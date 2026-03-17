@@ -1,6 +1,9 @@
 services:
   app:
-    build: ./backend
+    build:
+      context: ./backend
+      args:
+        DATABASE_URL: ${DATABASE_URL}
     container_name: telecare_app
     ports:
       - "4001:4001"
@@ -17,6 +20,21 @@ services:
       - db
       - mailpit
 
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: sh -c "npm install --include=dev && npm run build && npm run start"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - app
+
   mailpit:
     image: axllent/mailpit:latest
     container_name: telecare_mailpit
@@ -28,6 +46,8 @@ services:
     image: postgres:16-alpine
     container_name: telecare_db
     restart: always
+    env_file:
+      - .env
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}

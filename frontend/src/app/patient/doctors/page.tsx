@@ -70,7 +70,7 @@ function DoctorCard({ doctor, specializationLabel }: { doctor: DoctorSummary; sp
   );
 }
 
-export default function DoctorDiscovery() {
+function DoctorDiscoveryContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -291,5 +291,13 @@ export default function DoctorDiscovery() {
         )}
       </div>
     </motion.div>
+  );
+}
+
+export default function DoctorDiscovery() {
+  return (
+    <React.Suspense fallback={null}>
+      <DoctorDiscoveryContent />
+    </React.Suspense>
   );
 }

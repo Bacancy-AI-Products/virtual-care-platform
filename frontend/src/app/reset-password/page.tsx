@@ -66,7 +66,7 @@ function getStrengthLevel(password: string): {
   };
 }
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token")?.trim() ?? "";
 
@@ -347,5 +347,13 @@ export default function ResetPasswordPage() {
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-900/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <ResetPasswordContent />
+    </React.Suspense>
   );
 }

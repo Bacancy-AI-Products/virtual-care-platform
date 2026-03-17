@@ -7,7 +7,7 @@ import { Mail, ArrowRight, Stethoscope, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { authApi } from "@/services/api";
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordContent() {
   const searchParams = useSearchParams();
   const [email, setEmail] = React.useState("");
   const [fieldError, setFieldError] = React.useState<string | null>(null);
@@ -175,5 +175,13 @@ export default function ForgotPasswordPage() {
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-900/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
       </div>
     </div>
+  );
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <ForgotPasswordContent />
+    </React.Suspense>
   );
 }

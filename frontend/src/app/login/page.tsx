@@ -69,6 +69,7 @@ export default function LoginPage() {
   };
 
   return (
+    <React.Suspense fallback={null}>
     <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
       {/* Left Side - Form */}
       <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-24 bg-white relative overflow-hidden">
@@ -213,5 +214,6 @@ export default function LoginPage() {
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-900/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
       </div>
     </div>
+    </React.Suspense>
   );
 }
