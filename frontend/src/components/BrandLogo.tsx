@@ -4,45 +4,36 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
+/** Official Bacancy mark — do not edit the asset; only scale via CSS. */
+const LOGO_MARK_SRC = '/branding/bacancy-logo-without-name.png';
+
 interface BrandLogoProps {
-  href?: string;
-  compact?: boolean;
+    href?: string;
+    compact?: boolean;
 }
 
-export function BrandLogo({ href, compact = false }: BrandLogoProps) {
-  const iconSize = compact ? 32 : 40;
-
-  const inner = (
-    <div className="flex items-start gap-3">
-      <Image
-        src="/branding/bacancy-logo-without-name.png"
-        alt="Bacancy"
-        width={iconSize}
-        height={iconSize}
-        className="flex-shrink-0"
-      />
-      <div className="flex flex-col justify-center">
-        <span
-          className={`font-black tracking-[0.06em] uppercase text-slate-900 leading-tight ${
-            compact ? 'text-base' : 'text-xl'
-          }`}
-        >
-          Bacancy
-        </span>
-        <span className="font-semibold text-slate-500 tracking-widest uppercase text-[11px] leading-tight">
-          TeleCare
-        </span>
-      </div>
-    </div>
-  );
-
-  if (href === undefined) {
-    return inner;
-  }
-
-  return (
-    <Link href={href} className="inline-flex items-start">
-      {inner}
-    </Link>
-  );
+export function BrandLogo({ href = '/doctors', compact }: BrandLogoProps) {
+    return (
+        <Link href={href} className="flex items-center gap-2 sm:gap-2.5">
+            <Image
+                src={LOGO_MARK_SRC}
+                alt="Bacancy"
+                width={160}
+                height={160}
+                className={
+                    compact
+                        ? 'h-8 w-auto max-w-[120px] object-contain object-left'
+                        : 'h-9 w-auto max-w-[140px] sm:h-10 object-contain object-left'
+                }
+                priority
+            />
+            <span
+                className={`font-bold text-brand-500 tracking-tight ${
+                    compact ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'
+                }`}
+            >
+                BacancyTeleCare
+            </span>
+        </Link>
+    );
 }

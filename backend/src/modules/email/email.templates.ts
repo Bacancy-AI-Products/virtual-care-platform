@@ -11,16 +11,16 @@ export function buildPasswordResetEmail(
   payload: PasswordResetTemplatePayload
 ): { subject: string; text: string; html: string } {
   const { resetLink } = payload;
-  const subject = "Reset your TeleCare password";
+  const subject = "Reset your BacancyTeleCare password";
   const text = `You requested a password reset. Click the link below to reset your password:\n\n${resetLink}\n\nThis link expires in 1 hour. If you didn't request this, ignore this email.`;
   const html = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
 <body style="font-family: sans-serif; line-height: 1.6; color: #333;">
-  <h2>Reset your TeleCare password</h2>
+  <h2>Reset your BacancyTeleCare password</h2>
   <p>You requested a password reset. Click the button below to reset your password:</p>
-  <p><a href="${resetLink}" style="display: inline-block; padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px;">Reset Password</a></p>
+  <p><a href="${resetLink}" style="display: inline-block; padding: 10px 20px; background: #f58220; color: white; text-decoration: none; border-radius: 6px;">Reset Password</a></p>
   <p style="color: #666; font-size: 0.9em;">This link expires in 1 hour. If you didn't request this, ignore this email.</p>
   <p style="color: #666; font-size: 0.85em;">Or copy this link: ${resetLink}</p>
 </body>
@@ -50,7 +50,7 @@ export function buildAppointmentDeclinedEmail(
   const subject = "Your appointment request was declined";
 
   const displayDoctor = doctorName.startsWith("Dr.") ? doctorName : `Dr. ${doctorName}`;
-  const text = `Hi ${patientName},\n\nUnfortunately, ${displayDoctor} has declined your appointment request scheduled for ${dateStr} at ${timeStr}.\n\nReason: ${declineReason}\n\nYou can book a new appointment with another available doctor on TeleCare.\n\nThe TeleCare Team`;
+  const text = `Hi ${patientName},\n\nUnfortunately, ${displayDoctor} has declined your appointment request scheduled for ${dateStr} at ${timeStr}.\n\nReason: ${declineReason}\n\nYou can book a new appointment with another available doctor on BacancyTeleCare.\n\nThe BacancyTeleCare Team`;
 
   const html = `
 <!DOCTYPE html>
@@ -76,8 +76,8 @@ export function buildAppointmentDeclinedEmail(
         <p style="margin: 0; color: #374151;">${declineReason}</p>
       </div>
 
-      <p>You can book a new appointment with another available doctor on TeleCare.</p>
-      <p style="color: #64748b; font-size: 14px;">— The TeleCare Team</p>
+      <p>You can book a new appointment with another available doctor on BacancyTeleCare.</p>
+      <p style="color: #64748b; font-size: 14px;">— The BacancyTeleCare Team</p>
     </div>
   </div>
 </body>

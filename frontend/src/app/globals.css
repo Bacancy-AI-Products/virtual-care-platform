@@ -4,16 +4,17 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-outfit), sans-serif;
 
-  --color-brand-50: #f0f9ff;
-  --color-brand-100: #e0f2fe;
-  --color-brand-200: #bae6fd;
-  --color-brand-300: #7dd3fc;
-  --color-brand-400: #38bdf8;
-  --color-brand-500: #0ea5e9;
-  --color-brand-600: #0284c7;
-  --color-brand-700: #0369a1;
-  --color-brand-800: #075985;
-  --color-brand-900: #0c4a6e;
+  /* Bacancy brand orange — primary #f58220 */
+  --color-brand-50: #fff8f4;
+  --color-brand-100: #ffecdd;
+  --color-brand-200: #ffd4b8;
+  --color-brand-300: #ffb380;
+  --color-brand-400: #f7933e;
+  --color-brand-500: #f58220;
+  --color-brand-600: #e06d10;
+  --color-brand-700: #bc5a0e;
+  --color-brand-800: #994a0f;
+  --color-brand-900: #7c3e10;
 
   --color-medical-teal: #14b8a6;
   --color-medical-soft: #f0fdfa;

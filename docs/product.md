@@ -1,6 +1,6 @@
-Project: TeleCare
+Project: BacancyTeleCare
 
-TeleCare is a telemedicine SaaS platform connecting patients and doctors.
+BacancyTeleCare is a telemedicine SaaS platform connecting patients and doctors.
 
 Core features:
 

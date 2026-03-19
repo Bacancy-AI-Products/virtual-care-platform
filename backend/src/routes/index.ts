@@ -14,7 +14,7 @@ import { notificationsRouter } from "../modules/notifications";
 const apiRouter = Router();
 
 apiRouter.get("/", (_req, res) => {
-  res.json({ message: "TeleCare API v1", version: "1.0" });
+  res.json({ message: "BacancyTeleCare API v1", version: "1.0" });
 });
 
 apiRouter.use("/auth", authRouter);

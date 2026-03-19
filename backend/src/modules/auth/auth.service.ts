@@ -118,8 +118,8 @@ export async function requestPasswordReset(email: string): Promise<{ message: st
       const isSmtpUnreachable =
         code === "ESOCKET" || code === "ECONNREFUSED" || msg.includes("ECONNREFUSED");
       if (isSmtpUnreachable && config.nodeEnv === "development") {
-        console.warn("[TeleCare] SMTP unreachable. Run Mailpit: docker compose up mailpit -d");
-        console.warn(`[TeleCare] Dev reset link for ${user.email}: ${resetLink}`);
+        console.warn("[BacancyTeleCare] SMTP unreachable. Run Mailpit: docker compose up mailpit -d");
+        console.warn(`[BacancyTeleCare] Dev reset link for ${user.email}: ${resetLink}`);
         return { message: "If an account exists, a reset link was sent." };
       }
       throw err;

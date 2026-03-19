@@ -14,15 +14,15 @@ setNotificationEmitter((userId, payload) => {
 });
 
 server.listen(port, () => {
-  console.log(`[TeleCare] Server running on port ${port} (${config.nodeEnv})`);
-  console.log(`[TeleCare] Socket.io initialized`);
+  console.log(`[BacancyTeleCare] Server running on port ${port} (${config.nodeEnv})`);
+  console.log(`[BacancyTeleCare] Socket.io initialized`);
 });
 
 server.on("error", (err: NodeJS.ErrnoException) => {
   const msg = err.code === "EADDRINUSE"
     ? `Port ${port} in use. Run: lsof -ti:${port} | xargs kill`
     : err.message;
-  console.error(`[TeleCare] ${msg}`);
+  console.error(`[BacancyTeleCare] ${msg}`);
   process.exit(1);
 });
 

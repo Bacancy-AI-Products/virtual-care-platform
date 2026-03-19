@@ -1,5 +1,5 @@
 /**
- * Email types for the TeleCare notification system.
+ * Email types for the BacancyTeleCare notification system.
  * Extensible for future: signup_verification, appointment_confirmation, appointment_reminder,
  * video_call_link, appointment_cancelled, appointment_rescheduled.
  */

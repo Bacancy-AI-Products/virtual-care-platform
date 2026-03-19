@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body>
-        <NextTopLoader color="#0ea5e9" height={3} showSpinner={false} shadow="0 0 10px #0ea5e9,0 0 5px #0ea5e9" />
+        <NextTopLoader color="#f58220" height={3} showSpinner={false} shadow="0 0 10px #f58220,0 0 5px #f58220" />
         <AuthBootstrap />
         <QueryProvider>{children}</QueryProvider>
       </body>

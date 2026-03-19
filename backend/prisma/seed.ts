@@ -29,7 +29,7 @@ function availability(startTime: string, endTime: string, weekdays: number[]) {
 }
 
 async function main() {
-  console.log("🌱 Seeding TeleCare database...\n");
+  console.log("🌱 Seeding BacancyTeleCare database...\n");
 
   // ─── SPECIALIZATIONS ─────────────────────────────────────────────────────────
 

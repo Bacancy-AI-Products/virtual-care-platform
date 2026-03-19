@@ -58,7 +58,7 @@ export const config = {
     smtpPort: parseInt(getOptionalEnv("SMTP_PORT", "1025") ?? "1025", 10),
     smtpUser: getOptionalEnv("SMTP_USER"),
     smtpPass: getOptionalEnv("SMTP_PASS"),
-    mailFrom: getOptionalEnv("MAIL_FROM", "TeleCare <noreply@localhost>"),
+    mailFrom: getOptionalEnv("MAIL_FROM", "BacancyTeleCare <noreply@localhost>"),
   },
   dailyApiKey: process.env.DAILY_API_KEY ?? "",
   dailyDomain: process.env.DAILY_DOMAIN ?? "",
