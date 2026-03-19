@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Mail, ArrowRight, Stethoscope, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { authApi } from "@/services/api";
+import { BrandLogo } from "@/components/BrandLogo";
 
 function ForgotPasswordContent() {
   const searchParams = useSearchParams();
@@ -60,18 +61,15 @@ function ForgotPasswordContent() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
       {/* Left Side - Form */}
-      <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-24 bg-white relative overflow-hidden">
+      <div className="flex-1 flex flex-col px-6 py-6 lg:py-12 lg:px-24 bg-white relative overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="max-w-md w-full mx-auto"
         >
-          <div className="flex items-center gap-2 mb-10">
-            <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-100">
-              <Stethoscope className="text-white w-6 h-6" />
-            </div>
-            <span className="text-2xl font-bold text-slate-900 tracking-tight">TeleCare</span>
+          <div className="mb-10">
+            <BrandLogo />
           </div>
 
           <h2 className="text-4xl font-bold text-slate-900 mb-2">Forgot Password?</h2>
@@ -102,7 +100,7 @@ function ForgotPasswordContent() {
                     type="email"
                     placeholder="name@example.com"
                     className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
-                      fieldError ? "border-red-500" : "border-transparent focus:border-brand-500"
+                      fieldError ? "border-red-500" : "border-slate-200 focus:border-brand-500"
                     }`}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -165,7 +163,7 @@ function ForgotPasswordContent() {
               Secure Account Recovery.
             </h3>
             <p className="text-xl text-brand-100 leading-relaxed">
-              We&apos;ll help you get back into TeleCare safely. Reset your password and continue your care
+              We&apos;ll help you get back into BacancyTeleCare safely. Reset your password and continue your care
               journey.
             </p>
           </motion.div>

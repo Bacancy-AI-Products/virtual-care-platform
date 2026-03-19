@@ -121,7 +121,7 @@ export default function DoctorProfilePage() {
   React.useEffect(() => {
     if (doctor) {
       const name = doctor.user.name || 'Doctor';
-      document.title = `${name} | TeleCare`;
+      document.title = `${name} | BacancyTeleCare`;
     }
   }, [doctor]);
 

@@ -20,7 +20,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "TeleCare - Your Health, Our Priority",
+  title: "BacancyTeleCare - Your Health, Our Priority",
   description: "Modern telemedicine platform for remote consultations",
 };
 

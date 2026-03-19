@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import {
-  Stethoscope,
   Star,
   Clock,
   Award,
@@ -21,6 +20,7 @@ import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import { doctorsApi, type AvailabilitySlot } from "@/services/api";
 import { useAuth } from "@/hooks/useAuth";
+import { PublicHeader } from "@/components/PublicHeader";
 
 export default function PublicDoctorProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -42,14 +42,16 @@ export default function PublicDoctorProfilePage() {
   React.useEffect(() => {
     if (doctor) {
       const name = doctor.user.name || "Doctor";
-      document.title = `${name} | TeleCare`;
+      document.title = `${name} | BacancyTeleCare`;
     }
   }, [doctor]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex flex-col">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between border-b border-slate-100" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
+          <PublicHeader bordered />
+        </div>
         <div className="flex-1 flex items-center justify-center py-32">
           <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
         </div>
@@ -60,22 +62,9 @@ export default function PublicDoctorProfilePage() {
   if (isError || !doctor) {
     return (
       <div className="min-h-screen bg-white flex flex-col">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between border-b border-slate-100">
-          <Link href="/doctors" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-100">
-              <Stethoscope className="text-white w-6 h-6" />
-            </div>
-            <span className="text-2xl font-bold text-slate-900 tracking-tight">TeleCare</span>
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link href="/login" className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-slate-600 font-semibold hover:text-brand-500 transition-colors">
-              Login
-            </Link>
-            <Link href="/signup" className="px-6 sm:px-8 py-2.5 sm:py-3 bg-brand-500 text-white text-sm sm:text-base font-bold rounded-full shadow-lg shadow-brand-100 hover:bg-brand-600 transition-all active:scale-95">
-              Get Started
-            </Link>
-          </div>
-        </nav>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
+          <PublicHeader bordered />
+        </div>
         <div className="flex-1 flex items-center justify-center p-20">
           <p className="text-slate-500 font-bold">Doctor not found.</p>
         </div>
@@ -85,29 +74,10 @@ export default function PublicDoctorProfilePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Public navbar (same as /doctors list) */}
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between border-b border-slate-100">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-100">
-            <Stethoscope className="text-white w-6 h-6" />
-          </div>
-          <span className="text-2xl font-bold text-slate-900 tracking-tight">TeleCare</span>
-        </Link>
-        <div className="flex items-center gap-2 sm:gap-4">
-          <Link
-            href="/login"
-            className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-slate-600 font-semibold hover:text-brand-500 transition-colors"
-          >
-            Login
-          </Link>
-          <Link
-            href="/signup"
-            className="px-6 sm:px-8 py-2.5 sm:py-3 bg-brand-500 text-white text-sm sm:text-base font-bold rounded-full shadow-lg shadow-brand-100 hover:bg-brand-600 hover:shadow-brand-200 transition-all active:scale-95"
-          >
-            Get Started
-          </Link>
-        </div>
-      </nav>
+      {/* Public navbar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <PublicHeader bordered />
+      </div>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         <motion.div

@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { ArrowRight, Eye, EyeOff, Loader2, Stethoscope } from "lucide-react";
 import { motion } from "motion/react";
 import { authApi } from "@/services/api";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const PASSWORD_MAX_LENGTH = 128;
 
@@ -143,18 +144,15 @@ function ResetPasswordContent() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
-      <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-24 bg-white relative overflow-hidden">
+      <div className="flex-1 flex flex-col px-6 py-6 lg:py-12 lg:px-24 bg-white relative overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="max-w-md w-full mx-auto"
         >
-          <div className="flex items-center gap-2 mb-10">
-            <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-100">
-              <Stethoscope className="text-white w-6 h-6" />
-            </div>
-            <span className="text-2xl font-bold text-slate-900 tracking-tight">TeleCare</span>
+          <div className="mb-10">
+            <BrandLogo />
           </div>
 
           <h2 className="text-4xl font-bold text-slate-900 mb-2">Reset Password</h2>
@@ -183,7 +181,7 @@ function ResetPasswordContent() {
                     placeholder="Minimum 8 characters"
                     disabled={isSubmitting}
                     className={`w-full px-4 pr-12 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium disabled:opacity-70 ${
-                      errors.newPassword ? "border-red-500" : "border-transparent focus:border-brand-500"
+                      errors.newPassword ? "border-red-500" : "border-slate-200 focus:border-brand-500"
                     }`}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -269,7 +267,7 @@ function ResetPasswordContent() {
                     placeholder="Re-enter your password"
                     disabled={isSubmitting}
                     className={`w-full px-4 pr-12 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium disabled:opacity-70 ${
-                      errors.confirmPassword ? "border-red-500" : "border-transparent focus:border-brand-500"
+                      errors.confirmPassword ? "border-red-500" : "border-slate-200 focus:border-brand-500"
                     }`}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -339,7 +337,7 @@ function ResetPasswordContent() {
             </div>
             <h3 className="text-5xl font-bold text-white mb-8 leading-tight">Set a New Password.</h3>
             <p className="text-xl text-brand-100 leading-relaxed">
-              Create a strong password to secure your TeleCare account and continue safely.
+              Create a strong password to secure your BacancyTeleCare account and continue safely.
             </p>
           </motion.div>
         </div>

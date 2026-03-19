@@ -3,10 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Stethoscope, Mail, Lock, User, ArrowRight, ChevronLeft, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, ChevronLeft, Loader2, Stethoscope } from 'lucide-react';
 import { motion } from 'motion/react';
 import { authApi } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
+import { BrandLogo } from '@/components/BrandLogo';
 
 const COUNTRY_OPTIONS = [
     '+1 (USA)',
@@ -110,216 +111,227 @@ export default function SignupPage() {
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
             {/* Left Side - Form */}
-            <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-24 bg-white relative overflow-hidden">
+            <div className="flex-1 flex flex-col px-6 py-6 lg:py-12 lg:px-24 bg-white relative overflow-hidden">
+                {/* Mobile top bar */}
+                <div className="flex items-center justify-between lg:hidden mb-6">
+                    <Link
+                        href="/"
+                        className="flex items-center gap-2 text-slate-500 hover:text-brand-500 transition-colors font-semibold group"
+                    >
+                        <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                        Back
+                    </Link>
+                    <BrandLogo />
+                </div>
+
+                {/* Desktop back button */}
                 <Link
                     href="/"
-                    className="inline-flex items-center gap-2 text-slate-500 hover:text-brand-500 transition-colors font-semibold group mb-6 sm:mb-8 lg:mb-0 lg:absolute lg:top-8 lg:left-8"
+                    className="hidden lg:flex absolute top-8 left-8 items-center gap-2 text-slate-500 hover:text-brand-500 transition-colors font-semibold group"
                 >
                     <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                     Back to Home
                 </Link>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="max-w-md w-full mx-auto"
-                >
-                    <div className="flex items-center gap-2 mb-10">
-                        <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-100">
-                            <Stethoscope className="text-white w-6 h-6" />
-                        </div>
-                        <span className="text-2xl font-bold text-slate-900 tracking-tight">
-                            TeleCare
-                        </span>
-                    </div>
-
-                    <h2 className="text-4xl font-bold text-slate-900 mb-2">Join TeleCare</h2>
-                    <p className="text-slate-500 mb-10">
-                        Create your account and get started with secure online consultations.
-                    </p>
-
-                    {/* Role Switcher (Patient / Doctor only) */}
-                    <div className="flex p-1 bg-slate-100 rounded-2xl mb-8">
-                        <button
-                            type="button"
-                            onClick={() => setRole('patient')}
-                            className={`flex-1 py-3 rounded-xl font-bold transition-all ${
-                                role === 'patient'
-                                    ? 'bg-white text-brand-600 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-700'
-                            }`}
-                        >
-                            Patient
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setRole('doctor')}
-                            className={`flex-1 py-3 rounded-xl font-bold transition-all ${
-                                role === 'doctor'
-                                    ? 'bg-white text-brand-600 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-700'
-                            }`}
-                        >
-                            Doctor
-                        </button>
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 ml-1">
-                                Full Name
-                            </label>
-                            <div className="relative group">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
-                                <input
-                                    type="text"
-                                    placeholder="John Doe"
-                                    className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
-                                        errors.fullName
-                                            ? 'border-red-500'
-                                            : 'border-transparent focus:border-brand-500'
-                                    }`}
-                                    value={fullName}
-                                    onChange={(e) => setFullName(e.target.value)}
-                                />
-                            </div>
-                            {errors.fullName && (
-                                <p className="text-xs text-red-500 font-medium ml-1">
-                                    {errors.fullName}
-                                </p>
-                            )}
+                <div className="flex-1 flex flex-col justify-center">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="max-w-md w-full mx-auto"
+                    >
+                        {/* Desktop BrandLogo */}
+                        <div className="hidden lg:flex mb-10">
+                            <BrandLogo />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 ml-1">
-                                Mobile Number
-                            </label>
-                            <div className="flex gap-3">
-                                <div className="w-40">
-                                    <select
-                                        className="w-full min-h-[58px] h-full px-3 py-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-brand-500 outline-none text-sm font-medium text-slate-700"
-                                        value={countryCode}
-                                        onChange={(e) => setCountryCode(e.target.value)}
-                                    >
-                                        {COUNTRY_OPTIONS.map((code) => (
-                                            <option key={code} value={code}>
-                                                {code}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="flex-1 relative group">
+                        <h2 className="text-4xl font-bold text-slate-900 mb-2">Join BacancyTeleCare</h2>
+                        <p className="text-slate-500 mb-10">
+                            Create your account and get started with secure online consultations.
+                        </p>
+
+                        {/* Role Switcher (Patient / Doctor only) */}
+                        <div className="flex p-1 bg-slate-100 rounded-2xl mb-8">
+                            <button
+                                type="button"
+                                onClick={() => setRole('patient')}
+                                className={`flex-1 py-3 rounded-xl font-bold transition-all ${
+                                    role === 'patient'
+                                        ? 'bg-white text-brand-600 shadow-sm'
+                                        : 'text-slate-500 hover:text-slate-700'
+                                }`}
+                            >
+                                Patient
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setRole('doctor')}
+                                className={`flex-1 py-3 rounded-xl font-bold transition-all ${
+                                    role === 'doctor'
+                                        ? 'bg-white text-brand-600 shadow-sm'
+                                        : 'text-slate-500 hover:text-slate-700'
+                                }`}
+                            >
+                                Doctor
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    Full Name
+                                </label>
+                                <div className="relative group">
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
                                     <input
-                                        type="tel"
-                                        placeholder="10-digit mobile number"
-                                        className={`w-full px-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
-                                            errors.mobile
+                                        type="text"
+                                        placeholder="John Doe"
+                                        className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
+                                            errors.fullName
                                                 ? 'border-red-500'
-                                                : 'border-transparent focus:border-brand-500'
+                                                : 'border-slate-200 focus:border-brand-500'
                                         }`}
-                                        value={mobile}
-                                        onChange={(e) =>
-                                            setMobile(e.target.value.replace(/\D/g, ''))
-                                        }
-                                        maxLength={10}
+                                        value={fullName}
+                                        onChange={(e) => setFullName(e.target.value)}
                                     />
                                 </div>
+                                {errors.fullName && (
+                                    <p className="text-xs text-red-500 font-medium ml-1">
+                                        {errors.fullName}
+                                    </p>
+                                )}
                             </div>
-                            {errors.mobile && (
-                                <p className="text-xs text-red-500 font-medium ml-1">
-                                    {errors.mobile}
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    Mobile Number
+                                </label>
+                                <div className="flex gap-3">
+                                    <div className="w-40">
+                                        <select
+                                            className="w-full min-h-[58px] h-full px-3 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-brand-500 outline-none text-sm font-medium text-slate-700"
+                                            value={countryCode}
+                                            onChange={(e) => setCountryCode(e.target.value)}
+                                        >
+                                            {COUNTRY_OPTIONS.map((code) => (
+                                                <option key={code} value={code}>
+                                                    {code}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="flex-1 relative group">
+                                        <input
+                                            type="tel"
+                                            placeholder="10-digit mobile number"
+                                            className={`w-full px-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
+                                                errors.mobile
+                                                    ? 'border-red-500'
+                                                    : 'border-slate-200 focus:border-brand-500'
+                                            }`}
+                                            value={mobile}
+                                            onChange={(e) =>
+                                                setMobile(e.target.value.replace(/\D/g, ''))
+                                            }
+                                            maxLength={10}
+                                        />
+                                    </div>
+                                </div>
+                                {errors.mobile && (
+                                    <p className="text-xs text-red-500 font-medium ml-1">
+                                        {errors.mobile}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    Email Address (optional)
+                                </label>
+                                <div className="relative group">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+                                    <input
+                                        type="email"
+                                        placeholder="name@example.com"
+                                        className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
+                                            errors.email
+                                                ? 'border-red-500'
+                                                : 'border-slate-200 focus:border-brand-500'
+                                        }`}
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                </div>
+                                {errors.email && (
+                                    <p className="text-xs text-red-500 font-medium ml-1">
+                                        {errors.email}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">
+                                    Create Password
+                                </label>
+                                <div className="relative group">
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+                                    <input
+                                        type="password"
+                                        placeholder="Minimum 8 characters"
+                                        className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
+                                            errors.password
+                                                ? 'border-red-500'
+                                                : 'border-slate-200 focus:border-brand-500'
+                                        }`}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                </div>
+                                {errors.password && (
+                                    <p className="text-xs text-red-500 font-medium ml-1">
+                                        {errors.password}
+                                    </p>
+                                )}
+                            </div>
+
+                            {formError && (
+                                <p className="text-sm text-red-500 font-medium text-center bg-red-50 px-4 py-3 rounded-2xl">
+                                    {formError}
                                 </p>
                             )}
-                        </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 ml-1">
-                                Email Address (optional)
-                            </label>
-                            <div className="relative group">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
-                                <input
-                                    type="email"
-                                    placeholder="name@example.com"
-                                    className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
-                                        errors.email
-                                            ? 'border-red-500'
-                                            : 'border-transparent focus:border-brand-500'
-                                    }`}
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                            </div>
-                            {errors.email && (
-                                <p className="text-xs text-red-500 font-medium ml-1">
-                                    {errors.email}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 ml-1">
-                                Create Password
-                            </label>
-                            <div className="relative group">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
-                                <input
-                                    type="password"
-                                    placeholder="Minimum 8 characters"
-                                    className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
-                                        errors.password
-                                            ? 'border-red-500'
-                                            : 'border-transparent focus:border-brand-500'
-                                    }`}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
-                            </div>
-                            {errors.password && (
-                                <p className="text-xs text-red-500 font-medium ml-1">
-                                    {errors.password}
-                                </p>
-                            )}
-                        </div>
-
-                        {formError && (
-                            <p className="text-sm text-red-500 font-medium text-center bg-red-50 px-4 py-3 rounded-2xl">
-                                {formError}
-                            </p>
-                        )}
-
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="w-full py-5 bg-brand-500 text-white font-bold rounded-2xl shadow-xl shadow-brand-100 hover:bg-brand-600 hover:shadow-brand-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
-                        >
-                            {isSubmitting ? (
-                                <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    Creating account...
-                                </>
-                            ) : (
-                                <>
-                                    Create Account
-                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </>
-                            )}
-                        </button>
-                    </form>
-
-                    <div className="mt-10 text-center">
-                        <p className="text-slate-500 font-medium">
-                            Already have an account?
-                            <Link
-                                href="/login"
-                                className="ml-2 text-brand-600 font-bold hover:text-brand-700 underline decoration-2 underline-offset-4"
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full py-5 bg-brand-500 text-white font-bold rounded-2xl shadow-xl shadow-brand-100 hover:bg-brand-600 hover:shadow-brand-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
                             >
-                                Log In
-                            </Link>
-                        </p>
-                    </div>
-                </motion.div>
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        Creating account...
+                                    </>
+                                ) : (
+                                    <>
+                                        Create Account
+                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    </>
+                                )}
+                            </button>
+                        </form>
+
+                        <div className="mt-10 text-center">
+                            <p className="text-slate-500 font-medium">
+                                Already have an account?
+                                <Link
+                                    href="/login"
+                                    className="ml-2 text-brand-600 font-bold hover:text-brand-700 underline decoration-2 underline-offset-4"
+                                >
+                                    Log In
+                                </Link>
+                            </p>
+                        </div>
+                    </motion.div>
+                </div>
             </div>
 
             {/* Right Side - Visual */}
@@ -337,7 +349,7 @@ export default function SignupPage() {
                             Your Health, Our Priority.
                         </h3>
                         <p className="text-xl text-brand-100 leading-relaxed">
-                            Experience the future of healthcare with TeleCare. Connect with experts
+                            Experience the future of healthcare with BacancyTeleCare. Connect with experts
                             in minutes and manage your health records seamlessly.
                         </p>
                     </motion.div>

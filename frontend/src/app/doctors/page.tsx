@@ -4,11 +4,12 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Stethoscope, Search, Star, Clock, MapPin, ArrowRight, Loader2, ChevronDown, XCircle } from "lucide-react";
+import { Search, Star, Clock, MapPin, ArrowRight, Loader2, ChevronDown, XCircle } from "lucide-react";
 import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import { doctorsApi, type DoctorSummary, type SpecializationOption } from "@/services/api";
 import { getStates, getCities } from "@/constants/us-locations";
+import { PublicHeader } from "@/components/PublicHeader";
 
 const SELECT_CLASS =
   "w-full appearance-none pl-4 pr-10 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all font-medium text-slate-900 text-sm disabled:opacity-60 disabled:cursor-not-allowed";
@@ -146,29 +147,10 @@ function PublicDoctorsContent() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Public navbar (same as landing) */}
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between border-b border-slate-100">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-100">
-            <Stethoscope className="text-white w-6 h-6" />
-          </div>
-          <span className="text-2xl font-bold text-slate-900 tracking-tight">TeleCare</span>
-        </Link>
-        <div className="flex items-center gap-2 sm:gap-4">
-          <Link
-            href="/login"
-            className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-slate-600 font-semibold hover:text-brand-500 transition-colors"
-          >
-            Login
-          </Link>
-          <Link
-            href="/signup"
-            className="px-6 sm:px-8 py-2.5 sm:py-3 bg-brand-500 text-white text-sm sm:text-base font-bold rounded-full shadow-lg shadow-brand-100 hover:bg-brand-600 hover:shadow-brand-200 transition-all active:scale-95"
-          >
-            Get Started
-          </Link>
-        </div>
-      </nav>
+      {/* Public navbar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <PublicHeader bordered />
+      </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <motion.div

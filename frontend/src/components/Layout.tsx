@@ -13,12 +13,11 @@ import {
   LogOut,
   Menu,
   X,
-  Stethoscope,
   Users,
   Settings,
-  ShieldCheck,
   ClipboardList,
 } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "@/hooks/useAuth";
@@ -54,7 +53,7 @@ const doctorNav: NavItem[] = [
 
 const adminNav: NavItem[] = [
   { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/admin/doctors", icon: Stethoscope, label: "Manage Doctors" },
+  { to: "/admin/doctors", icon: Search, label: "Manage Doctors" },
   { to: "/admin/patients", icon: Users, label: "Manage Patients" },
   { to: "/admin/appointments", icon: Calendar, label: "All Appointments" },
   { to: "/admin/settings", icon: Settings, label: "Settings" },
@@ -213,15 +212,8 @@ export const Layout = ({ children, role }: LayoutProps) => {
 
   const Sidebar = () => (
     <>
-      <div className="flex items-center gap-2 mb-10 px-2">
-        <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-100">
-          {role === "admin" ? (
-            <ShieldCheck className="text-white w-6 h-6" />
-          ) : (
-            <Stethoscope className="text-white w-6 h-6" />
-          )}
-        </div>
-        <span className="text-2xl font-bold text-slate-900 tracking-tight">TeleCare</span>
+      <div className="mb-10 px-2">
+        <BrandLogo />
       </div>
 
       <nav className="flex-1 flex flex-col gap-2">
@@ -245,7 +237,10 @@ export const Layout = ({ children, role }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-slate-50 flex w-full max-w-full overflow-x-hidden">
       {/* Sidebar — Desktop */}
-      <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 p-6 fixed h-full z-40">
+      <aside
+        className="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 p-6 fixed h-full z-40"
+        style={{ borderTop: "3px solid #F47B20" }}
+      >
         <Sidebar />
       </aside>
 
@@ -322,18 +317,12 @@ export const Layout = ({ children, role }: LayoutProps) => {
             className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <aside className="absolute inset-y-0 left-0 w-72 bg-white p-6 shadow-2xl flex flex-col">
+          <aside
+            className="absolute inset-y-0 left-0 w-72 bg-white p-6 shadow-2xl flex flex-col"
+            style={{ borderTop: "3px solid #F47B20" }}
+          >
             <div className="flex items-center justify-between mb-10">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center">
-                  {role === "admin" ? (
-                    <ShieldCheck className="text-white w-6 h-6" />
-                  ) : (
-                    <Stethoscope className="text-white w-6 h-6" />
-                  )}
-                </div>
-                <span className="text-2xl font-bold text-slate-900">TeleCare</span>
-              </div>
+              <BrandLogo />
               <button onClick={() => setIsMobileMenuOpen(false)}>
                 <X className="w-6 h-6 text-slate-400" />
               </button>

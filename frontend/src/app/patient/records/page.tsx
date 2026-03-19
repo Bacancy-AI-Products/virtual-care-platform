@@ -47,7 +47,7 @@ async function downloadPrescriptionPng(rx: Prescription, specializationLabel: st
   ctx.fillStyle = "#94a3b8";
   ctx.font = "12px Arial, sans-serif";
   ctx.textAlign = "right";
-  ctx.fillText("TeleCare Medical Consultation", W - PAD, y + 10);
+  ctx.fillText("BacancyTeleCare Medical Consultation", W - PAD, y + 10);
   ctx.textAlign = "left";
 
   y += 52;
@@ -136,7 +136,7 @@ async function downloadPrescriptionPng(rx: Prescription, specializationLabel: st
   ctx.fillStyle = "#cbd5e1";
   ctx.font = "11px Arial, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText("Digital prescription generated via TeleCare • Not a substitute for professional medical advice", W / 2, y);
+  ctx.fillText("Digital prescription generated via BacancyTeleCare • Not a substitute for professional medical advice", W / 2, y);
 
   canvas.toBlob(blob => {
     if (!blob) return;

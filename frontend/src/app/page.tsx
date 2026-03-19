@@ -22,6 +22,8 @@ import { motion } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import { doctorsApi, type SpecializationOption } from '@/services/api';
 import { getStates, getCities } from '@/constants/us-locations';
+import { PublicHeader } from '@/components/PublicHeader';
+import { BrandLogo } from '@/components/BrandLogo';
 
 const SELECT_CLASS =
     'w-full appearance-none pl-4 pr-10 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all font-medium text-slate-900 text-sm disabled:opacity-60 disabled:cursor-not-allowed';
@@ -158,7 +160,7 @@ function FindDoctorsBlock() {
                 <button
                     type="button"
                     onClick={handleFindDoctors}
-                    className="flex items-center justify-center gap-2 px-8 py-3.5 bg-brand-500 text-white font-bold rounded-xl shadow-lg shadow-brand-100 hover:bg-brand-600 transition-all active:scale-[0.98] whitespace-nowrap"
+                    className="flex items-center justify-center gap-2 px-8 py-3.5 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-100 hover:bg-brand-600 transition-all active:scale-[0.98] whitespace-nowrap"
                 >
                     <Search className="w-5 h-5" /> Find Doctors
                 </button>
@@ -171,50 +173,9 @@ export default function Landing() {
     return (
         <div className="min-h-screen bg-white overflow-hidden">
             {/* Navbar */}
-            <nav className="max-w-7xl mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-100">
-                        <Stethoscope className="text-white w-6 h-6" />
-                    </div>
-                    <span className="text-2xl font-bold text-slate-900 tracking-tight">
-                        TeleCare
-                    </span>
-                </div>
-                {/* <div className="hidden md:flex items-center gap-10">
-                    <a
-                        href="#features"
-                        className="text-slate-600 font-medium hover:text-brand-500 transition-colors"
-                    >
-                        Features
-                    </a>
-                    <a
-                        href="#how-it-works"
-                        className="text-slate-600 font-medium hover:text-brand-500 transition-colors"
-                    >
-                        How it works
-                    </a>
-                    <a
-                        href="#doctors"
-                        className="text-slate-600 font-medium hover:text-brand-500 transition-colors"
-                    >
-                        For Doctors
-                    </a>
-                </div> */}
-                <div className="flex items-center gap-2 sm:gap-4">
-                    <Link
-                        href="/login"
-                        className="px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-slate-600 font-semibold hover:text-brand-500 transition-colors"
-                    >
-                        Login
-                    </Link>
-                    <Link
-                        href="/signup"
-                        className="px-6 sm:px-8 py-2.5 sm:py-3 bg-brand-500 text-white text-sm sm:text-base font-bold rounded-full shadow-lg shadow-brand-100 hover:bg-brand-600 hover:shadow-brand-200 transition-all active:scale-95"
-                    >
-                        Get Started
-                    </Link>
-                </div>
-            </nav>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                <PublicHeader />
+            </div>
 
             {/* Find Doctors (public results → /doctors) */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-10">
@@ -226,8 +187,8 @@ export default function Landing() {
                 <FindDoctorsBlock />
             </section>
 
-            {/* Hero Section */}
-            <section className="relative pt-12 pb-24 lg:pt-24 lg:pb-40">
+            {/* Hero Section — no top padding, Find Doctors block sits directly above */}
+            <section className="relative pb-24 lg:pb-40">
                 <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
@@ -254,12 +215,6 @@ export default function Landing() {
                                 Book an Appointment{' '}
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                             </Link>
-                            {/* <Link
-                                href="/patient/doctors"
-                                className="px-10 py-5 bg-white text-slate-900 border-2 border-slate-100 text-lg font-bold rounded-full hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
-                            >
-                                Find a Doctor
-                            </Link> */}
                         </div>
                     </motion.div>
 
@@ -278,34 +233,6 @@ export default function Landing() {
                                 referrerPolicy="no-referrer"
                             />
                         </div>
-                        {/* Floating Cards */}
-                        {/* <div className="absolute -top-10 -right-10 bg-white p-6 rounded-3xl shadow-2xl z-20 border border-slate-50 hidden md:block animate-bounce-slow">
-              <div className="flex items-center gap-4 mb-2">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <Video className="text-green-600 w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-900">Live Consultation</p>
-                  <p className="text-xs text-slate-500">Dr. Sarah Johnson</p>
-                </div>
-              </div>
-              <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-green-500 w-2/3"></div>
-              </div>
-            </div> */}
-
-                        {/* <div className="absolute -bottom-10 -left-10 bg-white p-6 rounded-3xl shadow-2xl z-20 border border-slate-50 hidden md:block animate-pulse-slow">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-brand-100 rounded-full flex items-center justify-center">
-                                    <Star className="text-brand-600 w-6 h-6 fill-brand-600" />
-                                </div>
-                                <div>
-                                    <p className="text-lg font-bold text-slate-900">4.9/5</p>
-                                    <p className="text-xs text-slate-500">Patient Satisfaction</p>
-                                </div>
-                            </div>
-                        </div> */}
-
                         {/* Background elements */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-brand-50 rounded-full blur-3xl -z-10 opacity-50"></div>
                     </motion.div>
@@ -317,7 +244,7 @@ export default function Landing() {
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center max-w-3xl mx-auto mb-20">
                         <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
-                            Why Choose TeleCare?
+                            Why Choose BacancyTeleCare?
                         </h2>
                         <p className="text-xl text-slate-500 leading-relaxed">
                             We combine cutting-edge technology with compassionate care to provide
@@ -368,7 +295,7 @@ export default function Landing() {
                                 Ready to start your journey?
                             </h2>
                             <p className="text-xl text-brand-100 mb-12 max-w-2xl mx-auto">
-                                Join thousands of patients who trust TeleCare for their daily
+                                Join thousands of patients who trust BacancyTeleCare for their daily
                                 healthcare needs.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -396,14 +323,9 @@ export default function Landing() {
             {/* Footer */}
             <footer className="py-12 border-t border-slate-100">
                 <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
-                            <Stethoscope className="text-white w-5 h-5" />
-                        </div>
-                        <span className="text-xl font-bold text-slate-900">TeleCare</span>
-                    </div>
+                    <BrandLogo compact />
                     <p className="text-slate-500 text-sm">
-                        © 2026 TeleCare Inc. All rights reserved.
+                        © 2026 BacancyTeleCare Inc. All rights reserved.
                     </p>
                     <div className="flex gap-8">
                         <a
