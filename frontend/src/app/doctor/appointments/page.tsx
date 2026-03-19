@@ -16,11 +16,10 @@ import { useAuth } from "@/hooks/useAuth";
 
 // ─── Tab types ────────────────────────────────────────────────────────────────
 
-type Tab = "Requests" | "Scheduled" | "Past" | "Cancelled";
+type Tab = "Upcoming" | "Past" | "Cancelled";
 
 function getTab(status: string): Tab {
-  if (status === "PENDING") return "Requests";
-  if (status === "CONFIRMED") return "Scheduled";
+  if (status === "PENDING" || status === "CONFIRMED") return "Upcoming";
   if (status === "COMPLETED" || status === "NO_SHOW") return "Past";
   return "Cancelled";
 }
@@ -319,7 +318,7 @@ function ReadOnlyCard({ appt }: { appt: Appointment }) {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white px-8 py-6 rounded-[28px] border border-slate-100 shadow-sm grid grid-cols-[260px_1fr_40px] items-center gap-8 opacity-75"
+      className="bg-white px-5 py-5 sm:px-8 sm:py-6 rounded-[28px] border border-slate-100 shadow-sm flex flex-col gap-4 sm:gap-6 md:flex-row md:items-center opacity-75"
     >
       {/* Patient info – fixed 260px */}
       <div className="flex items-center gap-4 min-w-0">
@@ -339,14 +338,14 @@ function ReadOnlyCard({ appt }: { appt: Appointment }) {
       </div>
 
       {/* Info columns */}
-      <div className="flex items-center border-l border-slate-100 pl-8">
-        <div className="w-[130px]">
+      <div className="flex flex-wrap gap-4 sm:gap-6 md:flex-nowrap md:items-center md:border-l md:border-slate-100 md:pl-8">
+        <div className="w-1/2 min-w-[140px] sm:w-auto">
           <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
             <Calendar className="w-3.5 h-3.5" /> Date
           </p>
           <p className="text-sm font-bold text-slate-500">{format(new Date(appt.scheduledAt), "MMM d, yyyy")}</p>
         </div>
-        <div className="w-[110px]">
+        <div className="w-1/2 min-w-[120px] sm:w-auto">
           <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
             <Clock className="w-3.5 h-3.5" /> Time
           </p>
@@ -357,11 +356,11 @@ function ReadOnlyCard({ appt }: { appt: Appointment }) {
             </span>
           </p>
         </div>
-        <div className="w-[190px]">
+        <div className="w-full sm:w-auto sm:min-w-[180px]">
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Status</p>
           <StatusBadge status={appt.status} />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 min-w-full sm:min-w-[200px]">
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
             {appt.status === "CANCELLED_BY_DOCTOR" && appt.declineReason ? "Your Reason" : '\u00A0'}
           </p>
@@ -373,7 +372,6 @@ function ReadOnlyCard({ appt }: { appt: Appointment }) {
         </div>
       </div>
 
-      <div />
     </motion.div>
   );
 }
@@ -382,13 +380,9 @@ function ReadOnlyCard({ appt }: { appt: Appointment }) {
 
 function EmptyState({ tab }: { tab: Tab }) {
   const configs: Record<Tab, { icon: React.ReactNode; message: string }> = {
-    Requests: {
+    Upcoming: {
       icon: <PhoneCall className="w-8 h-8 text-slate-300" />,
-      message: "No pending appointment requests.",
-    },
-    Scheduled: {
-      icon: <Video className="w-8 h-8 text-slate-300" />,
-      message: "No scheduled calls. Accept a request to get started.",
+      message: "No upcoming requests or scheduled calls.",
     },
     Past: {
       icon: <CheckCircle2 className="w-8 h-8 text-slate-300" />,
@@ -399,7 +393,7 @@ function EmptyState({ tab }: { tab: Tab }) {
       message: "No cancelled appointments.",
     },
   };
-  const cfg = configs[tab];
+  const cfg = configs[tab] ?? configs.Upcoming;
   return (
     <div className="p-16 bg-white rounded-[40px] border border-dashed border-slate-200 text-center flex flex-col items-center gap-3">
       {cfg.icon}
@@ -410,12 +404,12 @@ function EmptyState({ tab }: { tab: Tab }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-const TABS: Tab[] = ["Requests", "Scheduled", "Past", "Cancelled"];
+const TABS: Tab[] = ["Upcoming", "Past", "Cancelled"];
 
 export default function DoctorAppointments() {
   const { user, token } = useAuth();
   const qClient = useQueryClient();
-  const [activeTab, setActiveTab] = React.useState<Tab>("Requests");
+  const [activeTab, setActiveTab] = React.useState<Tab>("Upcoming");
   const [actionId, setActionId] = React.useState<{ id: string; action: string } | null>(null);
   const [pendingDecline, setPendingDecline] = React.useState<{ id: string; patientName: string } | null>(null);
   const [visibleCount, setVisibleCount] = React.useState(10);
@@ -451,10 +445,10 @@ export default function DoctorAppointments() {
 
   const counts = React.useMemo(
     () => ({
-      Requests: all.filter((a) => a.status === "PENDING").length,
-      Scheduled: all.filter((a) => a.status === "CONFIRMED").length,
-      Past: all.filter((a) => a.status === "COMPLETED" || a.status === "NO_SHOW").length,
+      Upcoming: all.filter((a) => getTab(a.status) === "Upcoming").length,
+      Past: all.filter((a) => getTab(a.status) === "Past").length,
       Cancelled: all.filter((a) => getTab(a.status) === "Cancelled").length,
+      pendingRequests: all.filter((a) => a.status === "PENDING").length,
     }),
     [all]
   );
@@ -478,7 +472,7 @@ export default function DoctorAppointments() {
           <h2 className="text-3xl font-bold text-slate-900 mb-1">Appointments</h2>
           <p className="text-slate-500 font-medium">Review requests and manage your consultations.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <button
             type="button"
             onClick={() => qClient.invalidateQueries({ queryKey: ["appointments", "doctor", "all"] })}
@@ -487,11 +481,11 @@ export default function DoctorAppointments() {
             <RotateCw className="w-4 h-4" />
             Refresh
           </button>
-          {counts.Requests > 0 && (
+          {counts.pendingRequests > 0 && (
             <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-2xl">
               <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
               <p className="text-sm font-bold text-amber-600">
-                {counts.Requests} pending {counts.Requests === 1 ? "request" : "requests"}
+                {counts.pendingRequests} pending {counts.pendingRequests === 1 ? "request" : "requests"}
               </p>
             </div>
           )}
@@ -512,9 +506,7 @@ export default function DoctorAppointments() {
             {counts[tab] > 0 && (
               <span
                 className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                  tab === "Requests"
-                    ? "bg-amber-100 text-amber-600"
-                    : tab === "Cancelled"
+                  tab === "Cancelled"
                     ? "bg-red-100 text-red-500"
                     : "bg-brand-50 text-brand-600"
                 }`}
@@ -553,26 +545,33 @@ export default function DoctorAppointments() {
             <AnimatePresence mode="popLayout">
               {filtered.length === 0 ? (
                 <EmptyState tab={activeTab} />
-              ) : activeTab === "Requests" ? (
-                visible.map((appt) => (
-                  <RequestCard
-                    key={appt.id}
-                    appt={appt}
-                    onAccept={() => statusMutation.mutate({ id: appt.id, status: "CONFIRMED" })}
-                    onDecline={() => setPendingDecline({ id: appt.id, patientName: appt.patient.user.name })}
-                    accepting={actionId?.id === appt.id && actionId?.action === "accept"}
-                    declining={actionId?.id === appt.id && actionId?.action === "decline"}
-                  />
-                ))
-              ) : activeTab === "Scheduled" ? (
-                visible.map((appt) => (
-                  <ScheduledCard
-                    key={appt.id}
-                    appt={appt}
-                    onCancel={() => cancelMutation.mutate(appt.id)}
-                    cancelling={actionId?.id === appt.id && actionId?.action === "cancel"}
-                  />
-                ))
+              ) : activeTab === "Upcoming" ? (
+                <>
+                  {visible
+                    .filter((appt) => appt.status === "PENDING")
+                    .map((appt) => (
+                      <RequestCard
+                        key={appt.id}
+                        appt={appt}
+                        onAccept={() => statusMutation.mutate({ id: appt.id, status: "CONFIRMED" })}
+                        onDecline={() =>
+                          setPendingDecline({ id: appt.id, patientName: appt.patient.user.name })
+                        }
+                        accepting={actionId?.id === appt.id && actionId?.action === "accept"}
+                        declining={actionId?.id === appt.id && actionId?.action === "decline"}
+                      />
+                    ))}
+                  {visible
+                    .filter((appt) => appt.status === "CONFIRMED")
+                    .map((appt) => (
+                      <ScheduledCard
+                        key={appt.id}
+                        appt={appt}
+                        onCancel={() => cancelMutation.mutate(appt.id)}
+                        cancelling={actionId?.id === appt.id && actionId?.action === "cancel"}
+                      />
+                    ))}
+                </>
               ) : (
                 visible.map((appt) => <ReadOnlyCard key={appt.id} appt={appt} />)
               )}

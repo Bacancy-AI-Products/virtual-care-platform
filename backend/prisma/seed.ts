@@ -1,4 +1,9 @@
-import { PrismaClient, Role, AppointmentStatus, Gender } from "../generated/prisma";
+import {
+  PrismaClient,
+  Role,
+  AppointmentStatus,
+  Gender,
+} from "../generated/prisma";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -15,7 +20,12 @@ const daysFromNow = (n: number, hour = 10, minute = 0) => {
 
 // ─── Availability builder (all weekdays for a given time window) ──────────────
 function availability(startTime: string, endTime: string, weekdays: number[]) {
-  return weekdays.map((weekday) => ({ weekday, startTime, endTime, slotDuration: 30 }));
+  return weekdays.map((weekday) => ({
+    weekday,
+    startTime,
+    endTime,
+    slotDuration: 30,
+  }));
 }
 
 async function main() {
@@ -28,7 +38,10 @@ async function main() {
     { id: "family_medicine", name: "Family Medicine" },
     { id: "internal_medicine", name: "Internal Medicine" },
     { id: "pediatrician", name: "Pediatrician" },
-    { id: "gynecologist_obstetrician", name: "Gynecologist / Obstetrician (OB-GYN)" },
+    {
+      id: "gynecologist_obstetrician",
+      name: "Gynecologist / Obstetrician (OB-GYN)",
+    },
     { id: "fertility_specialist", name: "Fertility Specialist" },
     { id: "dermatologist", name: "Dermatologist" },
     { id: "cosmetologist", name: "Cosmetologist" },
@@ -63,7 +76,10 @@ async function main() {
     { id: "vascular_surgeon", name: "Vascular Surgeon" },
     { id: "radiologist", name: "Radiologist" },
     { id: "pathologist", name: "Pathologist" },
-    { id: "emergency_medicine_specialist", name: "Emergency Medicine Specialist" },
+    {
+      id: "emergency_medicine_specialist",
+      name: "Emergency Medicine Specialist",
+    },
     { id: "critical_care_specialist", name: "Critical Care Specialist" },
     { id: "ayurveda", name: "Ayurveda" },
     { id: "homeopathy", name: "Homeopathy" },
@@ -110,18 +126,18 @@ async function main() {
       email: "michael.chen@telecare.dev",
       specialization: "cardiologist",
       experienceYears: 15,
-      bio: "Board-certified cardiologist specialising in heart failure, arrhythmia, and preventive cardiology. Published researcher with 40+ peer-reviewed papers.",
+      bio: "Board-certified cardiologist specializing in heart failure, arrhythmia, and preventive cardiology. Published researcher with 40+ peer-reviewed papers.",
       consultationFee: 150,
       city: "Los Angeles",
       state: "California",
       availability: availability("10:00", "16:00", [1, 3, 5]), // Mon/Wed/Fri
     },
     {
-      name: "Dr. Priya Patel",
+      name: "Dr. Olivia Parker",
       email: "priya.patel@telecare.dev",
       specialization: "dermatologist",
       experienceYears: 6,
-      bio: "Dermatologist specialising in acne, eczema, psoriasis, and cosmetic procedures. Passionate about skin health for all skin types.",
+      bio: "Dermatologist specializing in acne, eczema, psoriasis, and cosmetic procedures. Passionate about skin health for all skin types.",
       consultationFee: 100,
       city: "Chicago",
       state: "Illinois",
@@ -132,7 +148,7 @@ async function main() {
       email: "james.wilson@telecare.dev",
       specialization: "pediatrician",
       experienceYears: 10,
-      bio: "Paediatrician providing compassionate care for newborns through adolescents. Special interest in developmental milestones and childhood nutrition.",
+      bio: "Pediatrician providing compassionate care for newborns through adolescents. Special interest in developmental milestones and childhood nutrition.",
       consultationFee: 75,
       city: "Houston",
       state: "Texas",
@@ -151,7 +167,7 @@ async function main() {
     },
     // Additional doctors to reach ~30–40 total with varied specializations
     {
-      name: "Dr. Ananya Rao",
+      name: "Dr. Lauren Mitchell",
       email: "ananya.rao@telecare.dev",
       specialization: "general_physician",
       experienceYears: 9,
@@ -162,18 +178,18 @@ async function main() {
       availability: availability("10:00", "18:00", [1, 2, 3, 4, 6]),
     },
     {
-      name: "Dr. Arjun Mehta",
+      name: "Dr. Ethan Cooper",
       email: "arjun.mehta@telecare.dev",
       specialization: "psychiatrist",
       experienceYears: 11,
-      bio: "Psychiatrist specialising in mood disorders, anxiety, and telepsychiatry-based follow-up care.",
+      bio: "Psychiatrist specializing in mood disorders, anxiety, and telepsychiatry-based follow-up care.",
       consultationFee: 140,
       city: "San Antonio",
       state: "Texas",
       availability: availability("15:00", "21:00", [1, 3, 5]),
     },
     {
-      name: "Dr. Kavya Nair",
+      name: "Dr. Emily Carter",
       email: "kavya.nair@telecare.dev",
       specialization: "gynecologist_obstetrician",
       experienceYears: 13,
@@ -184,7 +200,7 @@ async function main() {
       availability: availability("09:00", "14:00", [1, 2, 4, 6]),
     },
     {
-      name: "Dr. Rohan Singh",
+      name: "Dr. Jason Miller",
       email: "rohan.singh@telecare.dev",
       specialization: "orthopedic_doctor",
       experienceYears: 10,
@@ -195,7 +211,7 @@ async function main() {
       availability: availability("16:00", "21:00", [2, 3, 5]),
     },
     {
-      name: "Dr. Meera Kapoor",
+      name: "Dr. Hannah Brooks",
       email: "meera.kapoor@telecare.dev",
       specialization: "endocrinologist",
       experienceYears: 14,
@@ -206,7 +222,7 @@ async function main() {
       availability: availability("09:00", "13:00", [1, 3, 5]),
     },
     {
-      name: "Dr. Sameer Ali",
+      name: "Dr. Daniel Rivera",
       email: "sameer.ali@telecare.dev",
       specialization: "pulmonologist",
       experienceYears: 8,
@@ -217,7 +233,7 @@ async function main() {
       availability: availability("11:00", "17:00", [2, 3, 4]),
     },
     {
-      name: "Dr. Neha Verma",
+      name: "Dr. Madison Lee",
       email: "neha.verma@telecare.dev",
       specialization: "dermatologist",
       experienceYears: 7,
@@ -228,7 +244,7 @@ async function main() {
       availability: availability("10:00", "16:00", [1, 3, 6]),
     },
     {
-      name: "Dr. Vikram Desai",
+      name: "Dr. Brandon Scott",
       email: "vikram.desai@telecare.dev",
       specialization: "diabetologist",
       experienceYears: 9,
@@ -239,7 +255,7 @@ async function main() {
       availability: availability("08:00", "12:00", [1, 2, 3, 4, 5]),
     },
     {
-      name: "Dr. Sanya Bose",
+      name: "Dr. Chloe Adams",
       email: "sanya.bose@telecare.dev",
       specialization: "psychologist",
       experienceYears: 6,
@@ -250,7 +266,7 @@ async function main() {
       availability: availability("13:00", "19:00", [2, 4, 6]),
     },
     {
-      name: "Dr. Rahul Chaturvedi",
+      name: "Dr. Jacob Turner",
       email: "rahul.chaturvedi@telecare.dev",
       specialization: "gastroenterologist",
       experienceYears: 12,
@@ -261,7 +277,7 @@ async function main() {
       availability: availability("09:00", "15:00", [1, 2, 4]),
     },
     {
-      name: "Dr. Tanya Gill",
+      name: "Dr. Megan Foster",
       email: "tanya.gill@telecare.dev",
       specialization: "fertility_specialist",
       experienceYears: 10,
@@ -272,7 +288,7 @@ async function main() {
       availability: availability("10:00", "14:00", [1, 3, 5]),
     },
     {
-      name: "Dr. Nitin Kulkarni",
+      name: "Dr. Ryan Howard",
       email: "nitin.kulkarni@telecare.dev",
       specialization: "sports_medicine_specialist",
       experienceYears: 7,
@@ -283,7 +299,7 @@ async function main() {
       availability: availability("17:00", "21:00", [1, 3, 5]),
     },
     {
-      name: "Dr. Aditi Sharma",
+      name: "Dr. Natalie Brooks",
       email: "aditi.sharma@telecare.dev",
       specialization: "psychiatrist",
       experienceYears: 8,
@@ -294,7 +310,7 @@ async function main() {
       availability: availability("11:00", "18:00", [2, 3, 5]),
     },
     {
-      name: "Dr. Karan Malhotra",
+      name: "Dr. Andrew Collins",
       email: "karan.malhotra@telecare.dev",
       specialization: "cardiologist",
       experienceYears: 10,
@@ -305,7 +321,7 @@ async function main() {
       availability: availability("09:00", "13:00", [1, 2, 3]),
     },
     {
-      name: "Dr. Pooja Iyer",
+      name: "Dr. Grace Morgan",
       email: "pooja.iyer@telecare.dev",
       specialization: "pediatrician",
       experienceYears: 5,
@@ -322,24 +338,24 @@ async function main() {
       experienceYears: 9,
       bio: "Pulmonologist managing chronic respiratory illness and sleep apnea.",
       consultationFee: 150,
-      city: "Lucknow",
-      state: "Uttar Pradesh",
+      city: "Denver",
+      state: "Colorado",
       availability: availability("10:00", "16:00", [1, 3, 5]),
     },
     // Low-activity / edge-case doctors
     {
-      name: "Dr. Shruti Menon",
+      name: "Dr. Lauren Reed",
       email: "shruti.menon@telecare.dev",
       specialization: "ayurveda",
       experienceYears: 6,
-      bio: "Ayurveda practitioner specialising in lifestyle-based interventions and chronic pain.",
+      bio: "Ayurveda practitioner specializing in lifestyle-based interventions and chronic pain.",
       consultationFee: 70,
       city: "Chicago",
       state: "Illinois",
       availability: availability("10:00", "16:00", [1, 3, 6]),
     },
     {
-      name: "Dr. Manish Gupta",
+      name: "Dr. Steven Ross",
       email: "manish.gupta@telecare.dev",
       specialization: "homeopathy",
       experienceYears: 15,
@@ -350,7 +366,7 @@ async function main() {
       availability: availability("11:00", "17:00", [2, 4, 6]),
     },
     {
-      name: "Dr. Leena Das",
+      name: "Dr. Rebecca Hayes",
       email: "leena.das@telecare.dev",
       specialization: "dentist",
       experienceYears: 4,
@@ -361,7 +377,7 @@ async function main() {
       availability: availability("10:00", "15:00", [1, 3, 5]),
     },
     {
-      name: "Dr. Arpita Banerjee",
+      name: "Dr. Rachel Price",
       email: "arpita.banerjee@telecare.dev",
       specialization: "ophthalmologist",
       experienceYears: 8,
@@ -372,7 +388,7 @@ async function main() {
       availability: availability("12:00", "18:00", [2, 4, 6]),
     },
     {
-      name: "Dr. Suresh Reddy",
+      name: "Dr. Mark Phillips",
       email: "suresh.reddy@telecare.dev",
       specialization: "urologist",
       experienceYears: 10,
@@ -383,7 +399,7 @@ async function main() {
       availability: availability("09:00", "13:00", [1, 3, 5]),
     },
     {
-      name: "Dr. Nisha Kulshreshtha",
+      name: "Dr. Ashley Bennett",
       email: "nisha.kulshreshtha@telecare.dev",
       specialization: "radiologist",
       experienceYears: 9,
@@ -394,7 +410,7 @@ async function main() {
       availability: availability("14:00", "19:00", [1, 2, 4]),
     },
     {
-      name: "Dr. Farah Siddiqui",
+      name: "Dr. Sydney Clark",
       email: "farah.siddiqui@telecare.dev",
       specialization: "critical_care_specialist",
       experienceYears: 11,
@@ -405,7 +421,7 @@ async function main() {
       availability: availability("16:00", "21:00", [2, 3, 5]),
     },
     {
-      name: "Dr. Rajeev Kumar",
+      name: "Dr. Tyler James",
       email: "rajeev.kumar@telecare.dev",
       specialization: "general_physician",
       experienceYears: 3,
@@ -416,7 +432,7 @@ async function main() {
       availability: availability("10:00", "16:00", [1, 2, 3, 4, 5]),
     },
     {
-      name: "Dr. Shalini Sinha",
+      name: "Dr. Brooke Allen",
       email: "shalini.sinha@telecare.dev",
       specialization: "internal_medicine",
       experienceYears: 7,
@@ -427,7 +443,7 @@ async function main() {
       availability: availability("09:00", "13:00", [1, 3, 5]),
     },
     {
-      name: "Dr. Ajay Yadav",
+      name: "Dr. Logan Harris",
       email: "ajay.yadav@telecare.dev",
       specialization: "nephrologist",
       experienceYears: 10,
@@ -438,8 +454,8 @@ async function main() {
       availability: availability("11:00", "17:00", [2, 4]),
     },
     {
-      name: "Dr. Zoya Khan",
-      email: "zoya.khan@telecare.dev",
+      name: "Dr. El Green",
+      email: "el.green@telecare.dev",
       specialization: "oncologist",
       experienceYears: 12,
       bio: "Oncologist providing second opinions and survivorship care.",
@@ -483,7 +499,9 @@ async function main() {
     const profile = user.doctorProfile!;
 
     // Create availability rows only if none exist yet
-    const existingAvail = await prisma.doctorAvailability.count({ where: { doctorId: profile.id } });
+    const existingAvail = await prisma.doctorAvailability.count({
+      where: { doctorId: profile.id },
+    });
     if (existingAvail === 0) {
       await prisma.doctorAvailability.createMany({
         data: d.availability.map((a) => ({ doctorId: profile.id, ...a })),
@@ -525,7 +543,7 @@ async function main() {
       city: "Chicago",
     },
     {
-      name: "Priya Sharma",
+      name: "Mia Johnson",
       email: "priya.sharma@telecare.com",
       dob: new Date("1995-03-10"),
       gender: Gender.FEMALE,
@@ -534,7 +552,7 @@ async function main() {
       city: "Houston",
     },
     {
-      name: "Rahul Jain",
+      name: "Noah Williams",
       email: "rahul.jain@telecare.com",
       dob: new Date("1992-07-21"),
       gender: Gender.MALE,
@@ -543,7 +561,7 @@ async function main() {
       city: "Phoenix",
     },
     {
-      name: "Sneha Patel",
+      name: "Ava Thompson",
       email: "sneha.patel@telecare.com",
       dob: new Date("1986-11-02"),
       gender: Gender.FEMALE,
@@ -552,7 +570,7 @@ async function main() {
       city: "Philadelphia",
     },
     {
-      name: "Aman Singh",
+      name: "Liam Anderson",
       email: "aman.singh@telecare.com",
       dob: new Date("1983-09-15"),
       gender: Gender.MALE,
@@ -570,7 +588,7 @@ async function main() {
       city: "San Diego",
     },
     {
-      name: "Vikram Rao",
+      name: "Ethan Martinez",
       email: "vikram.rao@telecare.com",
       dob: new Date("1970-04-18"),
       gender: Gender.MALE,
@@ -579,7 +597,7 @@ async function main() {
       city: "Dallas",
     },
     {
-      name: "Neha Gupta",
+      name: "Sophia Wilson",
       email: "neha.gupta@telecare.com",
       dob: new Date("1993-01-09"),
       gender: Gender.FEMALE,
@@ -588,7 +606,7 @@ async function main() {
       city: "San Jose",
     },
     {
-      name: "Karan Arora",
+      name: "James Clark",
       email: "karan.arora@telecare.com",
       dob: new Date("1989-06-30"),
       gender: Gender.MALE,
@@ -597,7 +615,7 @@ async function main() {
       city: "New York",
     },
     {
-      name: "Lata Iyer",
+      name: "Olivia Davis",
       email: "lata.iyer@telecare.com",
       dob: new Date("1965-02-14"),
       gender: Gender.FEMALE,
@@ -606,7 +624,7 @@ async function main() {
       city: "Los Angeles",
     },
     {
-      name: "Mohit Verma",
+      name: "Benjamin Lewis",
       email: "mohit.verma@telecare.com",
       dob: new Date("2001-10-05"),
       gender: Gender.MALE,
@@ -624,7 +642,7 @@ async function main() {
       city: "Houston",
     },
     {
-      name: "Yusuf Khan",
+      name: "Henry Walker",
       email: "yusuf.khan@telecare.com",
       dob: new Date("1980-03-03"),
       gender: Gender.MALE,
@@ -633,7 +651,7 @@ async function main() {
       city: "Phoenix",
     },
     {
-      name: "Anjali Mehta",
+      name: "Charlotte Moore",
       email: "anjali.mehta@telecare.com",
       dob: new Date("1997-05-27"),
       gender: Gender.FEMALE,
@@ -642,7 +660,7 @@ async function main() {
       city: "Philadelphia",
     },
     {
-      name: "Rohit Kulkarni",
+      name: "Daniel Young",
       email: "rohit.kulkarni@telecare.com",
       dob: new Date("1984-11-19"),
       gender: Gender.MALE,
@@ -651,7 +669,7 @@ async function main() {
       city: "San Antonio",
     },
     {
-      name: "Divya Reddy",
+      name: "Amelia Gonzalez",
       email: "divya.reddy@telecare.com",
       dob: new Date("1991-09-08"),
       gender: Gender.FEMALE,
@@ -660,7 +678,7 @@ async function main() {
       city: "San Diego",
     },
     {
-      name: "Imran Shaikh",
+      name: "Logan Perez",
       email: "imran.shaikh@telecare.com",
       dob: new Date("1978-12-02"),
       gender: Gender.MALE,
@@ -669,7 +687,7 @@ async function main() {
       city: "Dallas",
     },
     {
-      name: "Pooja Nair",
+      name: "Harper Rivera",
       email: "pooja.nair@telecare.com",
       dob: new Date("1987-04-28"),
       gender: Gender.FEMALE,
@@ -678,7 +696,7 @@ async function main() {
       city: "San Jose",
     },
     {
-      name: "Gaurav Mishra",
+      name: "Mason King",
       email: "gaurav.mishra@telecare.com",
       dob: new Date("1994-02-16"),
       gender: Gender.MALE,
@@ -687,7 +705,7 @@ async function main() {
       city: "New York",
     },
     {
-      name: "Riya Chawla",
+      name: "Ella Scott",
       email: "riya.chawla@telecare.com",
       dob: new Date("2000-07-13"),
       gender: Gender.FEMALE,
@@ -696,7 +714,7 @@ async function main() {
       city: "Los Angeles",
     },
     {
-      name: "Naveen Joshi",
+      name: "Carter Green",
       email: "naveen.joshi@telecare.com",
       dob: new Date("1972-01-04"),
       gender: Gender.MALE,
@@ -705,7 +723,7 @@ async function main() {
       city: "Chicago",
     },
     {
-      name: "Shreya Banerjee",
+      name: "Abigail Baker",
       email: "shreya.banerjee@telecare.com",
       dob: new Date("1996-06-22"),
       gender: Gender.FEMALE,
@@ -714,7 +732,7 @@ async function main() {
       city: "Houston",
     },
     {
-      name: "Aditya Rao",
+      name: "Wyatt Hill",
       email: "aditya.rao@telecare.com",
       dob: new Date("1982-10-29"),
       gender: Gender.MALE,
@@ -723,7 +741,7 @@ async function main() {
       city: "Phoenix",
     },
     {
-      name: "Kriti Jain",
+      name: "Scarlett Adams",
       email: "kriti.jain@telecare.com",
       dob: new Date("1990-09-11"),
       gender: Gender.FEMALE,
@@ -732,7 +750,7 @@ async function main() {
       city: "Philadelphia",
     },
     {
-      name: "Siddharth Malhotra",
+      name: "Hudson Rivera",
       email: "siddharth.malhotra@telecare.com",
       dob: new Date("1985-03-07"),
       gender: Gender.MALE,
@@ -741,7 +759,7 @@ async function main() {
       city: "San Antonio",
     },
     {
-      name: "Anu Joseph",
+      name: "Lily Barnes",
       email: "anu.joseph@telecare.com",
       dob: new Date("1999-01-19"),
       gender: Gender.FEMALE,
@@ -750,7 +768,7 @@ async function main() {
       city: "San Diego",
     },
     {
-      name: "Prateek Saxena",
+      name: "Jack Mitchell",
       email: "prateek.saxena@telecare.com",
       dob: new Date("1979-08-04"),
       gender: Gender.MALE,
@@ -759,7 +777,7 @@ async function main() {
       city: "Dallas",
     },
     {
-      name: "Zainab Hussain",
+      name: "Grace Ramirez",
       email: "zainab.hussain@telecare.com",
       dob: new Date("1992-12-30"),
       gender: Gender.FEMALE,
@@ -801,16 +819,30 @@ async function main() {
   }
 
   // Aliases for key doctors and a few special-case patients
-  const [drSarah, drChen, drPriya, drWilson, drEmily] = doctors.map((d) => d.profile);
-  const [john, aisha, robert, priyaSharma, rahulJain] = patients.map((p) => p.record);
+  const [drSarah, drChen, drPriya, drWilson, drEmily] = doctors.map(
+    (d) => d.profile,
+  );
+  const [john, aisha, robert, priyaSharma, rahulJain] = patients.map(
+    (p) => p.record,
+  );
 
   // ─── APPOINTMENTS ──────────────────────────────────────────────────────────
   // Wipe existing seed appointments/prescriptions so re-runs are clean.
   const seedPatientIds = patients.map((p) => p.record.id);
-  await prisma.appointment.deleteMany({ where: { patientId: { in: seedPatientIds } } });
-  await prisma.prescription.deleteMany({ where: { patientId: { in: seedPatientIds } } });
+  await prisma.appointment.deleteMany({
+    where: { patientId: { in: seedPatientIds } },
+  });
+  await prisma.prescription.deleteMany({
+    where: { patientId: { in: seedPatientIds } },
+  });
 
-  const busyDoctorIds = [drSarah.id, drChen.id, drPriya.id, drWilson.id, drEmily.id];
+  const busyDoctorIds = [
+    drSarah.id,
+    drChen.id,
+    drPriya.id,
+    drWilson.id,
+    drEmily.id,
+  ];
 
   const apptData: {
     patientId: string;
@@ -825,7 +857,11 @@ async function main() {
     {
       patientId: john.id,
       doctorId: drSarah.id,
-      scheduledAt: daysFromNow(0, new Date().getHours(), new Date().getMinutes() + 90),
+      scheduledAt: daysFromNow(
+        0,
+        new Date().getHours(),
+        new Date().getMinutes() + 90,
+      ),
       status: AppointmentStatus.CONFIRMED,
       reason: "General health check-up and blood pressure review",
     },
@@ -1015,7 +1051,10 @@ async function main() {
         patientId: patient.id,
         doctorId: busyDoctorIds[(idx + 1) % busyDoctorIds.length],
         scheduledAt: daysFromNow(-7, 12, 0),
-        status: idx % 2 === 0 ? AppointmentStatus.CANCELLED_BY_PATIENT : AppointmentStatus.NO_SHOW,
+        status:
+          idx % 2 === 0
+            ? AppointmentStatus.CANCELLED_BY_PATIENT
+            : AppointmentStatus.NO_SHOW,
         reason: "Missed or cancelled appointment for routine review",
       });
     }
@@ -1027,7 +1066,10 @@ async function main() {
   // ─── PRESCRIPTIONS & REPORT FILES FOR COMPLETED APPOINTMENTS ───────────────
 
   const completedAppts = await prisma.appointment.findMany({
-    where: { patientId: { in: seedPatientIds }, status: AppointmentStatus.COMPLETED },
+    where: {
+      patientId: { in: seedPatientIds },
+      status: AppointmentStatus.COMPLETED,
+    },
     select: { id: true, doctorId: true, patientId: true, scheduledAt: true },
   });
 
@@ -1037,7 +1079,8 @@ async function main() {
         doctorId: appt.doctorId,
         patientId: appt.patientId,
         appointmentId: appt.id,
-        notes: "Follow the prescribed medication and lifestyle recommendations. Seek immediate help if symptoms worsen.",
+        notes:
+          "Follow the prescribed medication and lifestyle recommendations. Seek immediate help if symptoms worsen.",
         items: {
           create: [
             {
@@ -1099,7 +1142,11 @@ async function main() {
 
   // Fetch the live-test appointment for the URL
   const liveAppt = await prisma.appointment.findFirst({
-    where: { patientId: john.id, doctorId: drSarah.id, status: AppointmentStatus.CONFIRMED },
+    where: {
+      patientId: john.id,
+      doctorId: drSarah.id,
+      status: AppointmentStatus.CONFIRMED,
+    },
     orderBy: { scheduledAt: "asc" },
   });
 
@@ -1128,11 +1175,17 @@ async function main() {
   console.log("─".repeat(60));
   if (liveAppt) {
     console.log(`  Appointment ID : ${liveAppt.id}`);
-    console.log(`  Scheduled at   : ${liveAppt.scheduledAt.toLocaleTimeString()}`);
+    console.log(
+      `  Scheduled at   : ${liveAppt.scheduledAt.toLocaleTimeString()}`,
+    );
     console.log(`  Patient login  : john.doe@telecare.com`);
     console.log(`  Doctor login   : sarah.johnson@telecare.dev`);
-    console.log(`  Patient URL    : http://localhost:3000/patient/consultation/${liveAppt.id}`);
-    console.log(`  Doctor URL     : http://localhost:3000/doctor/consultation/${liveAppt.id}`);
+    console.log(
+      `  Patient URL    : http://localhost:3000/patient/consultation/${liveAppt.id}`,
+    );
+    console.log(
+      `  Doctor URL     : http://localhost:3000/doctor/consultation/${liveAppt.id}`,
+    );
   }
   console.log("═".repeat(60) + "\n");
 }

@@ -1,0 +1,61 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  # ── Job 1: Run Tests ──────────────────────────────
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  # ── Job 2: Deploy to EC2 ──────────────────────────
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/my-app
+
+            # Pull latest code from GitHub
+            git pull origin main
+
+            # Write the latest .env from GitHub secrets
+            echo '${{ secrets.APP_ENV_FILE }}' > .env
+
+            # Rebuild image locally and restart containers
+            docker compose down --remove-orphans
+            docker compose up -d --build --force-recreate
+
+            # Ensure Prisma migrations are applied
+            docker compose exec -T app npx prisma migrate deploy
+
+            # Show final status
+            docker compose ps
+
+            # Clean up dangling images to free disk space
+            docker image prune -f
+

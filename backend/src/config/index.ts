@@ -1,4 +1,15 @@
-import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import dotenv from "dotenv";
+
+// Load env from project root .env if present; otherwise fall back to default lookup.
+// At runtime this file lives in dist/config, so go up three levels to reach the repo root.
+const rootEnvPath = path.resolve(__dirname, "..", "..", "..", ".env");
+if (fs.existsSync(rootEnvPath)) {
+  dotenv.config({ path: rootEnvPath });
+} else {
+  dotenv.config();
+}
 
 function getEnv(key: string, defaultValue?: string): string {
   const value = process.env[key] ?? defaultValue;

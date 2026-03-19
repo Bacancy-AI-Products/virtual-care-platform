@@ -278,19 +278,33 @@ export const Layout = ({ children, role }: LayoutProps) => {
             <NotificationBell />
             <div className="h-10 w-px bg-slate-200 mx-2" />
             <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-semibold text-slate-900">{displayName}</p>
-                <p className="text-xs text-slate-500 capitalize">{role}</p>
-              </div>
-              <div className="relative w-10 h-10">
-                <Image
-                  src={avatarUrl ?? `https://picsum.photos/seed/${avatarSeed}/100/100`}
-                  alt="Avatar"
-                  fill
-                  className="rounded-full border-2 border-white shadow-sm object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (role === "patient") {
+                    router.push("/patient/profile");
+                  } else if (role === "doctor") {
+                    router.push("/doctor/profile");
+                  } else {
+                    router.push("/admin/dashboard");
+                  }
+                }}
+                className="flex items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-full"
+              >
+                <div className="text-right hidden sm:block">
+                  <p className="text-sm font-semibold text-slate-900">{displayName}</p>
+                  <p className="text-xs text-slate-500 capitalize">{role}</p>
+                </div>
+                <div className="relative w-10 h-10">
+                  <Image
+                    src={avatarUrl ?? `https://picsum.photos/seed/${avatarSeed}/100/100`}
+                    alt="Avatar"
+                    fill
+                    className="rounded-full border-2 border-white shadow-sm object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+              </button>
             </div>
           </div>
         </header>
@@ -334,6 +348,15 @@ export const Layout = ({ children, role }: LayoutProps) => {
                 />
               ))}
             </nav>
+            <div className="mt-auto pt-6 border-t border-slate-100">
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-slate-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 group"
+              >
+                <LogOut className="w-5 h-5 text-slate-400 group-hover:text-red-500" />
+                <span className="font-medium">Logout</span>
+              </button>
+            </div>
           </aside>
         </div>
       )}

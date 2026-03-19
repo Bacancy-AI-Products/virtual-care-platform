@@ -9,7 +9,7 @@ import { authApi } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 
 const COUNTRY_OPTIONS = [
-    '+91 (IND)',
+    '+1 (USA)',
     '+65 (SGP)',
     '+63 (PHL)',
     '+60 (MYS)',
@@ -24,7 +24,7 @@ const COUNTRY_OPTIONS = [
     '+255 (TZA)',
     '+973 (BH)',
     '+966 (SA)',
-    '+1 (USA)',
+    '+91 (IND)',
 ];
 
 export default function SignupPage() {

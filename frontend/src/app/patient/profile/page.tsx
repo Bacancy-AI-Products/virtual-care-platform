@@ -497,7 +497,7 @@ export default function PatientProfile() {
                 <FormField label="Phone Number" icon={Phone}>
                   <input
                     type="tel"
-                    placeholder="+91 98765 43210"
+                    placeholder="+1 (555) 123-4567"
                     value={form.phone}
                     onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                     className={INPUT_CLASS}
@@ -642,7 +642,7 @@ export default function PatientProfile() {
                 <FormField label="Contact Phone" icon={PhoneCall}>
                   <input
                     type="tel"
-                    placeholder="+91 98765 43210"
+                    placeholder="+1 (555) 123-4567"
                     value={form.emergencyContactPhone}
                     onChange={e => setForm(f => ({ ...f, emergencyContactPhone: e.target.value }))}
                     className={INPUT_CLASS}
