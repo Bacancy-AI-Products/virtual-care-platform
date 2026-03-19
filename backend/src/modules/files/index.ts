@@ -1,13 +1,12 @@
 import { Router, Response, NextFunction } from "express";
 import multer from "multer";
-import fs from "fs";
 import { requireAuth, AuthenticatedRequest } from "../../middleware/auth";
 import { prisma } from "../../db";
 import {
   saveFile,
   getFileById,
   getFilesByAppointment,
-  getFilePath,
+  getFileBlob,
   deleteFile,
 } from "./files.service";
 
@@ -49,7 +48,13 @@ router.get(
             { appointment: { doctor: { userId } } },
           ],
         },
-        include: {
+        select: {
+          id: true,
+          originalName: true,
+          mimeType: true,
+          type: true,
+          sizeBytes: true,
+          createdAt: true,
           uploadedBy: { select: { id: true, name: true, role: true } },
           appointment: { select: { id: true, scheduledAt: true, reason: true } },
         },
@@ -211,9 +216,9 @@ router.get(
         }
       }
 
-      const filePath = getFilePath(file.storageKey);
+      const blob = getFileBlob(file);
 
-      if (!fs.existsSync(filePath)) {
+      if (!blob) {
         return res.status(404).json({
           error: { code: "FILE_MISSING", message: "File not found on server" },
         });
@@ -222,11 +227,10 @@ router.get(
       res.setHeader("Content-Type", file.mimeType);
       res.setHeader(
         "Content-Disposition",
-        `attachment; filename="${file.originalName}"`
+        `inline; filename="${file.originalName}"`
       );
 
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
+      res.send(blob);
     } catch (error) {
       next(error);
     }

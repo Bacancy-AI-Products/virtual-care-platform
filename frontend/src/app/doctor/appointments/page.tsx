@@ -546,7 +546,7 @@ export default function DoctorAppointments() {
               {filtered.length === 0 ? (
                 <EmptyState tab={activeTab} />
               ) : activeTab === "Upcoming" ? (
-                <>
+                <div className="contents">
                   {visible
                     .filter((appt) => appt.status === "PENDING")
                     .map((appt) => (
@@ -571,7 +571,7 @@ export default function DoctorAppointments() {
                         cancelling={actionId?.id === appt.id && actionId?.action === "cancel"}
                       />
                     ))}
-                </>
+                </div>
               ) : (
                 visible.map((appt) => <ReadOnlyCard key={appt.id} appt={appt} />)
               )}

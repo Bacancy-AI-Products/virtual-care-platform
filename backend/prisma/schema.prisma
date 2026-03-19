@@ -248,17 +248,18 @@ model PrescriptionItem {
   @@map("prescription_items")
 }
 
-// --- Files (medical reports, S3-ready) ---
+// --- Files (medical reports, profile images — blob stored in DB) ---
 model File {
   id            String   @id @default(uuid())
   ownerId       String   @map("owner_id")
-  appointmentId String?  @map("appointment_id")
+  appointmentId String?   @map("appointment_id")
   uploadedById  String   @map("uploaded_by_id")
   type          FileType
-  storageKey    String   @map("storage_key") // S3 object key
+  storageKey    String?  @map("storage_key") // legacy: filesystem path; "db" when data in DB
   originalName  String   @map("original_name")
   mimeType      String   @map("mime_type")
   sizeBytes     BigInt   @map("size_bytes")
+  data          Bytes?  @map("data") // optimized blob stored in DB
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 

@@ -112,11 +112,14 @@ export default function PatientProfile() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof EditForm, string>>>({});
+  const [mounted, setMounted] = useState(false);
   const [avatarBlobUrl, setAvatarBlobUrl] = useState<string | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedStateCode, setSelectedStateCode] = useState("");
+
+  useEffect(() => setMounted(true), []);
 
   const [form, setForm] = useState<EditForm>({
     phone: '',
@@ -268,7 +271,7 @@ export default function PatientProfile() {
     saveMutation.mutate();
   };
 
-  if (isLoading) {
+  if (!mounted || isLoading) {
     return (
       <div className="flex justify-center py-32">
         <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />

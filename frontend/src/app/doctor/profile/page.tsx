@@ -24,10 +24,13 @@ export default function DoctorProfile() {
   const { user, token } = useAuth();
   const router = useRouter();
   const qClient = useQueryClient();
+  const [mounted, setMounted] = React.useState(false);
   const [avatarBlobUrl, setAvatarBlobUrl] = React.useState<string | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = React.useState(false);
   const [avatarError, setAvatarError] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  React.useEffect(() => setMounted(true), []);
 
   const { data: profile, isLoading, isError } = useQuery({
     queryKey: ["doctor", "me"],
@@ -174,17 +177,17 @@ export default function DoctorProfile() {
     }));
   };
 
-  if (!token || user?.role !== "DOCTOR") {
-    router.push("/login?from=/doctor/profile");
-    return null;
-  }
-
-  if (isLoading) {
+  if (!mounted || isLoading) {
     return (
       <div className="flex justify-center py-24">
         <p className="text-slate-500 font-medium">Loading profile...</p>
       </div>
     );
+  }
+
+  if (!token || user?.role !== "DOCTOR") {
+    router.push("/login?from=/doctor/profile");
+    return null;
   }
 
   if (isError || !profile) {
