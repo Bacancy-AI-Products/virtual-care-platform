@@ -10,8 +10,6 @@ jobs:
   # ── Job 1: Run Tests ──────────────────────────────
   test:
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -29,6 +27,10 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
         working-directory: frontend
+
+      - name: Create backend .env for build
+        run: echo "DATABASE_URL=postgresql://ci:ci@localhost:5432/ci?schema=public" > .env
+        working-directory: backend
 
       - name: Build backend
         run: npm run build
