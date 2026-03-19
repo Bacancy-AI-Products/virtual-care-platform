@@ -10,6 +10,8 @@ jobs:
   # ── Job 1: Run Tests ──────────────────────────────
   test:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,6 +39,8 @@ jobs:
         working-directory: frontend
 
   # ── Job 2: Deploy to EC2 ──────────────────────────
+  # Required secrets: EC2_HOST, EC2_USERNAME, EC2_SSH_KEY, APP_ENV_FILE
+  # APP_ENV_FILE must contain: DATABASE_URL, DB_NAME, DB_USER, DB_PASSWORD, NEXT_PUBLIC_API_URL
   deploy:
     runs-on: ubuntu-latest
     needs: test
@@ -48,24 +52,23 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -e
             cd /home/ubuntu/my-app
+            test -f docker-compose.yml || { echo "Error: docker-compose.yml not found in $(pwd)"; exit 1; }
 
-            # Pull latest code from GitHub
             git pull origin main
 
-            # Write the latest .env from GitHub secrets
             echo '${{ secrets.APP_ENV_FILE }}' > .env
 
-            # Rebuild image locally and restart containers
             docker compose down --remove-orphans
             docker compose up -d --build --force-recreate
 
-            # Ensure Prisma migrations are applied
-            docker compose exec -T app npx prisma migrate deploy
+            # Deploy DB: apply migrations (one-off container)
+            docker compose run --rm app npx prisma migrate deploy
 
-            # Show final status
+            # Push seed data (one-off container)
+            docker compose run --rm app npx prisma db seed
+
             docker compose ps
-
-            # Clean up dangling images to free disk space
             docker image prune -f
 
