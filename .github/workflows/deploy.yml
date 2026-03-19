@@ -55,7 +55,8 @@ jobs:
           password: ${{ secrets.EC2_PASSWORD }}
           script: |
             set -e
-            cd /home/ubuntu/my-app
+            APP_DIR="/root/virtual-care-platform"
+            cd "$APP_DIR" || { echo "Error: app directory not found: $APP_DIR"; exit 1; }
             test -f docker-compose.yml || { echo "Error: docker-compose.yml not found in $(pwd)"; exit 1; }
 
             git pull origin main
@@ -73,4 +74,3 @@ jobs:
 
             docker compose ps
             docker image prune -f
-
