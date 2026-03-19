@@ -41,7 +41,7 @@ jobs:
         working-directory: frontend
 
   # ── Job 2: Deploy to EC2 ──────────────────────────
-  # Required secrets: EC2_HOST, EC2_USERNAME, EC2_SSH_KEY, APP_ENV_FILE
+  # Required secrets: EC2_HOST, EC2_USERNAME, EC2_PASSWORD, APP_ENV_FILE
   # APP_ENV_FILE must contain: DATABASE_URL, DB_NAME, DB_USER, DB_PASSWORD, NEXT_PUBLIC_API_URL
   deploy:
     runs-on: ubuntu-latest
@@ -52,7 +52,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          password: ${{ secrets.EC2_PASSWORD }}
           script: |
             set -e
             cd /home/ubuntu/my-app
