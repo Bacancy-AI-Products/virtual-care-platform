@@ -69,8 +69,5 @@ jobs:
             # Deploy DB: apply migrations (one-off container)
             docker compose run --rm app npx prisma migrate deploy
 
-            # Push seed data (one-off container)
-            docker compose run --rm app npx prisma db seed
-
             docker compose ps
             docker image prune -f
