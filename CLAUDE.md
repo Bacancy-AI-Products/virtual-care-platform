@@ -112,26 +112,40 @@ docker-compose up             # starts PostgreSQL + app containers
 - Prefer editing existing files over creating new ones
 - Follow the existing folder structure and naming conventions
 
+## GitHub Access
+Use the GitHub MCP server for all GitHub operations:
+- push code
+- create / update PRs
+- read issues
+- review branches and commits
 
-## Commit Messages
+Never ask for SSH keys, PAT tokens, or manual authentication unless MCP access fails.
 
-Always use a prefix followed by a colon and a short message.
+## Commit Message Convention
 
-| Prefix | When to use |
-|--------|------------|
-| `feat:` | new feature |
-| `fix:` | bug fix |
-| `chore:` | config, tooling, maintenance |
-| `refactor:` | code restructure, no new feature |
-| `docs:` | documentation changes |
+Always generate concise, meaningful commit messages based on the primary intent of the change.
 
-**Format:** `<prefix>: <short lowercase message>`
+### Format
+<type>: <short lowercase summary>
 
-**Examples:**
-```
+### Allowed types
+- feat: new feature
+- fix: bug fix
+- refactor: code restructure without behavior change
+- chore: tooling, config, maintenance
+- docs: documentation only
+
+### Rules
+- keep under 60 characters
+- use lowercase
+- use imperative tone
+- describe intent, not implementation
+- focus on the most important change in the diff
+- avoid vague words like update, changes, fixes, misc
+
+### Good examples
 feat: add appointment booking flow
-fix: resolve login redirect on mobile
-chore: update mcp config
-refactor: simplify doctor card component
-docs: update readme setup steps
-```
+fix: prevent login redirect loop
+refactor: simplify doctor card state
+chore: update mcp server config
+docs: add local setup steps
