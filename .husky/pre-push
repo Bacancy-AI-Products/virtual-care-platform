@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+#
+# Git pre-push hook — runs Playwright smoke tests before every push.
+# Smoke spec is fast (~10–15s) when dev servers are already running.
+#
+# Activate (one-time, per clone): handled by `npm install` in frontend/
+# Skip for a single push:        git push --no-verify
+#
+
+set -e
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR/frontend"
+
+# Skip if Playwright browsers aren't installed yet (avoid failing first-time clones).
+if [ ! -d "$HOME/Library/Caches/ms-playwright" ] && [ ! -d "$HOME/.cache/ms-playwright" ]; then
+  printf "${YELLOW}⚠  Playwright browsers not installed. Skipping pre-push smoke tests.${NC}\n"
+  printf "${YELLOW}   Run: cd frontend && npx playwright install${NC}\n"
+  exit 0
+fi
+
+# Skip if dev servers aren't running — avoids 30–60s cold starts that would
+# tempt devs to bypass the hook with --no-verify. Run servers + try again.
+if ! curl -sf -o /dev/null --max-time 2 http://localhost:3000; then
+  printf "${YELLOW}⚠  Frontend not running on :3000. Skipping pre-push smoke tests.${NC}\n"
+  printf "${YELLOW}   To run them: start 'npm run dev' in frontend/ and try again.${NC}\n"
+  exit 0
+fi
+
+if ! curl -sf -o /dev/null --max-time 2 http://localhost:4001/api/v1/health 2>/dev/null && \
+   ! curl -sf -o /dev/null --max-time 2 http://localhost:4001 2>/dev/null; then
+  printf "${YELLOW}⚠  Backend not running on :4001. Skipping pre-push smoke tests.${NC}\n"
+  printf "${YELLOW}   To run them: start 'npm run dev' in backend/ and try again.${NC}\n"
+  exit 0
+fi
+
+printf "${YELLOW}▶ Running Playwright smoke tests before push...${NC}\n"
+
+if npm run test:e2e -- smoke.spec.ts --reporter=list; then
+  printf "${GREEN}✓ Smoke tests passed — pushing.${NC}\n"
+  exit 0
+else
+  printf "${RED}✗ Smoke tests failed. Push aborted.${NC}\n"
+  printf "${YELLOW}  Use 'git push --no-verify' to skip (only if you are sure).${NC}\n"
+  exit 1
+fi
