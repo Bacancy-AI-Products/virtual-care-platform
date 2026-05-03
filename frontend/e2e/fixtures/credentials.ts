@@ -10,27 +10,27 @@
 export const SEED_PASSWORD = 'Demo@1234';
 
 export const PATIENT = {
-  email: 'john.doe@telecare.com',
-  password: SEED_PASSWORD,
-  name: 'John Doe',
+    email: 'john.doe@telecare.com',
+    password: SEED_PASSWORD,
+    name: 'John Doe',
 } as const;
 
 export const PATIENT_ALT = {
-  email: 'aisha.khan@telecare.com',
-  password: SEED_PASSWORD,
-  name: 'Aisha Khan',
+    email: 'aisha.khan@telecare.com',
+    password: SEED_PASSWORD,
+    name: 'Aisha Khan',
 } as const;
 
 export const DOCTOR = {
-  email: 'sarah.johnson@telecare.dev',
-  password: SEED_PASSWORD,
-  name: 'Sarah Johnson',
-  specialization: 'General Physician',
+    email: 'sarah.johnson@telecare.dev',
+    password: SEED_PASSWORD,
+    name: 'Sarah Johnson',
+    specialization: 'General Physician',
 } as const;
 
 export const DOCTOR_ALT = {
-  email: 'michael.chen@telecare.dev',
-  password: SEED_PASSWORD,
-  name: 'Michael Chen',
-  specialization: 'Cardiologist',
+    email: 'michael.chen@telecare.dev',
+    password: SEED_PASSWORD,
+    name: 'Michael Chen',
+    specialization: 'Cardiologist',
 } as const;

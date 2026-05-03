@@ -145,7 +145,9 @@ export default function SignupPage() {
                             <BrandLogo />
                         </div>
 
-                        <h2 className="text-4xl font-bold text-slate-900 mb-2">Join BacancyTeleCare</h2>
+                        <h2 className="text-4xl font-bold text-slate-900 mb-2">
+                            Join BacancyTeleCare
+                        </h2>
                         <p className="text-slate-500 mb-10">
                             Create your account and get started with secure online consultations.
                         </p>
@@ -349,8 +351,8 @@ export default function SignupPage() {
                             Your Health, Our Priority.
                         </h3>
                         <p className="text-xl text-brand-100 leading-relaxed">
-                            Experience the future of healthcare with BacancyTeleCare. Connect with experts
-                            in minutes and manage your health records seamlessly.
+                            Experience the future of healthcare with BacancyTeleCare. Connect with
+                            experts in minutes and manage your health records seamlessly.
                         </p>
                     </motion.div>
                 </div>

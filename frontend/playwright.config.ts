@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 /**
@@ -24,7 +25,7 @@ export const TEST_CONFIG = {
   apiUrl: 'http://localhost:4001/api/v1',
 } as const;
 
-const BACKEND_DIR = path.resolve(__dirname, '../backend');
+const BACKEND_DIR = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../backend');
 
 export default defineConfig({
   testDir: './e2e',
