@@ -1,15 +1,8 @@
-import { Router, Request, Response, NextFunction } from "express";
-import {
-  requireAuth,
-  requireRole,
-  type AuthenticatedRequest,
-} from "../../middleware";
-import { toValidationError } from "../../utils/validation";
-import * as patientsService from "./patients.service";
-import {
-  patientIdParamSchema,
-  updatePatientProfileSchema,
-} from "./patients.schemas";
+import { Router, Request, Response, NextFunction } from 'express';
+import { requireAuth, requireRole, type AuthenticatedRequest } from '../../middleware';
+import { toValidationError } from '../../utils/validation';
+import * as patientsService from './patients.service';
+import { patientIdParamSchema, updatePatientProfileSchema } from './patients.schemas';
 
 const router = Router();
 
@@ -18,23 +11,23 @@ const router = Router();
  * Update own patient profile. Patient-only. Must be defined before /:id.
  */
 router.put(
-  "/me",
-  requireAuth,
-  requireRole("PATIENT"),
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const parsed = updatePatientProfileSchema.safeParse(req.body);
-      if (!parsed.success) {
-        next(toValidationError(parsed.error));
-        return;
-      }
-      const userId = (req as AuthenticatedRequest).user!.sub;
-      const result = await patientsService.updateMyProfile(userId, parsed.data);
-      res.json(result);
-    } catch (e) {
-      next(e);
-    }
-  }
+    '/me',
+    requireAuth,
+    requireRole('PATIENT'),
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const parsed = updatePatientProfileSchema.safeParse(req.body);
+            if (!parsed.success) {
+                next(toValidationError(parsed.error));
+                return;
+            }
+            const userId = (req as AuthenticatedRequest).user!.sub;
+            const result = await patientsService.updateMyProfile(userId, parsed.data);
+            res.json(result);
+        } catch (e) {
+            next(e);
+        }
+    },
 );
 
 /**
@@ -42,26 +35,23 @@ router.put(
  * Get patient evaluation data. Doctor-only; must have an appointment with this patient.
  */
 router.get(
-  "/:id",
-  requireAuth,
-  requireRole("DOCTOR"),
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const parsed = patientIdParamSchema.safeParse(req.params);
-      if (!parsed.success) {
-        next(toValidationError(parsed.error));
-        return;
-      }
-      const userId = (req as AuthenticatedRequest).user!.sub;
-      const result = await patientsService.getPatientForDoctor(
-        parsed.data.id,
-        userId
-      );
-      res.json(result);
-    } catch (e) {
-      next(e);
-    }
-  }
+    '/:id',
+    requireAuth,
+    requireRole('DOCTOR'),
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const parsed = patientIdParamSchema.safeParse(req.params);
+            if (!parsed.success) {
+                next(toValidationError(parsed.error));
+                return;
+            }
+            const userId = (req as AuthenticatedRequest).user!.sub;
+            const result = await patientsService.getPatientForDoctor(parsed.data.id, userId);
+            res.json(result);
+        } catch (e) {
+            next(e);
+        }
+    },
 );
 
 export { router as patientsRouter };

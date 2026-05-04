@@ -3,17 +3,19 @@
  */
 
 export interface PasswordResetTemplatePayload {
-  to: string;
-  resetLink: string;
+    to: string;
+    resetLink: string;
 }
 
-export function buildPasswordResetEmail(
-  payload: PasswordResetTemplatePayload
-): { subject: string; text: string; html: string } {
-  const { resetLink } = payload;
-  const subject = "Reset your BacancyTeleCare password";
-  const text = `You requested a password reset. Click the link below to reset your password:\n\n${resetLink}\n\nThis link expires in 1 hour. If you didn't request this, ignore this email.`;
-  const html = `
+export function buildPasswordResetEmail(payload: PasswordResetTemplatePayload): {
+    subject: string;
+    text: string;
+    html: string;
+} {
+    const { resetLink } = payload;
+    const subject = 'Reset your BacancyTeleCare password';
+    const text = `You requested a password reset. Click the link below to reset your password:\n\n${resetLink}\n\nThis link expires in 1 hour. If you didn't request this, ignore this email.`;
+    const html = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -25,34 +27,40 @@ export function buildPasswordResetEmail(
   <p style="color: #666; font-size: 0.85em;">Or copy this link: ${resetLink}</p>
 </body>
 </html>`;
-  return { subject, text, html };
+    return { subject, text, html };
 }
 
 export interface AppointmentDeclinedTemplatePayload {
-  to: string;
-  patientName: string;
-  doctorName: string;
-  scheduledAt: Date;
-  declineReason: string;
+    to: string;
+    patientName: string;
+    doctorName: string;
+    scheduledAt: Date;
+    declineReason: string;
 }
 
-export function buildAppointmentDeclinedEmail(
-  payload: AppointmentDeclinedTemplatePayload
-): { subject: string; text: string; html: string } {
-  const { patientName, doctorName, scheduledAt, declineReason } = payload;
-  const dateStr = scheduledAt.toLocaleDateString("en-US", {
-    weekday: "long", year: "numeric", month: "long", day: "numeric",
-  });
-  const timeStr = scheduledAt.toLocaleTimeString("en-US", {
-    hour: "2-digit", minute: "2-digit",
-  });
+export function buildAppointmentDeclinedEmail(payload: AppointmentDeclinedTemplatePayload): {
+    subject: string;
+    text: string;
+    html: string;
+} {
+    const { patientName, doctorName, scheduledAt, declineReason } = payload;
+    const dateStr = scheduledAt.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+    const timeStr = scheduledAt.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+    });
 
-  const subject = "Your appointment request was declined";
+    const subject = 'Your appointment request was declined';
 
-  const displayDoctor = doctorName.startsWith("Dr.") ? doctorName : `Dr. ${doctorName}`;
-  const text = `Hi ${patientName},\n\nUnfortunately, ${displayDoctor} has declined your appointment request scheduled for ${dateStr} at ${timeStr}.\n\nReason: ${declineReason}\n\nYou can book a new appointment with another available doctor on BacancyTeleCare.\n\nThe BacancyTeleCare Team`;
+    const displayDoctor = doctorName.startsWith('Dr.') ? doctorName : `Dr. ${doctorName}`;
+    const text = `Hi ${patientName},\n\nUnfortunately, ${displayDoctor} has declined your appointment request scheduled for ${dateStr} at ${timeStr}.\n\nReason: ${declineReason}\n\nYou can book a new appointment with another available doctor on BacancyTeleCare.\n\nThe BacancyTeleCare Team`;
 
-  const html = `
+    const html = `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -83,7 +91,7 @@ export function buildAppointmentDeclinedEmail(
 </body>
 </html>`;
 
-  return { subject, text, html };
+    return { subject, text, html };
 }
 
 /* Future template stubs:
