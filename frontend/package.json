@@ -1,65 +1,65 @@
 {
-  "name": "react-example",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "next dev --port=3000 --hostname=0.0.0.0",
-    "build": "next build",
-    "start": "next start --port=3000 --hostname=0.0.0.0",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "prepare": "cd .. && git config core.hooksPath .husky 2>/dev/null || true",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug",
-    "test:e2e:report": "playwright show-report"
-  },
-  "dependencies": {
-    "@daily-co/daily-js": "^0.87.0",
-    "@daily-co/daily-react": "^0.24.0",
-    "@google/genai": "^1.29.0",
-    "@tailwindcss/postcss": "^4.2.1",
-    "@tanstack/react-query": "^5.90.21",
-    "clsx": "^2.1.1",
-    "country-state-city": "^3.2.1",
-    "date-fns": "^4.1.0",
-    "dotenv": "^17.2.3",
-    "lucide-react": "^0.577.0",
-    "motion": "^12.23.24",
-    "next": "^15.1.6",
-    "nextjs-toploader": "^3.9.17",
-    "postcss": "^8.5.8",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "socket.io-client": "^4.8.3",
-    "tailwind-merge": "^3.5.0",
-    "zustand": "^5.0.11"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.59.1",
-    "@types/node": "^22.14.0",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "^19.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.57.0",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^9.17.0",
-    "eslint-config-next": "^16.1.7",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.5",
-    "lint-staged": "^15.2.10",
-    "prettier": "^3.8.1",
-    "tailwindcss": "^4.1.14",
-    "typescript": "5.8.3"
-  },
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "prettier --write",
-      "eslint --fix"
-    ],
-    "*.{json,md,css,yml,yaml}": [
-      "prettier --write"
-    ]
-  }
+    "name": "react-example",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "next dev --port=3000 --hostname=0.0.0.0",
+        "build": "next build",
+        "start": "next start --port=3000 --hostname=0.0.0.0",
+        "lint": "eslint src",
+        "lint:fix": "eslint src --fix",
+        "format": "prettier --write .",
+        "prepare": "cd .. && git config core.hooksPath .husky 2>/dev/null || true",
+        "test:e2e": "playwright test",
+        "test:e2e:ui": "playwright test --ui",
+        "test:e2e:debug": "playwright test --debug",
+        "test:e2e:report": "playwright show-report"
+    },
+    "dependencies": {
+        "@daily-co/daily-js": "^0.87.0",
+        "@daily-co/daily-react": "^0.24.0",
+        "@google/genai": "^1.29.0",
+        "@tailwindcss/postcss": "^4.2.1",
+        "@tanstack/react-query": "^5.90.21",
+        "clsx": "^2.1.1",
+        "country-state-city": "^3.2.1",
+        "date-fns": "^4.1.0",
+        "dotenv": "^17.2.3",
+        "lucide-react": "^0.577.0",
+        "motion": "^12.23.24",
+        "next": "^15.1.6",
+        "nextjs-toploader": "^3.9.17",
+        "postcss": "^8.5.8",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "socket.io-client": "^4.8.3",
+        "tailwind-merge": "^3.5.0",
+        "zustand": "^5.0.11"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.59.1",
+        "@types/node": "^22.14.0",
+        "@types/react": "19.2.14",
+        "@types/react-dom": "^19.0.0",
+        "@typescript-eslint/eslint-plugin": "^8.57.0",
+        "autoprefixer": "^10.4.21",
+        "eslint": "^9.17.0",
+        "eslint-config-next": "^16.1.7",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-prettier": "^5.5.5",
+        "lint-staged": "^15.2.10",
+        "prettier": "^3.8.1",
+        "tailwindcss": "^4.1.14",
+        "typescript": "5.8.3"
+    },
+    "lint-staged": {
+        "*.{ts,tsx,js,jsx}": [
+            "prettier --write",
+            "eslint --fix"
+        ],
+        "*.{json,md,css,yml,yaml}": [
+            "prettier --write"
+        ]
+    }
 }

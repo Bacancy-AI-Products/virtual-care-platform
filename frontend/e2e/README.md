@@ -59,10 +59,10 @@ e2e/
 
 Password for everyone: `Demo@1234`
 
-| Role    | Email                         | Notes                          |
-| ------- | ----------------------------- | ------------------------------ |
-| Patient | john.doe@telecare.com         | Has confirmed appt with Sarah  |
-| Doctor  | sarah.johnson@telecare.dev    | General Physician              |
+| Role    | Email                      | Notes                         |
+| ------- | -------------------------- | ----------------------------- |
+| Patient | john.doe@telecare.com      | Has confirmed appt with Sarah |
+| Doctor  | sarah.johnson@telecare.dev | General Physician             |
 
 See `fixtures/credentials.ts` for the full set used in tests.
 
@@ -74,8 +74,8 @@ Use the auth fixtures so you don't repeat the login dance:
 import { test, expect } from './fixtures/auth';
 
 test('patient sees their appointments', async ({ patientPage: page }) => {
-  await page.goto('/patient/appointments');
-  await expect(page).toHaveURL(/\/patient\/appointments/);
+    await page.goto('/patient/appointments');
+    await expect(page).toHaveURL(/\/patient\/appointments/);
 });
 ```
 
@@ -84,12 +84,12 @@ from `@playwright/test` directly.
 
 ## Automation
 
-| Trigger          | What runs                | Where             | Speed   |
-| ---------------- | ------------------------ | ----------------- | ------- |
-| `git push`       | Smoke spec only          | Local (pre-push)  | ~10–15s |
-| Pull request     | Full suite               | GitHub Actions    | ~2–4min |
-| Push to main     | Full suite               | GitHub Actions    | ~2–4min |
-| Manual           | `npm run test:e2e`       | Local             | ~1–2min |
+| Trigger      | What runs          | Where            | Speed   |
+| ------------ | ------------------ | ---------------- | ------- |
+| `git push`   | Smoke spec only    | Local (pre-push) | ~10–15s |
+| Pull request | Full suite         | GitHub Actions   | ~2–4min |
+| Push to main | Full suite         | GitHub Actions   | ~2–4min |
+| Manual       | `npm run test:e2e` | Local            | ~1–2min |
 
 - **Pre-push hook:** `.husky/pre-push` (bare git hook, no npm dependency).
   Activate once with `git config core.hooksPath .husky`.
