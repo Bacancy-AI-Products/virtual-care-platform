@@ -53,6 +53,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           password: ${{ secrets.EC2_PASSWORD }}
+          command_timeout: 30m
           script: |
             set -e
             APP_DIR="/root/virtual-care-platform"
