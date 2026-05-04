@@ -62,7 +62,7 @@ export default defineConfig({
         {
             command: 'npm run dev',
             cwd: BACKEND_DIR,
-            url: TEST_CONFIG.backendUrl,
+            url: `${TEST_CONFIG.backendUrl}/api/v1`,
             reuseExistingServer: !process.env.CI,
             timeout: 120_000,
             stdout: 'ignore',

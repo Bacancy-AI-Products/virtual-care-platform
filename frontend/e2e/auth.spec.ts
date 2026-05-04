@@ -15,7 +15,7 @@ test.describe('Authentication', () => {
     test('shows validation error on empty submit', async ({ page }) => {
         await page.goto('/login');
         await page.getByRole('button', { name: /^login$/i }).click();
-        await expect(page.getByText(/please enter your email|email or mobile/i)).toBeVisible();
+        await expect(page.getByText(/please enter your email/i)).toBeVisible();
     });
 
     test('shows validation error on invalid email format', async ({ page }) => {
