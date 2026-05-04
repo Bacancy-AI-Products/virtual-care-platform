@@ -3,11 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, ArrowRight, ChevronLeft, Loader2, Stethoscope } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, ChevronLeft, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { authApi } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { BrandLogo } from '@/components/BrandLogo';
+import { AuthVisualPanel } from '@/components/AuthVisualPanel';
 
 const COUNTRY_OPTIONS = [
     '+1 (USA)',
@@ -248,7 +249,7 @@ export default function SignupPage() {
 
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
-                                    Email Address (optional)
+                                    Email Address
                                 </label>
                                 <div className="relative group">
                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
@@ -336,31 +337,17 @@ export default function SignupPage() {
                 </div>
             </div>
 
-            {/* Right Side - Visual */}
-            <div className="hidden lg:flex flex-1 bg-brand-600 relative overflow-hidden items-center justify-center p-24">
-                <div className="relative z-10 max-w-lg text-center">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-[32px] flex items-center justify-center mx-auto mb-12 border border-white/30">
-                            <Stethoscope className="text-white w-12 h-12" />
-                        </div>
-                        <h3 className="text-5xl font-bold text-white mb-8 leading-tight">
-                            Your Health, Our Priority.
-                        </h3>
-                        <p className="text-xl text-brand-100 leading-relaxed">
-                            Experience the future of healthcare with BacancyTeleCare. Connect with
-                            experts in minutes and manage your health records seamlessly.
-                        </p>
-                    </motion.div>
-                </div>
-
-                {/* Abstract Background Shapes */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-900/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-            </div>
+            <AuthVisualPanel
+                title={
+                    <>
+                        Start Your{' '}
+                        <span className="text-brand-500">Care Journey.</span>
+                    </>
+                }
+                description="Create your BacancyTeleCare account in minutes — book consultations, manage prescriptions, and connect with verified specialists from anywhere."
+                imageSrc="/auth-signup.svg"
+                imageAlt="Onboarding checklist — building your profile"
+            />
         </div>
     );
 }

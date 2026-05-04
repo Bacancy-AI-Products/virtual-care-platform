@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" fill="none" role="img" aria-label="Sign up onboarding illustration">
+  <defs>
+    <radialGradient id="auth-bg" cx="50%" cy="48%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <style><![CDATA[
+      @keyframes float-a { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+      @keyframes float-b { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(9px); } }
+      @keyframes float-c { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+      @keyframes float-d { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+      @keyframes twinkle { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.15; } }
+      @keyframes cta-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+      @keyframes heart-beat { 0%, 100% { transform: scale(1); } 30% { transform: scale(1.18); } 60% { transform: scale(0.95); } }
+      @keyframes check-pop { 0%, 25% { transform: scale(0); } 35%, 95% { transform: scale(1); } 100% { transform: scale(1); } }
+      @keyframes check-fill {
+        0%, 25% { fill: #fff8f4; stroke: #ffd4b8; }
+        35%, 100% { fill: #10b981; stroke: #10b981; }
+      }
+
+      .anim-float-a { animation: float-a 4.5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-float-b { animation: float-b 5.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-float-c { animation: float-c 4.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-float-d { animation: float-d 5.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-twinkle { animation: twinkle 3s ease-in-out infinite; }
+      .anim-twinkle-2 { animation-delay: 0.5s; }
+      .anim-twinkle-3 { animation-delay: 1s; }
+      .anim-twinkle-4 { animation-delay: 1.5s; }
+      .anim-twinkle-5 { animation-delay: 2s; }
+      .anim-twinkle-6 { animation-delay: 2.5s; }
+      .anim-cta-pulse { animation: cta-pulse 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-heart-beat { animation: heart-beat 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-check { animation: check-pop 6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-check-fill { animation: check-fill 6s ease-in-out infinite; }
+      .anim-d-1 { animation-delay: 0s; }
+      .anim-d-2 { animation-delay: 0.7s; }
+      .anim-d-3 { animation-delay: 1.4s; }
+      .anim-d-4 { animation-delay: 2.1s; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .anim-float-a, .anim-float-b, .anim-float-c, .anim-float-d,
+        .anim-twinkle, .anim-cta-pulse, .anim-heart-beat,
+        .anim-check, .anim-check-fill { animation: none; }
+      }
+    ]]></style>
+  </defs>
+
+  <circle cx="400" cy="500" r="420" fill="url(#auth-bg)"/>
+
+  <!-- Twinkling dots -->
+  <circle class="anim-twinkle" cx="100" cy="200" r="6" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-2" cx="710" cy="180" r="9" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-3" cx="60" cy="540" r="5" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-4" cx="740" cy="560" r="7" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-5" cx="130" cy="860" r="8" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-6" cx="700" cy="880" r="6" fill="#f58220"/>
+
+  <!-- Floating: Plus -->
+  <g transform="translate(140, 240)">
+    <g class="anim-float-a">
+      <circle r="44" fill="#ffffff"/>
+      <circle r="44" fill="none" stroke="#ffd4b8" stroke-width="2"/>
+      <path d="M-16 0 H16 M0 -16 V16" stroke="#f58220" stroke-width="6" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Floating: Heart -->
+  <g transform="translate(660, 220)">
+    <g class="anim-float-b">
+      <circle r="46" fill="#ffffff"/>
+      <circle r="46" fill="none" stroke="#ffd4b8" stroke-width="2"/>
+      <path class="anim-heart-beat" d="M0 18 C-24 -4, -30 -26, -14 -26 C-6 -26, 0 -20, 0 -14 C0 -20, 6 -26, 14 -26 C30 -26, 24 -4, 0 18 Z" fill="#f58220"/>
+    </g>
+  </g>
+
+  <!-- Floating: User-with-check -->
+  <g transform="translate(680, 770)">
+    <g class="anim-float-c">
+      <circle r="44" fill="#ffffff"/>
+      <circle r="44" fill="none" stroke="#ffd4b8" stroke-width="2"/>
+      <circle cx="0" cy="-6" r="9" fill="#f58220"/>
+      <path d="M-16 16 Q-16 0, 0 0 Q16 0, 16 16 Z" fill="#f58220"/>
+      <circle cx="14" cy="-14" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2"/>
+      <path d="M11 -14 L13 -11 L17 -17" stroke="#ffffff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <!-- Floating: Gift box -->
+  <g transform="translate(130, 800)">
+    <g class="anim-float-d">
+      <circle r="42" fill="#ffffff"/>
+      <circle r="42" fill="none" stroke="#ffd4b8" stroke-width="2"/>
+      <rect x="-16" y="-4" width="32" height="22" rx="3" fill="#f58220"/>
+      <rect x="-16" y="-12" width="32" height="10" rx="2" fill="#bc5a0e"/>
+      <rect x="-2" y="-12" width="4" height="30" fill="#fff8f4"/>
+      <path d="M-2 -12 Q-12 -22, -2 -16 Q4 -18, 2 -12 M2 -12 Q12 -22, 2 -16" stroke="#fff8f4" stroke-width="2" fill="none"/>
+    </g>
+  </g>
+
+  <!-- Centerpiece: Clipboard onboarding form, tilted -->
+  <g transform="translate(400, 510) rotate(-3)">
+    <rect x="-176" y="-292" width="352" height="588" rx="16" fill="#000000" opacity="0.06"/>
+    <rect x="-180" y="-300" width="360" height="600" rx="16" fill="#bc5a0e"/>
+
+    <rect x="-32" y="-326" width="64" height="36" rx="8" fill="#1f2937"/>
+    <rect x="-14" y="-336" width="28" height="18" rx="4" fill="#7c3e10"/>
+
+    <rect x="-162" y="-282" width="324" height="566" rx="6" fill="#ffffff"/>
+
+    <rect x="-162" y="-282" width="324" height="82" fill="#fff8f4"/>
+    <rect x="-162" y="-200" width="324" height="1.5" fill="#ffd4b8"/>
+
+    <!-- Avatar in header -->
+    <circle cx="-118" cy="-241" r="24" fill="#f58220" stroke="#ffffff" stroke-width="3"/>
+    <ellipse cx="-118" cy="-247" rx="14" ry="14" fill="#ffd4b8"/>
+    <path d="M-132 -247 Q-132 -263, -118 -263 Q-104 -263, -104 -247 Q-104 -253, -114 -253 Q-118 -253, -122 -253 Q-132 -253, -132 -247 Z" fill="#1f2937"/>
+    <circle cx="-122" cy="-249" r="1.4" fill="#1f2937"/>
+    <circle cx="-114" cy="-249" r="1.4" fill="#1f2937"/>
+    <path d="M-121 -242 Q-118 -240, -115 -242" stroke="#1f2937" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+
+    <rect x="-86" y="-256" width="170" height="12" rx="6" fill="#1f2937"/>
+    <rect x="-86" y="-238" width="120" height="7" rx="3.5" fill="#bc5a0e"/>
+
+    <!-- Checklist item 1 -->
+    <g transform="translate(0, -160)">
+      <rect x="-140" y="-18" width="280" height="48" rx="12" fill="#fff8f4"/>
+      <circle class="anim-check-fill anim-d-1" cx="-114" cy="6" r="14" stroke-width="2"/>
+      <g class="anim-check anim-d-1">
+        <path d="M-120 6 L-116 12 L-108 -2" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <rect x="-90" y="-2" width="200" height="7" rx="3.5" fill="#1f2937"/>
+      <rect x="-90" y="10" width="140" height="5" rx="2.5" fill="#ffd4b8"/>
+    </g>
+
+    <!-- Checklist item 2 -->
+    <g transform="translate(0, -90)">
+      <rect x="-140" y="-18" width="280" height="48" rx="12" fill="#fff8f4"/>
+      <circle class="anim-check-fill anim-d-2" cx="-114" cy="6" r="14" stroke-width="2"/>
+      <g class="anim-check anim-d-2">
+        <path d="M-120 6 L-116 12 L-108 -2" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <rect x="-90" y="-2" width="180" height="7" rx="3.5" fill="#1f2937"/>
+      <rect x="-90" y="10" width="100" height="5" rx="2.5" fill="#ffd4b8"/>
+    </g>
+
+    <!-- Checklist item 3 -->
+    <g transform="translate(0, -20)">
+      <rect x="-140" y="-18" width="280" height="48" rx="12" fill="#fff8f4"/>
+      <circle class="anim-check-fill anim-d-3" cx="-114" cy="6" r="14" stroke-width="2"/>
+      <g class="anim-check anim-d-3">
+        <path d="M-120 6 L-116 12 L-108 -2" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <rect x="-90" y="-2" width="160" height="7" rx="3.5" fill="#1f2937"/>
+      <rect x="-90" y="10" width="120" height="5" rx="2.5" fill="#ffd4b8"/>
+    </g>
+
+    <!-- Checklist item 4 -->
+    <g transform="translate(0, 50)">
+      <rect x="-140" y="-18" width="280" height="48" rx="12" fill="#fff8f4"/>
+      <circle class="anim-check-fill anim-d-4" cx="-114" cy="6" r="14" stroke-width="2"/>
+      <g class="anim-check anim-d-4">
+        <path d="M-120 6 L-116 12 L-108 -2" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <rect x="-90" y="-2" width="200" height="7" rx="3.5" fill="#1f2937"/>
+      <rect x="-90" y="10" width="80" height="5" rx="2.5" fill="#ffd4b8"/>
+    </g>
+
+    <!-- CTA button -->
+    <g transform="translate(0, 150)">
+      <g class="anim-cta-pulse">
+        <rect x="-140" y="-24" width="280" height="48" rx="24" fill="#f58220"/>
+        <rect x="-50" y="-4" width="80" height="8" rx="4" fill="#ffffff"/>
+        <path d="M38 -4 L48 0 L38 4 Z" fill="#ffffff"/>
+      </g>
+    </g>
+
+    <rect x="-90" y="220" width="180" height="5" rx="2.5" fill="#ffd4b8"/>
+    <rect x="-60" y="232" width="120" height="5" rx="2.5" fill="#ffd4b8"/>
+  </g>
+</svg>

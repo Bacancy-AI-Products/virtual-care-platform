@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" fill="none" role="img" aria-label="Set new password illustration">
+  <defs>
+    <radialGradient id="auth-bg" cx="50%" cy="48%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <style><![CDATA[
+      @keyframes float-a { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+      @keyframes float-b { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(9px); } }
+      @keyframes float-c { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+      @keyframes float-d { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+      @keyframes twinkle { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.15; } }
+      @keyframes draw-check { 0%, 30% { stroke-dashoffset: 70; } 50%, 100% { stroke-dashoffset: 0; } }
+      @keyframes badge-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      @keyframes ray-pulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.08); opacity: 0.85; } }
+      @keyframes bar-fill {
+        0%, 18% { width: 0; opacity: 0.3; }
+        25%, 95% { opacity: 1; }
+      }
+      @keyframes bar-fill-1 { 0%, 18% { width: 0; } 25%, 95% { width: 70px; } 100% { width: 70px; } }
+      @keyframes bar-fill-2 { 0%, 28% { width: 0; } 35%, 95% { width: 110px; } 100% { width: 110px; } }
+      @keyframes bar-fill-3 { 0%, 38% { width: 0; } 45%, 95% { width: 150px; } 100% { width: 150px; } }
+      @keyframes bar-fill-4 { 0%, 48% { width: 0; } 55%, 95% { width: 200px; } 100% { width: 200px; } }
+
+      .anim-float-a { animation: float-a 4.5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-float-b { animation: float-b 5.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-float-c { animation: float-c 4.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-float-d { animation: float-d 5.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-twinkle { animation: twinkle 3s ease-in-out infinite; }
+      .anim-twinkle-2 { animation-delay: 0.5s; }
+      .anim-twinkle-3 { animation-delay: 1s; }
+      .anim-twinkle-4 { animation-delay: 1.5s; }
+      .anim-twinkle-5 { animation-delay: 2s; }
+      .anim-twinkle-6 { animation-delay: 2.5s; }
+      .anim-draw-check { stroke-dasharray: 70; stroke-dashoffset: 70; animation: draw-check 4s ease-in-out infinite; }
+      .anim-badge-rotate { animation: badge-rotate 16s linear infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-ray { animation: ray-pulse 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-bar-1 { animation: bar-fill-1 5s ease-out infinite; }
+      .anim-bar-2 { animation: bar-fill-2 5s ease-out infinite; }
+      .anim-bar-3 { animation: bar-fill-3 5s ease-out infinite; }
+      .anim-bar-4 { animation: bar-fill-4 5s ease-out infinite; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .anim-float-a, .anim-float-b, .anim-float-c, .anim-float-d,
+        .anim-twinkle, .anim-draw-check, .anim-badge-rotate, .anim-ray,
+        .anim-bar-1, .anim-bar-2, .anim-bar-3, .anim-bar-4 { animation: none; }
+        .anim-draw-check { stroke-dashoffset: 0; }
+      }
+    ]]></style>
+  </defs>
+
+  <circle cx="400" cy="500" r="420" fill="url(#auth-bg)"/>
+
+  <!-- Twinkling dots -->
+  <circle class="anim-twinkle" cx="100" cy="200" r="6" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-2" cx="710" cy="180" r="9" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-3" cx="60" cy="540" r="5" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-4" cx="740" cy="560" r="7" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-5" cx="130" cy="860" r="8" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-6" cx="700" cy="880" r="6" fill="#f58220"/>
+
+  <!-- Floating: Sparkle -->
+  <g transform="translate(140, 240)">
+    <g class="anim-float-a">
+      <circle r="44" fill="#ffffff"/>
+      <circle r="44" fill="none" stroke="#ffd4b8" stroke-width="2"/>
+      <path d="M0 -20 L4 -4 L20 0 L4 4 L0 20 L-4 4 L-20 0 L-4 -4 Z" fill="#f58220"/>
+    </g>
+  </g>
+
+  <!-- Floating: Shield with check -->
+  <g transform="translate(660, 220)">
+    <g class="anim-float-b">
+      <circle r="46" fill="#ffffff"/>
+      <circle r="46" fill="none" stroke="#ffd4b8" stroke-width="2"/>
+      <path d="M0 -22 L-18 -12 V4 Q-18 18 0 28 Q18 18 18 4 V-12 Z" fill="#10b981"/>
+      <path d="M-9 2 L-2 9 L10 -6" stroke="#ffffff" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <!-- Floating: Key -->
+  <g transform="translate(680, 770)">
+    <g class="anim-float-c">
+      <circle r="44" fill="#ffffff"/>
+      <circle r="44" fill="none" stroke="#ffd4b8" stroke-width="2"/>
+      <circle cx="-10" cy="0" r="11" fill="none" stroke="#f58220" stroke-width="4"/>
+      <circle cx="-10" cy="0" r="4" fill="#f58220"/>
+      <rect x="0" y="-3" width="26" height="6" fill="#f58220"/>
+      <rect x="18" y="3" width="4" height="9" fill="#f58220"/>
+      <rect x="24" y="3" width="4" height="9" fill="#f58220"/>
+    </g>
+  </g>
+
+  <!-- Floating: Lock-small -->
+  <g transform="translate(130, 800)">
+    <g class="anim-float-d">
+      <circle r="42" fill="#ffffff"/>
+      <circle r="42" fill="none" stroke="#ffd4b8" stroke-width="2"/>
+      <path d="M-9 -4 Q-9 -16, 0 -16 Q9 -16, 9 -4" stroke="#bc5a0e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <rect x="-13" y="-4" width="26" height="22" rx="3" fill="#f58220"/>
+      <circle cx="0" cy="6" r="2.5" fill="#bc5a0e"/>
+      <rect x="-1.5" y="6" width="3" height="6" fill="#bc5a0e"/>
+    </g>
+  </g>
+
+  <!-- Centerpiece: Closed lock with success -->
+  <g transform="translate(400, 460)">
+    <!-- Decorative success rays -->
+    <g class="anim-ray">
+      <circle r="220" fill="none" stroke="#f58220" stroke-width="2" stroke-dasharray="4 10" opacity="0.45"/>
+    </g>
+    <!-- Rotating outer dashed ring -->
+    <g class="anim-badge-rotate">
+      <circle r="250" fill="none" stroke="#ffd4b8" stroke-width="2" stroke-dasharray="2 12"/>
+    </g>
+
+    <!-- Lock shadow -->
+    <ellipse cx="0" cy="240" rx="150" ry="14" fill="#ffd4b8" opacity="0.5"/>
+
+    <!-- Lock shackle (locked, snug to body) -->
+    <path d="M-58 -10 V-80 Q-58 -130, 0 -130 Q58 -130, 58 -80 V-10" stroke="#bc5a0e" stroke-width="22" fill="none" stroke-linecap="round"/>
+    <path d="M-58 -10 V-80 Q-58 -130, 0 -130 Q58 -130, 58 -80 V-10" stroke="#f58220" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <path d="M-50 -20 V-80 Q-50 -120, 0 -120" stroke="#ffb380" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+
+    <!-- Lock body (slightly larger, success-state) -->
+    <rect x="-110" y="-10" width="220" height="200" rx="24" fill="#f58220" stroke="#bc5a0e" stroke-width="3"/>
+    <!-- Highlight -->
+    <rect x="-100" y="0" width="40" height="180" rx="8" fill="#ffffff" opacity="0.18"/>
+    <!-- Subtle inner shadow -->
+    <rect x="62" y="0" width="38" height="180" rx="8" fill="#000" opacity="0.08"/>
+
+    <!-- Big white circle for checkmark badge -->
+    <circle cx="0" cy="90" r="58" fill="#ffffff"/>
+    <circle cx="0" cy="90" r="58" fill="none" stroke="#10b981" stroke-width="4"/>
+    <!-- Animated checkmark draw -->
+    <path class="anim-draw-check" d="M-26 90 L-6 110 L28 70" stroke="#10b981" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Sparkle accents around the badge -->
+    <path class="anim-twinkle anim-twinkle-3" d="M-78 50 L-74 62 L-86 58 Z" fill="#f58220"/>
+    <path class="anim-twinkle anim-twinkle-4" d="M82 58 L88 70 L74 66 Z" fill="#f58220"/>
+    <path class="anim-twinkle anim-twinkle-5" d="M-70 130 L-64 142 L-76 138 Z" fill="#f58220"/>
+    <path class="anim-twinkle anim-twinkle-2" d="M76 140 L82 150 L70 148 Z" fill="#f58220"/>
+  </g>
+
+  <!-- Password strength meter (below lock) -->
+  <g transform="translate(400, 800)">
+    <!-- Card backdrop -->
+    <rect x="-150" y="-44" width="300" height="100" rx="14" fill="#ffffff" stroke="#ffd4b8" stroke-width="2"/>
+    <!-- "Password strength" label placeholder -->
+    <rect x="-130" y="-30" width="120" height="6" rx="3" fill="#1f2937"/>
+    <rect x="64" y="-30" width="66" height="6" rx="3" fill="#10b981"/>
+
+    <!-- Bar tracks (background) -->
+    <rect x="-130" y="-10" width="200" height="6" rx="3" fill="#fff8f4" stroke="#ffd4b8" stroke-width="1"/>
+    <rect x="-130" y="2" width="200" height="6" rx="3" fill="#fff8f4" stroke="#ffd4b8" stroke-width="1"/>
+    <rect x="-130" y="14" width="200" height="6" rx="3" fill="#fff8f4" stroke="#ffd4b8" stroke-width="1"/>
+    <rect x="-130" y="26" width="200" height="6" rx="3" fill="#fff8f4" stroke="#ffd4b8" stroke-width="1"/>
+
+    <!-- Animated fill bars -->
+    <rect class="anim-bar-1" x="-130" y="-10" height="6" rx="3" fill="#fbbf24"/>
+    <rect class="anim-bar-2" x="-130" y="2" height="6" rx="3" fill="#f59e0b"/>
+    <rect class="anim-bar-3" x="-130" y="14" height="6" rx="3" fill="#f58220"/>
+    <rect class="anim-bar-4" x="-130" y="26" height="6" rx="3" fill="#10b981"/>
+
+    <!-- Strong text placeholder -->
+    <rect x="-50" y="42" width="100" height="6" rx="3" fill="#10b981"/>
+  </g>
+</svg>

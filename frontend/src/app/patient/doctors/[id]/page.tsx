@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
@@ -164,7 +165,25 @@ export default function DoctorProfilePage() {
     }
 
     if (errorDoctor || !doctor) {
-        return <div className="p-20 text-center text-slate-500 font-bold">Doctor not found.</div>;
+        return (
+            <div className="max-w-xl mx-auto py-12">
+                <div className="bg-white rounded-[40px] border border-slate-100 shadow-sm p-10 text-center">
+                    <div className="w-16 h-16 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                        <AlertCircle className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-2">Doctor not found</h2>
+                    <p className="text-slate-500 font-medium mb-8">
+                        We couldn&apos;t load this profile. The doctor may no longer be available.
+                    </p>
+                    <Link
+                        href="/patient/doctors"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-100 hover:bg-brand-600 transition-all active:scale-[0.98]"
+                    >
+                        <ChevronLeft className="w-5 h-5" /> Back to find doctors
+                    </Link>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -172,7 +191,7 @@ export default function DoctorProfilePage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="max-w-6xl mx-auto space-y-10"
+            className="max-w-6xl mx-auto w-full space-y-6 sm:space-y-8 lg:space-y-10"
         >
             <button
                 onClick={() => router.back()}
@@ -182,38 +201,39 @@ export default function DoctorProfilePage() {
                 Back to Results
             </button>
 
-            <div className="grid lg:grid-cols-3 gap-10">
+            <div className="grid lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 min-w-0">
                 {/* Doctor info */}
-                <div className="lg:col-span-2 space-y-10">
-                    <div className="bg-white p-10 rounded-[48px] border border-slate-100 shadow-sm relative overflow-hidden">
-                        <div className="flex flex-col md:flex-row gap-10 items-start relative z-10">
-                            <div className="relative w-40 h-40 flex-shrink-0">
+                <div className="lg:col-span-2 space-y-6 sm:space-y-8 lg:space-y-10 min-w-0">
+                    <div className="w-full bg-white p-5 sm:p-8 lg:p-10 rounded-[28px] sm:rounded-[36px] lg:rounded-[48px] border border-slate-100 shadow-sm relative overflow-hidden">
+                        <div className="flex flex-col md:flex-row gap-6 lg:gap-10 items-center md:items-start relative z-10 min-w-0">
+                            <div className="relative w-28 h-28 sm:w-32 sm:h-32 lg:w-40 lg:h-40 flex-shrink-0">
                                 <Image
                                     src={`https://picsum.photos/seed/${doctor.id}/200/200`}
                                     alt={doctor.user.name}
                                     fill
-                                    className="rounded-[40px] object-cover border-8 border-slate-50 shadow-xl"
+                                    className="rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] object-cover border-4 lg:border-8 border-slate-50 shadow-xl"
                                     referrerPolicy="no-referrer"
                                 />
-                                <div className="absolute -bottom-4 -right-4 bg-brand-500 p-3 rounded-2xl shadow-lg shadow-brand-100 z-10">
-                                    <CheckCircle2 className="text-white w-6 h-6" />
+                                <div className="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-4 bg-brand-500 p-2 sm:p-2.5 lg:p-3 rounded-xl sm:rounded-2xl shadow-lg shadow-brand-100 z-10">
+                                    <CheckCircle2 className="text-white w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
                                 </div>
                             </div>
 
-                            <div className="flex-1">
-                                <div className="flex flex-wrap items-center gap-4 mb-3">
-                                    <h2 className="text-4xl font-bold text-slate-900">
+                            <div className="flex-1 min-w-0 w-full text-center md:text-left">
+                                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-3 lg:gap-4 mb-2 sm:mb-3">
+                                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
                                         {doctor.user.name}
                                     </h2>
-                                    <div className="flex items-center gap-1 text-amber-500 bg-amber-50 px-3 py-1 rounded-full text-sm font-bold">
-                                        <Star className="w-4 h-4 fill-amber-500" /> 4.8
+                                    <div className="flex items-center gap-1 text-amber-500 bg-amber-50 px-2.5 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold">
+                                        <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-500" />{' '}
+                                        4.8
                                     </div>
                                 </div>
-                                <p className="text-xl font-bold text-brand-600 mb-6">
+                                <p className="text-base sm:text-lg lg:text-xl font-bold text-brand-600 mb-4 sm:mb-6">
                                     {specializationLabel}
                                 </p>
 
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
                                     {[
                                         {
                                             icon: Award,
@@ -227,15 +247,15 @@ export default function DoctorProfilePage() {
                                     ].map(({ icon: Icon, label, value }) => (
                                         <div
                                             key={label}
-                                            className="p-4 bg-slate-50 rounded-3xl text-center"
+                                            className="min-w-0 p-2.5 sm:p-4 bg-slate-50 rounded-2xl sm:rounded-3xl text-center overflow-hidden"
                                         >
-                                            <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-sm text-brand-500">
-                                                <Icon className="w-5 h-5" />
+                                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-1.5 sm:mb-2 shadow-sm text-brand-500">
+                                                <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                                             </div>
-                                            <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
+                                            <p className="text-[9px] sm:text-xs text-slate-400 font-bold uppercase tracking-wide truncate">
                                                 {label}
                                             </p>
-                                            <p className="text-lg font-bold text-slate-900">
+                                            <p className="text-xs sm:text-base lg:text-lg font-bold text-slate-900 truncate">
                                                 {value}
                                             </p>
                                         </div>
@@ -243,28 +263,34 @@ export default function DoctorProfilePage() {
                                 </div>
                             </div>
                         </div>
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 -z-0" />
+                        <div className="absolute top-0 right-0 w-40 sm:w-52 lg:w-64 h-40 sm:h-52 lg:h-64 bg-brand-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 -z-0" />
                     </div>
 
                     {doctor.bio && (
-                        <div className="bg-white p-10 rounded-[48px] border border-slate-100 shadow-sm">
-                            <h3 className="text-2xl font-bold text-slate-900 mb-6">About Doctor</h3>
-                            <p className="text-lg text-slate-500 leading-relaxed">{doctor.bio}</p>
+                        <div className="bg-white p-5 sm:p-8 lg:p-10 rounded-[28px] sm:rounded-[36px] lg:rounded-[48px] border border-slate-100 shadow-sm">
+                            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-4 sm:mb-6">
+                                About Doctor
+                            </h3>
+                            <p className="text-base sm:text-lg text-slate-500 leading-relaxed">
+                                {doctor.bio}
+                            </p>
                         </div>
                     )}
                 </div>
 
                 {/* Booking panel */}
-                <div>
-                    <div className="bg-white p-8 rounded-[48px] border border-slate-100 shadow-xl shadow-slate-100 sticky top-28 space-y-6">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-2xl font-bold text-slate-900">Book Appointment</h3>
+                <div className="min-w-0">
+                    <div className="bg-white p-5 sm:p-7 lg:p-8 rounded-[28px] sm:rounded-[36px] lg:rounded-[48px] border border-slate-100 shadow-xl shadow-slate-100 lg:sticky lg:top-28 space-y-5 sm:space-y-6 max-w-md mx-auto lg:max-w-none lg:mx-0 overflow-hidden">
+                        <div className="flex items-center justify-between gap-3">
+                            <h3 className="min-w-0 text-lg sm:text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
+                                Book Appointment
+                            </h3>
                             {doctor.consultationFee && (
-                                <div className="text-right">
-                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
+                                <div className="text-right flex-shrink-0">
+                                    <p className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider">
                                         Fee
                                     </p>
-                                    <p className="text-2xl font-bold text-brand-600">
+                                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-brand-600">
                                         ${Number(doctor.consultationFee).toFixed(0)}
                                     </p>
                                 </div>

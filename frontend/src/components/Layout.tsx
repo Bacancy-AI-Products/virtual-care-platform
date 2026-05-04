@@ -18,6 +18,7 @@ import {
     ClipboardList,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
+import { SidebarDecoration } from '@/components/SidebarDecoration';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useAuth } from '@/hooks/useAuth';
@@ -113,15 +114,15 @@ function SidebarItem({
                 onClick?.();
             }}
             className={cn(
-                'flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group',
+                'group flex items-center gap-3 rounded-xl py-3 pl-4 pr-4 transition-all duration-200',
                 isHighlighted
                     ? 'bg-brand-500 text-white shadow-md shadow-brand-200'
-                    : 'text-slate-600 hover:bg-brand-50 hover:text-brand-600',
+                    : 'border border-transparent text-slate-600 hover:border-brand-100 hover:bg-brand-50 hover:text-brand-700',
             )}
         >
             <Icon
                 className={cn(
-                    'w-5 h-5',
+                    'h-5 w-5 shrink-0',
                     isHighlighted ? 'text-white' : 'text-slate-400 group-hover:text-brand-500',
                 )}
             />
@@ -217,22 +218,29 @@ export const Layout = ({ children, role }: LayoutProps) => {
 
     const Sidebar = () => (
         <>
-            <div className="shrink-0 mb-10 px-2">
-                <BrandLogo />
+            <div className="mb-3 shrink-0 px-2">
+                <div className="flex min-h-20 items-center pt-3">
+                    <BrandLogo />
+                </div>
+                <div
+                    className="mt-3 h-px w-full bg-gradient-to-r from-brand-200/0 via-brand-200/50 to-brand-200/0"
+                    aria-hidden
+                />
             </div>
 
-            <nav className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2">
+            <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto no-scrollbar">
                 {navItems.map((item) => (
                     <SidebarItem key={item.to} {...item} active={pathname === item.to} />
                 ))}
             </nav>
 
-            <div className="shrink-0 pt-6 border-t border-slate-100">
+            <div className="shrink-0 border-t border-brand-100 pt-6">
                 <button
+                    type="button"
                     onClick={handleLogout}
-                    className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-slate-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 group"
+                    className="group flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-600 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
                 >
-                    <LogOut className="w-5 h-5 text-slate-400 group-hover:text-red-500" />
+                    <LogOut className="h-5 w-5 text-slate-400 transition-colors group-hover:text-red-500" />
                     <span className="font-medium">Logout</span>
                 </button>
             </div>
@@ -242,17 +250,21 @@ export const Layout = ({ children, role }: LayoutProps) => {
     return (
         <div className="min-h-screen bg-slate-50 flex w-full max-w-full overflow-x-hidden">
             {/* Sidebar — Desktop */}
-            <aside
-                className="hidden lg:flex flex-col w-72 shrink-0 bg-white border-r border-slate-200 p-6 fixed inset-y-0 left-0 z-40 overflow-hidden"
-                style={{ borderTop: '3px solid #F47B20' }}
-            >
-                <Sidebar />
+            <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 shrink-0 flex-col overflow-hidden border-r border-slate-200/85 border-t-[3px] border-t-brand-500 bg-gradient-to-b from-white via-brand-50/30 to-brand-50/50 lg:flex lg:flex-col">
+                <div
+                    className="pointer-events-none absolute bottom-0 left-0 top-0 w-1 bg-gradient-to-b from-brand-400 via-brand-500 to-brand-700"
+                    aria-hidden
+                />
+                <SidebarDecoration />
+                <div className="relative z-10 flex min-h-0 flex-1 flex-col pb-6 pl-[1.125rem] pr-5 pt-0">
+                    <Sidebar />
+                </div>
             </aside>
 
             {/* Main Content */}
             <main className="flex-1 lg:ml-72 min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
                 {/* Header */}
-                <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 lg:px-10 flex items-center justify-between sticky top-0 z-30">
+                <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200 bg-white/80 px-6 pt-3 backdrop-blur-md lg:px-10">
                     <button
                         className="lg:hidden p-2 text-slate-600"
                         onClick={() => setIsMobileMenuOpen(true)}
@@ -327,34 +339,44 @@ export const Layout = ({ children, role }: LayoutProps) => {
                         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
                         onClick={() => setIsMobileMenuOpen(false)}
                     />
-                    <aside
-                        className="absolute inset-y-0 left-0 w-[min(24rem,calc(100vw-1.5rem))] max-h-full bg-white p-6 shadow-2xl flex flex-col overflow-hidden"
-                        style={{ borderTop: '3px solid #F47B20' }}
-                    >
-                        <div className="shrink-0 flex items-center justify-between mb-10">
-                            <BrandLogo />
-                            <button onClick={() => setIsMobileMenuOpen(false)}>
-                                <X className="w-6 h-6 text-slate-400" />
-                            </button>
-                        </div>
-                        <nav className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2">
-                            {navItems.map((item) => (
-                                <SidebarItem
-                                    key={item.to}
-                                    {...item}
-                                    active={pathname === item.to}
-                                    onClick={() => setIsMobileMenuOpen(false)}
+                    <aside className="absolute inset-y-0 left-0 flex max-h-full w-[min(24rem,calc(100vw-1.5rem))] flex-col overflow-hidden border-l-[3px] border-t-[3px] border-l-brand-600 border-t-brand-500 bg-gradient-to-b from-white via-brand-50/25 to-brand-50/45 shadow-2xl">
+                        <div className="flex min-h-0 flex-1 flex-col px-6 pb-6 pt-0">
+                            <div className="mb-3 shrink-0 px-2">
+                                <div className="flex min-h-20 items-center justify-between gap-2 pt-3">
+                                    <BrandLogo />
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="rounded-lg p-2 text-slate-400 hover:bg-brand-50 hover:text-brand-800"
+                                    >
+                                        <X className="h-6 w-6" />
+                                    </button>
+                                </div>
+                                <div
+                                    className="mt-3 h-px bg-gradient-to-r from-brand-200/0 via-brand-200/50 to-brand-200/0"
+                                    aria-hidden
                                 />
-                            ))}
-                        </nav>
-                        <div className="shrink-0 pt-6 border-t border-slate-100">
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-slate-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 group"
-                            >
-                                <LogOut className="w-5 h-5 text-slate-400 group-hover:text-red-500" />
-                                <span className="font-medium">Logout</span>
-                            </button>
+                            </div>
+                            <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto no-scrollbar">
+                                {navItems.map((item) => (
+                                    <SidebarItem
+                                        key={item.to}
+                                        {...item}
+                                        active={pathname === item.to}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                    />
+                                ))}
+                            </nav>
+                            <div className="shrink-0 border-t border-brand-100 pt-6">
+                                <button
+                                    type="button"
+                                    onClick={handleLogout}
+                                    className="group flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-600 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
+                                >
+                                    <LogOut className="h-5 w-5 text-slate-400 transition-colors group-hover:text-red-500" />
+                                    <span className="font-medium">Logout</span>
+                                </button>
+                            </div>
                         </div>
                     </aside>
                 </div>

@@ -3,11 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Mail, Lock, ArrowRight, ChevronLeft, Loader2, Stethoscope } from 'lucide-react';
+import { Mail, Lock, ArrowRight, ChevronLeft, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { authApi } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { BrandLogo } from '@/components/BrandLogo';
+import { AuthVisualPanel } from '@/components/AuthVisualPanel';
 
 /** Allow redirect after login only to these prefixes (avoid open redirect). */
 const ALLOWED_REDIRECT_PREFIXES = ['/patient/', '/doctor/', '/admin/', '/doctors'];
@@ -153,10 +154,11 @@ export default function LoginPage() {
                                         <label className="text-sm font-bold text-slate-700">
                                             Password
                                         </label>
+                                        {/* Desktop: inline with label */}
                                         <Link
                                             href="/forgot-password"
                                             title="Forgot password?"
-                                            className="text-xs font-bold text-brand-600 hover:text-brand-700"
+                                            className="hidden lg:inline text-base font-bold text-brand-600 hover:text-brand-700"
                                         >
                                             Forgot Password?
                                         </Link>
@@ -180,6 +182,16 @@ export default function LoginPage() {
                                             {errors.password}
                                         </p>
                                     )}
+                                    {/* Mobile/Tablet: below the input, right-aligned */}
+                                    <div className="flex justify-end lg:hidden">
+                                        <Link
+                                            href="/forgot-password"
+                                            title="Forgot password?"
+                                            className="text-base font-bold text-brand-600 hover:text-brand-700 underline decoration-2 underline-offset-4"
+                                        >
+                                            Forgot Password?
+                                        </Link>
+                                    </div>
                                 </div>
 
                                 {errors.form && (
@@ -222,31 +234,17 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                {/* Right Side - Visual */}
-                <div className="hidden lg:flex flex-1 bg-brand-600 relative overflow-hidden items-center justify-center p-24">
-                    <div className="relative z-10 max-w-lg text-center">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.8 }}
-                        >
-                            <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-[32px] flex items-center justify-center mx-auto mb-12 border border-white/30">
-                                <Stethoscope className="text-white w-12 h-12" />
-                            </div>
-                            <h3 className="text-5xl font-bold text-white mb-8 leading-tight">
-                                Your Health, Our Priority.
-                            </h3>
-                            <p className="text-xl text-brand-100 leading-relaxed">
-                                Experience the future of healthcare with BacancyTeleCare. Connect
-                                with experts in minutes and manage your health records seamlessly.
-                            </p>
-                        </motion.div>
-                    </div>
-
-                    {/* Abstract Background Shapes */}
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-900/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-                </div>
+                <AuthVisualPanel
+                    title={
+                        <>
+                            Your Health,{' '}
+                            <span className="text-brand-500">Our Priority.</span>
+                        </>
+                    }
+                    description="Experience the future of healthcare with BacancyTeleCare. Connect with verified specialists, manage prescriptions, and access your records — all in one place."
+                    imageSrc="/auth-login.svg"
+                    imageAlt="Friendly doctor waving — welcome back"
+                />
             </div>
         </React.Suspense>
     );

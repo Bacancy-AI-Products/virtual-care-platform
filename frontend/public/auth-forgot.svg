@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" fill="none" role="img" aria-label="Account recovery illustration">
+  <defs>
+    <radialGradient id="auth-bg" cx="50%" cy="48%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <style><![CDATA[
+      @keyframes float-a { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+      @keyframes float-b { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(9px); } }
+      @keyframes float-c { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+      @keyframes float-d { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+      @keyframes twinkle { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.15; } }
+      @keyframes orbit-key { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      @keyframes ring-pulse { 0% { transform: scale(0.95); opacity: 0.55; } 100% { transform: scale(1.4); opacity: 0; } }
+      @keyframes wiggle { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+      @keyframes badge-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+      .anim-float-a { animation: float-a 4.5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-float-b { animation: float-b 5.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-float-c { animation: float-c 4.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-float-d { animation: float-d 5.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-twinkle { animation: twinkle 3s ease-in-out infinite; }
+      .anim-twinkle-2 { animation-delay: 0.5s; }
+      .anim-twinkle-3 { animation-delay: 1s; }
+      .anim-twinkle-4 { animation-delay: 1.5s; }
+      .anim-twinkle-5 { animation-delay: 2s; }
+      .anim-twinkle-6 { animation-delay: 2.5s; }
+      .anim-orbit-key { animation: orbit-key 9s linear infinite; transform-box: fill-box; transform-origin: 0 0; }
+      .anim-ring-pulse { animation: ring-pulse 2.4s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-ring-pulse-2 { animation-delay: 1.2s; }
+      .anim-wiggle { animation: wiggle 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+      .anim-badge-rotate { animation: badge-rotate 16s linear infinite; transform-box: fill-box; transform-origin: center; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .anim-float-a, .anim-float-b, .anim-float-c, .anim-float-d,
+        .anim-twinkle, .anim-orbit-key, .anim-ring-pulse, .anim-wiggle, .anim-badge-rotate { animation: none; }
+      }
+    ]]></style>
+  </defs>
+
+  <circle cx="400" cy="500" r="420" fill="url(#auth-bg)"/>
+
+  <!-- Twinkling dots -->
+  <circle class="anim-twinkle" cx="100" cy="200" r="6" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-2" cx="710" cy="180" r="9" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-3" cx="60" cy="540" r="5" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-4" cx="740" cy="560" r="7" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-5" cx="130" cy="860" r="8" fill="#f58220"/>
+  <circle class="anim-twinkle anim-twinkle-6" cx="700" cy="880" r="6" fill="#f58220"/>
+
+  <!-- Floating: Shield -->
+  <g transform="translate(140, 240)">
+    <g class="anim-float-a">
+      <circle r="44" fill="#ffffff"/>
+      <circle r="44" fill="none" stroke="#ffd4b8" stroke-width="2"/>
+      <path d="M0 -18 L-15 -10 V2 Q-15 14 0 22 Q15 14 15 2 V-10 Z" fill="#f58220"/>
+      <path d="M-7 0 L-2 6 L8 -6" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <!-- Floating: Envelope (recovery email) -->
+  <g transform="translate(660, 220)">
+    <g class="anim-float-b">
+      <circle r="46" fill="#ffffff"/>
+      <circle r="46" fill="none" stroke="#ffd4b8" stroke-width="2"/>
+      <rect x="-22" y="-14" width="44" height="28" rx="4" fill="#f58220"/>
+      <path d="M-22 -10 L0 6 L22 -10" stroke="#ffffff" stroke-width="3" fill="none" stroke-linejoin="round"/>
+      <circle cx="22" cy="-14" r="6" fill="#ef4444" stroke="#ffffff" stroke-width="2"/>
+    </g>
+  </g>
+
+  <!-- Floating: Bell -->
+  <g transform="translate(680, 770)">
+    <g class="anim-float-c">
+      <circle r="44" fill="#ffffff"/>
+      <circle r="44" fill="none" stroke="#ffd4b8" stroke-width="2"/>
+      <path d="M-14 8 Q-14 -16, 0 -16 Q14 -16, 14 8 Z" fill="#f58220"/>
+      <path d="M-18 8 H18" stroke="#bc5a0e" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="0" cy="14" r="3" fill="#bc5a0e"/>
+      <circle cx="0" cy="-18" r="2.5" fill="#bc5a0e"/>
+    </g>
+  </g>
+
+  <!-- Floating: Question mark -->
+  <g transform="translate(130, 800)">
+    <g class="anim-float-d">
+      <circle r="42" fill="#ffffff"/>
+      <circle r="42" fill="none" stroke="#ffd4b8" stroke-width="2"/>
+      <path d="M-7 -8 Q-7 -14, 0 -14 Q7 -14, 7 -8 Q7 -3, 0 0 V6" stroke="#f58220" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <circle cx="0" cy="14" r="3" fill="#f58220"/>
+    </g>
+  </g>
+
+  <!-- Centerpiece: Padlock + orbiting key -->
+  <g transform="translate(400, 510)">
+    <!-- Pulse rings (radiating from lock) -->
+    <circle class="anim-ring-pulse" cx="0" cy="40" r="180" fill="none" stroke="#f58220" stroke-width="3" opacity="0.5"/>
+    <circle class="anim-ring-pulse anim-ring-pulse-2" cx="0" cy="40" r="180" fill="none" stroke="#f58220" stroke-width="3" opacity="0.5"/>
+
+    <!-- Decorative dashed orbit ring -->
+    <g class="anim-badge-rotate">
+      <circle r="240" fill="none" stroke="#ffd4b8" stroke-width="2" stroke-dasharray="6 8"/>
+    </g>
+
+    <!-- Lock shadow -->
+    <ellipse cx="0" cy="200" rx="140" ry="14" fill="#ffd4b8" opacity="0.5"/>
+
+    <!-- Wiggling lock body -->
+    <g class="anim-wiggle">
+      <!-- Lock shackle (top arc) -->
+      <path d="M-58 -40 Q-58 -130, 0 -130 Q58 -130, 58 -40 V20" stroke="#bc5a0e" stroke-width="22" fill="none" stroke-linecap="round"/>
+      <path d="M-58 -40 Q-58 -130, 0 -130 Q58 -130, 58 -40 V20" stroke="#f58220" stroke-width="14" fill="none" stroke-linecap="round"/>
+      <!-- Shackle highlight -->
+      <path d="M-50 -50 Q-50 -120, 0 -120" stroke="#ffb380" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+
+      <!-- Lock body -->
+      <rect x="-100" y="0" width="200" height="180" rx="22" fill="#f58220" stroke="#bc5a0e" stroke-width="3"/>
+      <!-- Body highlight -->
+      <rect x="-90" y="10" width="36" height="160" rx="6" fill="#ffffff" opacity="0.18"/>
+      <!-- Body shadow -->
+      <rect x="60" y="10" width="32" height="160" rx="6" fill="#000" opacity="0.08"/>
+
+      <!-- Keyhole -->
+      <circle cx="0" cy="78" r="14" fill="#1f2937"/>
+      <path d="M-4 78 V120 L-2 130 H2 L4 120 V78 Z" fill="#1f2937"/>
+    </g>
+  </g>
+
+  <!-- Floating key (orbits around the lock) -->
+  <g transform="translate(400, 510)">
+    <g class="anim-orbit-key">
+      <g transform="translate(190, -100)">
+        <!-- Key bow (loop) -->
+        <circle r="22" fill="#f58220" stroke="#bc5a0e" stroke-width="3"/>
+        <circle r="11" fill="#fff8f4"/>
+        <!-- Key shaft -->
+        <rect x="22" y="-4" width="62" height="8" fill="#f58220" stroke="#bc5a0e" stroke-width="2"/>
+        <!-- Key teeth -->
+        <rect x="60" y="4" width="6" height="11" fill="#f58220" stroke="#bc5a0e" stroke-width="2"/>
+        <rect x="74" y="4" width="6" height="14" fill="#f58220" stroke="#bc5a0e" stroke-width="2"/>
+      </g>
+    </g>
+  </g>
+</svg>

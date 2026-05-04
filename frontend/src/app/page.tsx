@@ -36,8 +36,8 @@ const FeatureCard = ({
     title: string;
     description: string;
 }) => (
-    <div className="p-8 bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group">
-        <div className="w-14 h-14 bg-brand-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-500 transition-colors duration-300">
+    <div className="p-8 bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group text-center sm:text-left">
+        <div className="w-14 h-14 bg-brand-50 rounded-2xl flex items-center justify-center mb-6 mx-auto sm:mx-0 group-hover:bg-brand-500 transition-colors duration-300">
             <Icon className="w-7 h-7 text-brand-500 group-hover:text-white transition-colors duration-300" />
         </div>
         <h3 className="text-xl font-bold text-slate-900 mb-3">{title}</h3>
@@ -190,8 +190,8 @@ export default function Landing() {
             </section>
 
             {/* Hero Section — no top padding, Find Doctors block sits directly above */}
-            <section className="relative pb-24 lg:pb-40">
-                <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+            <section className="relative pb-10 sm:pb-16 lg:pb-40">
+                <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-16 items-center">
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -224,15 +224,15 @@ export default function Landing() {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        className="relative"
+                        className="relative max-w-xs sm:max-w-md mx-auto w-full lg:max-w-none lg:mx-0"
                     >
-                        <div className="relative z-10 rounded-[40px] overflow-hidden shadow-2xl border-8 border-white aspect-[4/5]">
+                        <div className="relative z-10 aspect-[4/5]">
                             <Image
-                                src="https://picsum.photos/seed/telemedicine/800/1000"
-                                alt="Telemedicine Consultation"
+                                src="/hero-telemedicine.svg"
+                                alt="Online doctor consultation illustration"
                                 fill
-                                className="object-cover"
-                                referrerPolicy="no-referrer"
+                                className="object-contain"
+                                priority
                             />
                         </div>
                         {/* Background elements */}
@@ -324,7 +324,7 @@ export default function Landing() {
 
             {/* Footer */}
             <footer className="py-12 border-t border-slate-100">
-                <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
                     <BrandLogo compact />
                     <p className="text-slate-500 text-sm">
                         © 2026 BacancyTeleCare Inc. All rights reserved.

@@ -14,7 +14,7 @@ interface BrandLogoProps {
 
 export function BrandLogo({ href = '/doctors', compact }: BrandLogoProps) {
     return (
-        <Link href={href} className="flex items-center gap-2 sm:gap-2.5">
+        <Link href={href} className="flex items-center gap-2 sm:gap-2.5 min-w-0">
             <Image
                 src={LOGO_MARK_SRC}
                 alt="Bacancy"
@@ -22,14 +22,14 @@ export function BrandLogo({ href = '/doctors', compact }: BrandLogoProps) {
                 height={160}
                 className={
                     compact
-                        ? 'h-8 w-auto max-w-[120px] object-contain object-left'
-                        : 'h-9 w-auto max-w-[140px] sm:h-10 object-contain object-left'
+                        ? 'h-8 w-auto max-w-[120px] object-contain object-left flex-shrink-0'
+                        : 'h-9 w-auto max-w-[140px] sm:h-10 object-contain object-left flex-shrink-0'
                 }
                 priority
             />
             <span
-                className={`font-bold text-brand-500 tracking-tight ${
-                    compact ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'
+                className={`font-bold text-brand-500 tracking-tight truncate ${
+                    compact ? 'text-base sm:text-lg' : 'text-base sm:text-xl'
                 }`}
             >
                 BacancyTeleCare

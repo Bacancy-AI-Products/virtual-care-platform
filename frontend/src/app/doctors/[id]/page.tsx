@@ -14,6 +14,7 @@ import {
     Loader2,
     LogIn,
     Calendar,
+    Search,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
@@ -68,8 +69,25 @@ export default function PublicDoctorProfilePage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
                     <PublicHeader bordered />
                 </div>
-                <div className="flex-1 flex items-center justify-center p-20">
-                    <p className="text-slate-500 font-bold">Doctor not found.</p>
+                <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-20">
+                    <div className="max-w-md w-full bg-white rounded-[40px] border border-slate-100 shadow-sm p-10 text-center">
+                        <div className="w-16 h-16 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                            <Search className="w-8 h-8 text-slate-400" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                            Doctor not found
+                        </h2>
+                        <p className="text-slate-500 font-medium mb-8">
+                            We couldn&apos;t load this profile. The doctor may no longer be
+                            available.
+                        </p>
+                        <Link
+                            href="/doctors"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-100 hover:bg-brand-600 transition-all active:scale-[0.98]"
+                        >
+                            <ChevronLeft className="w-5 h-5" /> Back to all doctors
+                        </Link>
+                    </div>
                 </div>
             </div>
         );

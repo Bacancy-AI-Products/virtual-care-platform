@@ -158,25 +158,32 @@ export function NotificationBell() {
                 </AnimatePresence>
             </button>
 
-            {/* Dropdown */}
+            {/* Dropdown — desktop: under bell. Mobile: fixed below header (no transform on fixed node — motion translate/scale breaks fixed + can zero-height flex). */}
             <AnimatePresence>
                 {open && (
                     <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.97 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.97 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-[min(22rem,calc(100vw-2rem))] sm:left-auto sm:right-0 sm:translate-x-0 sm:w-96 sm:max-w-lg z-50"
+                        key="notifications-panel"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.12 }}
+                        className="z-50 max-sm:fixed max-sm:left-3 max-sm:right-3 max-sm:top-[calc(5rem+0.375rem)] max-sm:max-h-[calc(100dvh-5.5rem)] max-sm:flex max-sm:flex-col max-sm:w-auto sm:absolute sm:top-full sm:mt-2 sm:left-auto sm:right-0 sm:w-96 sm:max-w-lg"
                     >
-                        <div className="mx-auto w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+                        <motion.div
+                            initial={{ y: 6, scale: 0.98 }}
+                            animate={{ y: 0, scale: 1 }}
+                            exit={{ y: 6, scale: 0.98 }}
+                            transition={{ duration: 0.12 }}
+                            className="mx-auto flex min-h-0 w-full max-w-md max-sm:flex-1 flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-2xl sm:shrink-0"
+                        >
                             {/* Header */}
-                            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-                                <div className="flex items-center gap-2">
-                                    <h3 className="text-sm font-bold text-slate-900">
+                            <div className="flex shrink-0 items-center justify-between gap-2 border-b border-slate-100 px-3 py-3 sm:px-4">
+                                <div className="flex min-w-0 items-center gap-2">
+                                    <h3 className="truncate text-sm font-bold text-slate-900">
                                         Notifications
                                     </h3>
                                     {unread > 0 && (
-                                        <span className="text-xs font-bold bg-red-100 text-red-500 px-2 py-0.5 rounded-full">
+                                        <span className="shrink-0 text-xs font-bold rounded-full bg-red-100 px-2 py-0.5 text-red-500">
                                             {unread} new
                                         </span>
                                     )}
@@ -184,15 +191,17 @@ export function NotificationBell() {
                                 {unread > 0 && (
                                     <button
                                         onClick={() => markAllMutation.mutate()}
-                                        className="flex items-center gap-1 text-xs text-brand-500 hover:text-brand-700 font-semibold transition-colors"
+                                        className="flex shrink-0 items-center gap-1 text-xs font-semibold whitespace-nowrap text-brand-500 transition-colors hover:text-brand-700"
                                     >
-                                        <CheckCheck className="w-3.5 h-3.5" /> Mark all read
+                                        <CheckCheck className="h-3.5 w-3.5 shrink-0" />{' '}
+                                        <span className="max-sm:hidden">Mark all read</span>
+                                        <span className="sm:hidden">All read</span>
                                     </button>
                                 )}
                             </div>
 
                             {/* List */}
-                            <div className="max-h-80 overflow-y-auto divide-y divide-slate-50">
+                            <div className="min-h-0 max-sm:flex-1 divide-y divide-slate-50 overflow-y-auto overscroll-contain sm:max-h-80 sm:flex-none">
                                 {notes.length === 0 ? (
                                     <div className="py-10 text-center">
                                         <Bell className="w-8 h-8 text-slate-200 mx-auto mb-2" />
@@ -219,7 +228,7 @@ export function NotificationBell() {
                                     </p>
                                 </div>
                             )}
-                        </div>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>

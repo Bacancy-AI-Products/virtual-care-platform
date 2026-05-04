@@ -221,10 +221,10 @@ export default function DoctorProfile() {
             transition={{ duration: 0.5 }}
             className="space-y-10"
         >
-            <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold text-slate-900">My Profile</h2>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">My Profile</h2>
                 {isEditing ? (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
                         <button
                             type="button"
                             onClick={() => {
@@ -247,7 +247,7 @@ export default function DoctorProfile() {
                                 setSelectedStateCode(match?.isoCode ?? '');
                                 setIsEditing(false);
                             }}
-                            className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-all"
+                            className="flex-1 sm:flex-none px-4 py-3 rounded-xl border border-slate-200 text-sm sm:text-base font-semibold text-slate-600 hover:bg-slate-50 transition-all whitespace-nowrap"
                             disabled={updateMutation.isPending}
                         >
                             Cancel
@@ -255,7 +255,7 @@ export default function DoctorProfile() {
                         <button
                             type="submit"
                             form="doctor-profile-form"
-                            className="px-6 py-3 bg-brand-500 text-white font-bold rounded-xl hover:bg-brand-600 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-60"
+                            className="flex-1 sm:flex-none px-6 py-3 bg-brand-500 text-white text-sm sm:text-base font-bold rounded-xl hover:bg-brand-600 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-60 whitespace-nowrap"
                             disabled={updateMutation.isPending}
                         >
                             <Edit className="w-4 h-4" /> Save Changes
@@ -265,7 +265,7 @@ export default function DoctorProfile() {
                     <button
                         type="button"
                         onClick={() => setIsEditing(true)}
-                        className="px-6 py-3 bg-brand-500 text-white font-bold rounded-xl hover:bg-brand-600 transition-all flex items-center gap-2 active:scale-95"
+                        className="w-full sm:w-auto px-6 py-3 bg-brand-500 text-white font-bold rounded-xl hover:bg-brand-600 transition-all flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap"
                     >
                         <Edit className="w-4 h-4" /> Edit Profile
                     </button>

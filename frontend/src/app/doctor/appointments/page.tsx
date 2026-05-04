@@ -619,7 +619,18 @@ export default function DoctorAppointments() {
             {/* Error */}
             {isError && (
                 <div className="p-12 bg-red-50 rounded-[40px] text-center">
-                    <p className="text-red-500 font-bold">Failed to load appointments.</p>
+                    <p className="text-red-500 font-bold mb-6">Failed to load appointments.</p>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            qClient.invalidateQueries({
+                                queryKey: ['appointments', 'doctor', 'all'],
+                            })
+                        }
+                        className="inline-flex items-center gap-2 px-5 py-3 bg-white text-red-600 font-bold rounded-2xl border border-red-200 hover:bg-red-50 transition-all active:scale-95"
+                    >
+                        <RotateCw className="w-4 h-4" /> Retry
+                    </button>
                 </div>
             )}
 

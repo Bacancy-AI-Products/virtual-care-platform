@@ -3,10 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Mail, ArrowRight, Stethoscope, Loader2 } from 'lucide-react';
+import { Mail, ArrowRight, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { authApi } from '@/services/api';
 import { BrandLogo } from '@/components/BrandLogo';
+import { AuthVisualPanel } from '@/components/AuthVisualPanel';
 
 function ForgotPasswordContent() {
     const searchParams = useSearchParams();
@@ -158,30 +159,17 @@ function ForgotPasswordContent() {
                 </motion.div>
             </div>
 
-            {/* Right Side - Visual */}
-            <div className="hidden lg:flex flex-1 bg-brand-600 relative overflow-hidden items-center justify-center p-24">
-                <div className="relative z-10 max-w-lg text-center">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-[32px] flex items-center justify-center mx-auto mb-12 border border-white/30">
-                            <Stethoscope className="text-white w-12 h-12" />
-                        </div>
-                        <h3 className="text-5xl font-bold text-white mb-8 leading-tight">
-                            Secure Account Recovery.
-                        </h3>
-                        <p className="text-xl text-brand-100 leading-relaxed">
-                            We&apos;ll help you get back into BacancyTeleCare safely. Reset your
-                            password and continue your care journey.
-                        </p>
-                    </motion.div>
-                </div>
-
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-900/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-            </div>
+            <AuthVisualPanel
+                title={
+                    <>
+                        Secure Account{' '}
+                        <span className="text-brand-500">Recovery.</span>
+                    </>
+                }
+                description="We'll help you get back into BacancyTeleCare safely. Reset your password and continue your care journey without missing a beat."
+                imageSrc="/auth-forgot.svg"
+                imageAlt="Padlock with floating key — recovering your account"
+            />
         </div>
     );
 }

@@ -13,9 +13,10 @@ import {
     Loader2,
     ChevronDown,
     XCircle,
+    RotateCw,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { doctorsApi, type DoctorSummary, type SpecializationOption } from '@/services/api';
 import { getStates, getCities } from '@/constants/us-locations';
 
@@ -96,6 +97,7 @@ function DoctorCard({
 
 function DoctorDiscoveryContent() {
     const router = useRouter();
+    const qClient = useQueryClient();
     const searchParams = useSearchParams();
     const [searchTerm, setSearchTerm] = React.useState('');
     const [selectedSpecialtyId, setSelectedSpecialtyId] = React.useState<string>('all');
@@ -306,9 +308,20 @@ function DoctorDiscoveryContent() {
 
                 {isError && (
                     <div className="p-6 sm:p-12 bg-red-50 rounded-3xl sm:rounded-[40px] text-center">
-                        <p className="text-red-500 font-bold">
+                        <p className="text-red-500 font-bold mb-6">
                             Failed to load doctors. Please try again.
                         </p>
+                        <button
+                            type="button"
+                            onClick={() =>
+                                qClient.invalidateQueries({
+                                    queryKey: ['doctors'],
+                                })
+                            }
+                            className="inline-flex items-center gap-2 px-5 py-3 bg-white text-red-600 font-bold rounded-2xl border border-red-200 hover:bg-red-50 transition-all active:scale-95"
+                        >
+                            <RotateCw className="w-4 h-4" /> Retry
+                        </button>
                     </div>
                 )}
 

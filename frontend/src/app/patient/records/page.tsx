@@ -12,9 +12,10 @@ import {
     ChevronDown,
     ChevronUp,
     CheckCircle2,
+    RotateCw,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import {
     prescriptionsApi,
@@ -316,6 +317,7 @@ function PrescriptionCard({
 
 export default function MedicalRecords() {
     const { token } = useAuth();
+    const qClient = useQueryClient();
     const [search, setSearch] = useState('');
 
     const { data, isLoading, isError } = useQuery({
@@ -397,7 +399,21 @@ export default function MedicalRecords() {
             {isError && (
                 <div className="p-12 bg-red-50 rounded-[32px] text-center">
                     <AlertCircle className="w-10 h-10 text-red-400 mx-auto mb-3" />
-                    <p className="text-red-600 font-bold">Failed to load records</p>
+                    <p className="text-red-600 font-bold mb-1">Failed to load records.</p>
+                    <p className="text-sm text-red-500/80 font-medium mb-6">
+                        Please check your connection and try again.
+                    </p>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            qClient.invalidateQueries({
+                                queryKey: ['prescriptions', 'mine', 50],
+                            })
+                        }
+                        className="inline-flex items-center gap-2 px-5 py-3 bg-white text-red-600 font-bold rounded-2xl border border-red-200 hover:bg-red-50 transition-all active:scale-95"
+                    >
+                        <RotateCw className="w-4 h-4" /> Retry
+                    </button>
                 </div>
             )}
 

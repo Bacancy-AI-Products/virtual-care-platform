@@ -3,10 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { ArrowRight, Eye, EyeOff, Loader2, Stethoscope } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { authApi } from '@/services/api';
 import { BrandLogo } from '@/components/BrandLogo';
+import { AuthVisualPanel } from '@/components/AuthVisualPanel';
 
 const PASSWORD_MAX_LENGTH = 128;
 
@@ -367,28 +368,17 @@ function ResetPasswordContent() {
                 </motion.div>
             </div>
 
-            <div className="hidden lg:flex flex-1 bg-brand-600 relative overflow-hidden items-center justify-center p-24">
-                <div className="relative z-10 max-w-lg text-center">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-[32px] flex items-center justify-center mx-auto mb-12 border border-white/30">
-                            <Stethoscope className="text-white w-12 h-12" />
-                        </div>
-                        <h3 className="text-5xl font-bold text-white mb-8 leading-tight">
-                            Set a New Password.
-                        </h3>
-                        <p className="text-xl text-brand-100 leading-relaxed">
-                            Create a strong password to secure your BacancyTeleCare account and
-                            continue safely.
-                        </p>
-                    </motion.div>
-                </div>
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-900/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-            </div>
+            <AuthVisualPanel
+                title={
+                    <>
+                        Set a{' '}
+                        <span className="text-brand-500">New Password.</span>
+                    </>
+                }
+                description="Create a strong password to secure your BacancyTeleCare account and continue safely. Your data stays encrypted at every step."
+                imageSrc="/auth-reset.svg"
+                imageAlt="Locked padlock with success check and password strength meter"
+            />
         </div>
     );
 }
