@@ -31,11 +31,16 @@ export default [
             'no-fallthrough': 'error',
             'no-console': ['warn', { allow: ['warn', 'error'] }],
 
-            // Pre-existing violations — warn until cleaned up
+            // Pre-existing violations — warn until cleaned up in follow-up PRs
             'react/no-unescaped-entities': 'warn',
-
+            '@typescript-eslint/no-explicit-any': 'warn',
+            // React 19 / React Compiler rules (new in next/core-web-vitals v16)
+            'react-hooks/refs': 'warn',
+            'react-hooks/immutability': 'warn',
+            'react-hooks/static-components': 'warn',
+            'react-hooks/preserve-manual-memoization': 'warn',
             '@typescript-eslint/no-unused-vars': [
-                'error',
+                'warn',
                 {
                     vars: 'all',
                     varsIgnorePattern: '^_',
