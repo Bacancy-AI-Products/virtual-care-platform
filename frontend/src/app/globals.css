@@ -1,49 +1,60 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-outfit), sans-serif;
+    --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    --font-display: var(--font-outfit), sans-serif;
 
-  /* Bacancy brand orange — primary #f58220 */
-  --color-brand-50: #fff8f4;
-  --color-brand-100: #ffecdd;
-  --color-brand-200: #ffd4b8;
-  --color-brand-300: #ffb380;
-  --color-brand-400: #f7933e;
-  --color-brand-500: #f58220;
-  --color-brand-600: #e06d10;
-  --color-brand-700: #bc5a0e;
-  --color-brand-800: #994a0f;
-  --color-brand-900: #7c3e10;
+    /* Bacancy brand orange — primary #f58220 */
+    --color-brand-50: #fff8f4;
+    --color-brand-100: #ffecdd;
+    --color-brand-200: #ffd4b8;
+    --color-brand-300: #ffb380;
+    --color-brand-400: #f7933e;
+    --color-brand-500: #f58220;
+    --color-brand-600: #e06d10;
+    --color-brand-700: #bc5a0e;
+    --color-brand-800: #994a0f;
+    --color-brand-900: #7c3e10;
 
-  --color-medical-teal: #14b8a6;
-  --color-medical-soft: #f0fdfa;
+    --color-medical-teal: #14b8a6;
+    --color-medical-soft: #f0fdfa;
 }
 
 @keyframes dialog-in {
-  from { opacity: 0; transform: scale(0.94) translateY(8px); }
-  to   { opacity: 1; transform: scale(1)    translateY(0);   }
+    from {
+        opacity: 0;
+        transform: scale(0.94) translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 @layer utilities {
-  .animate-dialog-in {
-    animation: dialog-in 0.18s ease-out forwards;
-  }
+    .animate-dialog-in {
+        animation: dialog-in 0.18s ease-out forwards;
+    }
 }
 
 @layer base {
-  body {
-    @apply font-sans text-slate-900 bg-slate-50;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
-  }
+    body {
+        @apply font-sans text-slate-900 bg-slate-50;
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-display;
+    }
 }
 
 .glass {
-  @apply bg-white/80 backdrop-blur-md border border-white/20;
+    @apply bg-white/80 backdrop-blur-md border border-white/20;
 }
 
 .card-hover {
-  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
 }

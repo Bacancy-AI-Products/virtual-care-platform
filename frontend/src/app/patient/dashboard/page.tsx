@@ -71,7 +71,13 @@ function StatCard({
 
 // ─── Upcoming appointment card ────────────────────────────────────────────────
 
-function UpcomingCard({ appt, specializationLabel }: { appt: Appointment; specializationLabel: string }) {
+function UpcomingCard({
+    appt,
+    specializationLabel,
+}: {
+    appt: Appointment;
+    specializationLabel: string;
+}) {
     return (
         <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between group">
             <div className="flex items-center gap-4">
@@ -121,9 +127,7 @@ export default function PatientDashboard() {
         enabled: !!token,
     });
 
-    const {
-        data: specializationData,
-    } = useQuery({
+    const { data: specializationData } = useQuery({
         queryKey: ['doctor', 'specializations'],
         queryFn: () => doctorsApi.getSpecializations(),
         staleTime: 1000 * 60 * 60,
@@ -308,8 +312,9 @@ export default function PatientDashboard() {
                                                     {appt.doctor.user.name}
                                                 </h4>
                                                 <p className="text-xs text-slate-500">
-                                                    {(specializationNameById.get(appt.doctor.specialization) ??
-                                                        appt.doctor.specialization)}{' '}
+                                                    {specializationNameById.get(
+                                                        appt.doctor.specialization,
+                                                    ) ?? appt.doctor.specialization}{' '}
                                                     •{' '}
                                                     {format(
                                                         new Date(appt.scheduledAt),

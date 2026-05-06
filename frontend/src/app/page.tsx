@@ -70,7 +70,8 @@ function FindDoctorsBlock() {
         const params = new URLSearchParams();
         if (stateCode) params.set('stateCode', stateCode);
         if (city) params.set('city', city);
-        if (selectedSpecialtyId && selectedSpecialtyId !== 'all') params.set('specialty', selectedSpecialtyId);
+        if (selectedSpecialtyId && selectedSpecialtyId !== 'all')
+            params.set('specialty', selectedSpecialtyId);
         router.push(`/doctors${params.toString() ? `?${params.toString()}` : ''}`);
     };
 
@@ -143,7 +144,9 @@ function FindDoctorsBlock() {
                                 disabled={isLoadingSpecializations || isErrorSpecializations}
                             >
                                 <option value="all">
-                                    {isLoadingSpecializations ? 'Loading specialties...' : 'All specialties'}
+                                    {isLoadingSpecializations
+                                        ? 'Loading specialties...'
+                                        : 'All specialties'}
                                 </option>
                                 {!isLoadingSpecializations &&
                                     !isErrorSpecializations &&

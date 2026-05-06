@@ -12,7 +12,7 @@ let emitFn: EmitFn | null = null;
  * payload to the user's Socket.io room (e.g. io.to('user:' + userId).emit('notification', payload)).
  */
 export function setNotificationEmitter(fn: EmitFn): void {
-  emitFn = fn;
+    emitFn = fn;
 }
 
 /**
@@ -21,5 +21,5 @@ export function setNotificationEmitter(fn: EmitFn): void {
  * so the client receives it immediately without polling.
  */
 export function emitToUser(userId: string, payload: object): void {
-  emitFn?.(userId, payload);
+    emitFn?.(userId, payload);
 }

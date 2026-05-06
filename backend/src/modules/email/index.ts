@@ -1,1 +1,1 @@
-export { sendEmail, sendPasswordReset } from "./email.service";
+export { sendEmail, sendPasswordReset } from './email.service';

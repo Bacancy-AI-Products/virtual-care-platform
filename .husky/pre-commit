@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#
+# Git pre-commit hook — runs lint-staged on staged frontend and backend files.
+# Auto-formats with Prettier and auto-fixes with ESLint.
+# Blocks commit if lint errors remain after auto-fix.
+#
+# To skip the hook for a single commit (rare, e.g. WIP):
+#   git commit --no-verify
+#
+
+set -e
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+
+# ── Frontend ──────────────────────────────────────────────────────────────────
+cd "$ROOT_DIR/frontend"
+
+if ! [ -d "node_modules/lint-staged" ]; then
+  echo "⚠  lint-staged not installed in frontend. Skipping frontend checks."
+  echo "   Run: cd frontend && npm install"
+else
+  npx lint-staged --concurrent false
+fi
+
+# ── Backend ───────────────────────────────────────────────────────────────────
+cd "$ROOT_DIR/backend"
+
+if ! [ -d "node_modules/lint-staged" ]; then
+  echo "⚠  lint-staged not installed in backend. Skipping backend checks."
+  echo "   Run: cd backend && npm install"
+else
+  npx lint-staged --concurrent false
+fi
