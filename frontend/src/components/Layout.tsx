@@ -30,6 +30,12 @@ function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
+const ROLE_HEADER_TAGLINE: Record<'patient' | 'doctor' | 'admin', string> = {
+    patient: 'Stay on top of appointments, records, and visits.',
+    doctor: 'Schedule, visits, and patient context in one place.',
+    admin: 'Monitor providers, patients, and platform activity.',
+};
+
 interface NavItem {
     to: string;
     icon: React.ElementType;
@@ -108,25 +114,37 @@ function SidebarItem({
     return (
         <Link
             href={to}
+            aria-current={active ? 'page' : undefined}
             onMouseEnter={() => PREFETCH_MAP[to]?.(qc)}
             onClick={() => {
                 setPending(true);
                 onClick?.();
             }}
             className={cn(
-                'group flex items-center gap-3 rounded-xl py-3 pl-4 pr-4 transition-all duration-200',
+                'group relative flex items-center gap-3 overflow-hidden rounded-xl px-3 text-sm transition-all duration-200 ease-out',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/35 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
                 isHighlighted
-                    ? 'bg-brand-500 text-white shadow-md shadow-brand-200'
-                    : 'border border-transparent text-slate-600 hover:border-brand-100 hover:bg-brand-50 hover:text-brand-700',
+                    ? 'py-3 font-semibold text-brand-900 bg-brand-100 shadow-[inset_0_0_0_1px_rgba(245,130,32,0.25)]'
+                    : 'py-2.5 font-medium text-slate-600 motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0',
+                !isHighlighted &&
+                    'hover:bg-white/75 hover:text-slate-900 hover:shadow-sm hover:shadow-slate-300/40',
             )}
         >
+            <span
+                className={cn(
+                    'absolute left-0 top-1/2 h-[72%] w-1 -translate-y-1/2 rounded-full bg-gradient-to-b from-medical-teal via-brand-400 to-brand-500 transition-[opacity,transform] duration-200',
+                    isHighlighted ? 'opacity-90 scale-y-100' : 'opacity-0 scale-y-50',
+                )}
+                aria-hidden
+            />
             <Icon
                 className={cn(
-                    'h-5 w-5 shrink-0',
-                    isHighlighted ? 'text-white' : 'text-slate-400 group-hover:text-brand-500',
+                    'relative z-[1] h-5 w-5 shrink-0 transition-transform duration-200 motion-safe:group-hover:scale-[1.05]',
+                    isHighlighted ? 'text-brand-700' : 'text-slate-400 group-hover:text-brand-600/90',
                 )}
+                aria-hidden
             />
-            <span className="font-medium">{label}</span>
+            <span className="relative z-[1] min-w-0 flex-1 leading-snug">{label}</span>
         </Link>
     );
 }
@@ -143,6 +161,7 @@ export const Layout = ({ children, role }: LayoutProps) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
     const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
     const [isHydrated, setIsHydrated] = React.useState(false);
+    const [headerDate, setHeaderDate] = React.useState<{ line: string; iso: string } | null>(null);
 
     const navItems = role === 'patient' ? patientNav : role === 'doctor' ? doctorNav : adminNav;
 
@@ -150,8 +169,30 @@ export const Layout = ({ children, role }: LayoutProps) => {
         setIsHydrated(true);
     }, []);
 
+    React.useEffect(() => {
+        const d = new Date();
+        setHeaderDate({
+            iso: d.toISOString().slice(0, 10),
+            line: new Intl.DateTimeFormat(undefined, {
+                weekday: 'long',
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+            }).format(d),
+        });
+    }, []);
+
+    const dashboardPath = `/${role}/dashboard`;
+    const brandLogoHref =
+        role === 'patient'
+            ? '/patient/dashboard'
+            : role === 'doctor'
+              ? '/doctor/dashboard'
+              : '/admin/dashboard';
+
     const displayName = isHydrated && user?.name ? user.name : 'Loading...';
     const avatarSeed = isHydrated && user?.id ? user.id : 'default';
+    const isOnDashboard = pathname === dashboardPath;
 
     const { data: me } = useQuery({
         queryKey: ['users', 'me'],
@@ -216,32 +257,51 @@ export const Layout = ({ children, role }: LayoutProps) => {
         router.push('/login');
     }
 
-    const Sidebar = () => (
-        <>
-            <div className="mb-3 shrink-0 px-2">
-                <div className="flex min-h-20 items-center pt-3">
-                    <BrandLogo />
-                </div>
-                <div
-                    className="mt-3 h-px w-full bg-gradient-to-r from-brand-200/0 via-brand-200/50 to-brand-200/0"
-                    aria-hidden
-                />
-            </div>
+    const sidebarLogoRow = (
+        <div className="-mx-4 mb-3 flex h-[66px] shrink-0 items-center px-4">
+            <BrandLogo href={brandLogoHref} />
+        </div>
+    );
 
-            <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto no-scrollbar">
+    const Sidebar = ({
+        header,
+        onNavClick,
+    }: {
+        header?: React.ReactNode;
+        onNavClick?: () => void;
+    } = {}) => (
+        <>
+            {header ?? sidebarLogoRow}
+
+            <nav
+                className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto no-scrollbar pb-1"
+                aria-label="Primary"
+            >
                 {navItems.map((item) => (
-                    <SidebarItem key={item.to} {...item} active={pathname === item.to} />
+                    <SidebarItem
+                        key={item.to}
+                        {...item}
+                        active={pathname === item.to}
+                        onClick={onNavClick}
+                    />
                 ))}
             </nav>
 
-            <div className="shrink-0 border-t border-brand-100 pt-6">
+            <div className="shrink-0 border-t border-slate-200/70 pt-3">
                 <button
                     type="button"
                     onClick={handleLogout}
-                    className="group flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-600 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
+                    className="group flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-left text-sm font-medium text-slate-600 transition-all duration-200 hover:border-red-100 hover:bg-red-50/90 hover:text-red-700 motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0"
                 >
-                    <LogOut className="h-5 w-5 text-slate-400 transition-colors group-hover:text-red-500" />
-                    <span className="font-medium">Logout</span>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100/90 text-slate-500 transition-colors group-hover:bg-red-100 group-hover:text-red-600">
+                        <LogOut className="h-[18px] w-[18px]" aria-hidden />
+                    </span>
+                    <span className="flex min-w-0 flex-col">
+                        <span className="leading-tight">Sign out</span>
+                        <span className="text-[11px] font-normal text-slate-400 group-hover:text-red-500/90">
+                            End your session securely
+                        </span>
+                    </span>
                 </button>
             </div>
         </>
@@ -250,84 +310,99 @@ export const Layout = ({ children, role }: LayoutProps) => {
     return (
         <div className="min-h-screen bg-slate-50 flex w-full max-w-full overflow-x-hidden">
             {/* Sidebar — Desktop */}
-            <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 shrink-0 flex-col overflow-hidden border-r border-slate-200/85 border-t-[3px] border-t-brand-500 bg-gradient-to-b from-white via-brand-50/30 to-brand-50/50 lg:flex lg:flex-col">
+            <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 shrink-0 flex-col overflow-hidden border-r border-slate-200/80 bg-white/95 shadow-[6px_0_32px_-18px_rgba(15,23,42,0.12)] backdrop-blur-md lg:flex lg:flex-col">
                 <div
-                    className="pointer-events-none absolute bottom-0 left-0 top-0 w-1 bg-gradient-to-b from-brand-400 via-brand-500 to-brand-700"
+                    className="pointer-events-none absolute bottom-0 left-0 top-0 w-1 bg-gradient-to-b from-medical-teal via-brand-400 to-brand-500"
                     aria-hidden
                 />
                 <SidebarDecoration />
-                <div className="relative z-10 flex min-h-0 flex-1 flex-col pb-6 pl-[1.125rem] pr-5 pt-0">
+                <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pb-4 pt-0">
                     <Sidebar />
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 lg:ml-72 min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
-                {/* Header */}
-                <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200 bg-white/80 px-6 pt-3 backdrop-blur-md lg:px-10">
+            <main className="flex min-h-screen w-full min-w-0 max-w-full flex-1 flex-col overflow-x-hidden pt-[66px] lg:ml-72">
+                {/* Fixed within content column — desktop aligns with lg:ml-72 sidebar */}
+                <header className="fixed left-0 right-0 top-0 z-[38] flex h-[66px] shrink-0 items-center justify-between gap-3 border-b border-slate-200/80 bg-white/92 px-4 shadow-[0_4px_28px_-10px_rgba(15,23,42,0.1)] backdrop-blur-xl sm:px-6 lg:left-72 lg:gap-6 lg:px-10">
+                    <span
+                        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-medical-teal/0 via-brand-400/50 to-medical-teal/0"
+                        aria-hidden
+                    />
                     <button
-                        className="lg:hidden p-2 text-slate-600"
+                        type="button"
+                        className="lg:hidden flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200/90 bg-white text-slate-700 shadow-sm ring-1 ring-slate-100/90 transition-colors hover:border-brand-200 hover:bg-brand-50/70 hover:text-brand-800 active:scale-[0.98]"
                         onClick={() => setIsMobileMenuOpen(true)}
+                        aria-label="Open menu"
                     >
-                        <Menu className="w-6 h-6" />
+                        <Menu className="h-5 w-5" aria-hidden />
                     </button>
 
-                    <div className="flex-1 hidden lg:block">
-                        <h1 className="text-xl font-semibold text-slate-800 capitalize">
-                            {(() => {
-                                const segments = pathname.split('/').filter(Boolean);
-                                if (segments.length === 0) return 'dashboard';
-                                const last = segments[segments.length - 1];
-                                const secondLast = segments[segments.length - 2];
-                                const isUuidLike = /^[0-9a-fA-F-]{8,}$/.test(last);
-                                const raw = isUuidLike && secondLast ? secondLast : last;
-                                return raw.replace(/-/g, ' ');
-                            })()}
-                        </h1>
+                    <div className="min-w-0 flex-1 leading-tight">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
+                            <time
+                                dateTime={headerDate?.iso}
+                                className="text-sm font-semibold text-slate-800"
+                                suppressHydrationWarning
+                            >
+                                {headerDate?.line ?? '\u00a0'}
+                            </time>
+                            {!isOnDashboard && (
+                                <Link
+                                    href={dashboardPath}
+                                    className="text-xs font-semibold text-brand-600 transition-colors hover:text-brand-800"
+                                >
+                                    Overview
+                                </Link>
+                            )}
+                        </div>
+                        <p className="mt-0.5 hidden truncate text-xs leading-snug text-slate-500 sm:block">
+                            {ROLE_HEADER_TAGLINE[role]}
+                        </p>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex min-w-0 shrink items-center gap-1.5 sm:gap-3">
                         <NotificationBell />
-                        <div className="h-10 w-px bg-slate-200 mx-2" />
-                        <div className="flex items-center gap-3">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    if (role === 'patient') {
-                                        router.push('/patient/profile');
-                                    } else if (role === 'doctor') {
-                                        router.push('/doctor/profile');
-                                    } else {
-                                        router.push('/admin/dashboard');
+                        <button
+                            type="button"
+                            onClick={() => {
+                                if (role === 'patient') {
+                                    router.push('/patient/profile');
+                                } else if (role === 'doctor') {
+                                    router.push('/doctor/profile');
+                                } else {
+                                    router.push('/admin/dashboard');
+                                }
+                            }}
+                            className="group flex min-w-0 max-w-[min(11.5rem,calc(100vw-9.5rem))] items-center gap-2 rounded-full border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/95 py-1.5 pl-2.5 pr-1 shadow-sm shadow-slate-200/35 ring-1 ring-white/90 transition-[border-color,box-shadow] hover:border-brand-200/95 hover:shadow-md hover:shadow-brand-100/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 focus-visible:ring-offset-2 sm:max-w-none sm:py-1 sm:pl-4"
+                            aria-label="Open profile"
+                        >
+                            <div className="min-w-0 flex-1 text-left sm:text-right">
+                                <p className="truncate text-xs font-semibold leading-tight text-slate-900 sm:text-sm">
+                                    {displayName}
+                                </p>
+                                <p className="truncate text-[10px] font-medium capitalize leading-tight text-slate-500 sm:text-[11px]">
+                                    {role}
+                                </p>
+                            </div>
+                            <div className="relative h-10 w-10 shrink-0 rounded-full shadow-md shadow-slate-400/25 ring-2 ring-white transition-transform group-hover:ring-brand-100/80 sm:h-9 sm:w-9">
+                                <Image
+                                    src={
+                                        avatarUrl ??
+                                        `https://picsum.photos/seed/${avatarSeed}/100/100`
                                     }
-                                }}
-                                className="flex items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-full"
-                            >
-                                <div className="text-right hidden sm:block">
-                                    <p className="text-sm font-semibold text-slate-900">
-                                        {displayName}
-                                    </p>
-                                    <p className="text-xs text-slate-500 capitalize">{role}</p>
-                                </div>
-                                <div className="relative w-10 h-10">
-                                    <Image
-                                        src={
-                                            avatarUrl ??
-                                            `https://picsum.photos/seed/${avatarSeed}/100/100`
-                                        }
-                                        alt="Avatar"
-                                        fill
-                                        className="rounded-full border-2 border-white shadow-sm object-cover"
-                                        referrerPolicy="no-referrer"
-                                    />
-                                </div>
-                            </button>
-                        </div>
+                                    alt="Avatar"
+                                    fill
+                                    className="rounded-full object-cover"
+                                    referrerPolicy="no-referrer"
+                                />
+                            </div>
+                        </button>
                     </div>
                 </header>
 
                 {/* Page Content */}
-                <div className="px-4 py-6 sm:px-6 lg:px-10 lg:py-10 flex-1 w-full max-w-full overflow-x-hidden">
+                <div className="w-full min-w-0 max-w-full flex-1 overflow-x-hidden px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
                     {children}
                 </div>
             </main>
@@ -339,44 +414,29 @@ export const Layout = ({ children, role }: LayoutProps) => {
                         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
                         onClick={() => setIsMobileMenuOpen(false)}
                     />
-                    <aside className="absolute inset-y-0 left-0 flex max-h-full w-[min(24rem,calc(100vw-1.5rem))] flex-col overflow-hidden border-l-[3px] border-t-[3px] border-l-brand-600 border-t-brand-500 bg-gradient-to-b from-white via-brand-50/25 to-brand-50/45 shadow-2xl">
-                        <div className="flex min-h-0 flex-1 flex-col px-6 pb-6 pt-0">
-                            <div className="mb-3 shrink-0 px-2">
-                                <div className="flex min-h-20 items-center justify-between gap-2 pt-3">
-                                    <BrandLogo />
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                        className="rounded-lg p-2 text-slate-400 hover:bg-brand-50 hover:text-brand-800"
-                                    >
-                                        <X className="h-6 w-6" />
-                                    </button>
-                                </div>
-                                <div
-                                    className="mt-3 h-px bg-gradient-to-r from-brand-200/0 via-brand-200/50 to-brand-200/0"
-                                    aria-hidden
-                                />
-                            </div>
-                            <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto no-scrollbar">
-                                {navItems.map((item) => (
-                                    <SidebarItem
-                                        key={item.to}
-                                        {...item}
-                                        active={pathname === item.to}
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                    />
-                                ))}
-                            </nav>
-                            <div className="shrink-0 border-t border-brand-100 pt-6">
-                                <button
-                                    type="button"
-                                    onClick={handleLogout}
-                                    className="group flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-600 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
-                                >
-                                    <LogOut className="h-5 w-5 text-slate-400 transition-colors group-hover:text-red-500" />
-                                    <span className="font-medium">Logout</span>
-                                </button>
-                            </div>
+                    <aside className="absolute inset-y-0 left-0 flex max-h-full w-[min(20.5rem,calc(100vw-1.25rem))] flex-col overflow-hidden border-l-[3px] border-l-medical-teal bg-white/95 shadow-[6px_0_40px_-22px_rgba(15,23,42,0.2)] backdrop-blur-md">
+                        <div
+                            className="pointer-events-none absolute bottom-0 left-0 top-0 w-1 bg-gradient-to-b from-medical-teal via-brand-400 to-brand-500 opacity-90"
+                            aria-hidden
+                        />
+                        <SidebarDecoration />
+                        <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pb-4 pt-0">
+                            <Sidebar
+                                header={
+                                    <div className="-mx-4 mb-3 flex h-[66px] shrink-0 items-center justify-between gap-2 px-4">
+                                        <BrandLogo href={brandLogoHref} />
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-white text-slate-600 shadow-sm transition-colors hover:border-brand-200 hover:bg-brand-50/80 hover:text-brand-800"
+                                            aria-label="Close menu"
+                                        >
+                                            <X className="h-5 w-5" aria-hidden />
+                                        </button>
+                                    </div>
+                                }
+                                onNavClick={() => setIsMobileMenuOpen(false)}
+                            />
                         </div>
                     </aside>
                 </div>

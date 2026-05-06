@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { doctorsApi, type AvailabilitySlot, type AvailabilitySlotInput } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { Clock, Calendar, Plus, Trash2 } from 'lucide-react';
+import { NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -118,7 +119,7 @@ export default function DoctorAvailabilityPage() {
         >
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                 <div className="min-w-0">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-1">
+                    <h2 className="mb-1 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
                         Availability
                     </h2>
                     <p className="text-sm sm:text-base text-slate-500 font-medium">
@@ -189,6 +190,7 @@ export default function DoctorAvailabilityPage() {
                                                             'startTime',
                                                         )}
                                                         className="w-full max-w-[150px] px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium"
+                                                        {...NO_BROWSER_INPUT_HELPERS}
                                                     />
                                                     <span className="text-xs text-slate-400">
                                                         to
@@ -202,6 +204,7 @@ export default function DoctorAvailabilityPage() {
                                                             'endTime',
                                                         )}
                                                         className="w-full max-w-[150px] px-3 py-2 rounded-lg border border-slate-200 text-xs font-medium"
+                                                        {...NO_BROWSER_INPUT_HELPERS}
                                                     />
                                                 </div>
                                             </div>
@@ -220,6 +223,7 @@ export default function DoctorAvailabilityPage() {
                                                             'slotDuration',
                                                         )}
                                                         className="w-20 px-2 py-1 rounded-lg border border-slate-200 text-xs font-medium"
+                                                        {...NO_BROWSER_INPUT_HELPERS}
                                                     />
                                                     <span className="text-[10px] text-slate-400">
                                                         min

@@ -15,6 +15,7 @@ import {
     type Prescription,
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
+import { FORM_CONTROL_SEARCH_ON_WHITE, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
 // ─── Derive unique patients from appointment list ─────────────────────────────
 
@@ -108,7 +109,9 @@ export default function DoctorPatients() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h2 className="text-3xl font-bold text-slate-900 mb-2">Patient Records</h2>
+                    <h2 className="mb-2 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+                        Patient Records
+                    </h2>
                     <p className="text-slate-500 font-medium">
                         {isLoading
                             ? 'Loading...'
@@ -118,13 +121,14 @@ export default function DoctorPatients() {
 
                 {/* Search */}
                 <div className="relative w-full md:w-72">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                         type="text"
                         placeholder="Search patients..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-white border-2 border-slate-100 rounded-2xl focus:border-brand-500 focus:bg-white outline-none transition-all font-medium text-sm"
+                        className={FORM_CONTROL_SEARCH_ON_WHITE}
+                        {...NO_BROWSER_INPUT_HELPERS}
                     />
                 </div>
             </div>

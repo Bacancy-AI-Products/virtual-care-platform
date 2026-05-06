@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Search, Filter, MoreVertical, Mail, Phone, History, FileText } from 'lucide-react';
 import { motion } from 'motion/react';
+import { FORM_CONTROL_SEARCH, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
 const MOCK_PATIENTS = [
     {
@@ -68,7 +69,9 @@ export default function AdminPatients() {
         >
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h2 className="text-3xl font-bold text-slate-900 mb-2">Manage Patients</h2>
+                    <h2 className="mb-2 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+                        Manage Patients
+                    </h2>
                     <p className="text-slate-500 font-medium">
                         View and manage all registered patients on the platform.
                     </p>
@@ -78,14 +81,15 @@ export default function AdminPatients() {
             {/* Search & Filter */}
             <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-col md:flex-row gap-4 items-center">
                 <div className="flex-1 w-full relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
                     <input
                         type="text"
                         placeholder="Search by name, email, or phone..."
-                        className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-brand-500 outline-none transition-all font-medium"
+                        className={`${FORM_CONTROL_SEARCH} max-w-full`}
+                        {...NO_BROWSER_INPUT_HELPERS}
                     />
                 </div>
-                <button className="w-full md:w-auto px-6 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all flex items-center justify-center gap-2">
+                <button className="w-full md:w-auto px-6 py-[19px] bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all flex items-center justify-center gap-2">
                     <Filter className="w-5 h-5" /> Filter
                 </button>
             </div>

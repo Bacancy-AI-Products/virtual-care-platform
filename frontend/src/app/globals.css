@@ -31,9 +31,26 @@
     }
 }
 
+/** Landing “How it works” journey — CSS only, one path; cheap vs JS motion */
+@keyframes journey-dash-march {
+    to {
+        stroke-dashoffset: -40;
+    }
+}
+
 @layer utilities {
     .animate-dialog-in {
         animation: dialog-in 0.18s ease-out forwards;
+    }
+
+    .animate-journey-dash {
+        animation: journey-dash-march 2.6s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .animate-journey-dash {
+            animation: none;
+        }
     }
 
     .no-scrollbar {
@@ -55,7 +72,7 @@
     h4,
     h5,
     h6 {
-        @apply font-display;
+        @apply font-sans font-semibold;
     }
 
     button:not(:disabled),

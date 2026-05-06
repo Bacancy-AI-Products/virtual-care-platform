@@ -26,6 +26,7 @@ import {
     type AvailabilitySlot,
     type SpecializationOption,
 } from '@/services/api';
+import { FORM_CONTROL_GHOST, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
 // ─── Slot helpers ─────────────────────────────────────────────────────────────
 
@@ -221,7 +222,7 @@ export default function DoctorProfilePage() {
 
                             <div className="flex-1 min-w-0 w-full text-center md:text-left">
                                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-3 lg:gap-4 mb-2 sm:mb-3">
-                                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
+                                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900">
                                         {doctor.user.name}
                                     </h2>
                                     <div className="flex items-center gap-1 text-amber-500 bg-amber-50 px-2.5 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold">
@@ -407,9 +408,10 @@ export default function DoctorProfilePage() {
                             <textarea
                                 rows={2}
                                 placeholder="Brief description of your concern..."
-                                className="w-full px-4 py-3 bg-slate-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-brand-500 outline-none transition-all text-sm font-medium resize-none"
+                                className={`${FORM_CONTROL_GHOST} resize-none`}
                                 value={reason}
                                 onChange={(e) => setReason(e.target.value)}
+                                {...NO_BROWSER_INPUT_HELPERS}
                             />
                         </div>
 
@@ -440,7 +442,7 @@ export default function DoctorProfilePage() {
                                 bookMutation.mutate();
                             }}
                             disabled={!selectedSlot || bookMutation.isPending}
-                            className={`w-full py-5 rounded-[24px] font-bold text-lg shadow-xl transition-all flex items-center justify-center gap-3 active:scale-95 ${
+                            className={`w-full py-[23px] rounded-2xl font-bold text-lg shadow-xl transition-all flex items-center justify-center gap-3 active:scale-95 ${
                                 !selectedSlot
                                     ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
                                     : 'bg-brand-500 text-white shadow-brand-100 hover:bg-brand-600'

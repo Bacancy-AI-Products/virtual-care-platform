@@ -52,7 +52,7 @@ function StatCard({
             <p className="text-[11px] sm:text-sm font-bold text-slate-400 uppercase tracking-widest mb-1 sm:mb-1.5">
                 {label}
             </p>
-            <p className="text-2xl sm:text-3xl font-bold text-slate-900">{value}</p>
+            <p className="text-xl sm:text-2xl font-bold text-slate-900">{value}</p>
         </div>
     );
 }
@@ -150,8 +150,8 @@ export default function DoctorDashboard() {
             {/* Welcome */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
                 <div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-1.5 sm:mb-2">
-                        Welcome back, {formatDoctorDisplayName(user?.name)} 👋
+                    <h2 className="mb-1.5 text-xl font-bold tracking-tight text-slate-900 sm:mb-2 sm:text-2xl">
+                        Welcome back, {formatDoctorDisplayName(user?.name)}
                     </h2>
                     <p className="text-sm sm:text-base text-slate-500 font-medium">
                         {isLoading
@@ -193,7 +193,7 @@ export default function DoctorDashboard() {
                 {/* Today's Appointments */}
                 <div className="lg:col-span-2 space-y-6 lg:space-y-8">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 px-1 sm:px-2">
-                        <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
+                        <h3 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
                             Today&apos;s Appointments
                         </h3>
                         <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
@@ -230,7 +230,7 @@ export default function DoctorDashboard() {
 
                 {/* Recent Patients */}
                 <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm">
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-6 sm:mb-8">
+                    <h3 className="mb-6 text-xl font-bold tracking-tight text-slate-900 sm:mb-8 sm:text-2xl">
                         Recent Patients
                     </h3>
                     {isLoading ? (

@@ -1,48 +1,16 @@
 'use client';
 
-import { useId } from 'react';
-
-/** Soft brand-orange healthcare motif behind desktop sidebar (matches Bacancy TeleCare theme). */
+/** Background layers aligned with the landing page (grid + soft teal / brand wash). */
 export function SidebarDecoration() {
-    const uid = useId();
-    const paperId = `${uid}-sidebar-paper`;
-
     return (
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
-            <div className="absolute inset-0 bg-[radial-gradient(115%_75%_at_100%_0%,rgba(245,130,32,0.14),transparent_52%),radial-gradient(85%_55%_at_-5%_100%,rgba(255,200,150,0.12),transparent_48%)]" />
-            <svg
-                className="absolute inset-0 h-full w-full opacity-90"
-                viewBox="0 0 288 720"
-                preserveAspectRatio="xMidYMid slice"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-            >
-                <defs>
-                    <pattern
-                        id={paperId}
-                        width="48"
-                        height="48"
-                        patternUnits="userSpaceOnUse"
-                    >
-                        <path
-                            d="M0 24h48M24 0v48"
-                            stroke="#f58220"
-                            strokeOpacity="0.055"
-                            strokeWidth="0.5"
-                        />
-                    </pattern>
-                </defs>
-                <rect width="288" height="720" fill={`url(#${paperId})`} />
-                <path
-                    d="M-24 512H28L38 478L48 548L58 500H92L102 468L114 556L124 508H168L182 482L190 540L198 498H248L260 472L272 552L282 502H340"
-                    stroke="#e06d10"
-                    strokeOpacity="0.14"
-                    strokeWidth="1.75"
-                    strokeLinecap="square"
-                    strokeLinejoin="miter"
-                    fill="none"
-                />
-            </svg>
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-400/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white via-medical-soft/25 to-white" />
+            <div
+                className="absolute inset-0 opacity-[0.3] bg-[linear-gradient(to_right,rgb(148_163_184_/_0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgb(148_163_184_/_0.06)_1px,transparent_1px)] bg-[size:48px_48px]"
+                aria-hidden
+            />
+            <div className="absolute inset-0 bg-[radial-gradient(115%_75%_at_100%_0%,rgba(245,130,32,0.07),transparent_52%),radial-gradient(85%_55%_at_-5%_100%,rgba(20,184,166,0.06),transparent_48%)]" />
         </div>
     );
 }

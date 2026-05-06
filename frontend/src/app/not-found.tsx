@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Compass, Home, Search } from 'lucide-react';
+import { Compass, ChevronLeft, Search } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 
 export default function NotFound() {
@@ -20,7 +20,7 @@ export default function NotFound() {
                     <p className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-3">
                         Error 404
                     </p>
-                    <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
                         We couldn&apos;t find that page
                     </h1>
                     <p className="text-slate-500 font-medium mb-10 max-w-md mx-auto leading-relaxed">
@@ -31,9 +31,10 @@ export default function NotFound() {
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <Link
                             href="/"
-                            className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-100 hover:bg-brand-600 transition-all active:scale-[0.98]"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-100 hover:bg-brand-600 transition-all active:scale-[0.98] group"
                         >
-                            <Home className="w-5 h-5" /> Back to home
+                            <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
+                            Back to home
                         </Link>
                         <Link
                             href="/doctors"

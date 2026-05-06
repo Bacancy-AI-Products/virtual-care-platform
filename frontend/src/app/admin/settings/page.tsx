@@ -43,7 +43,9 @@ export default function AdminSettings() {
             className="max-w-4xl mx-auto space-y-10"
         >
             <div>
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">Platform Settings</h2>
+                <h2 className="mb-2 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+                    Platform Settings
+                </h2>
                 <p className="text-slate-500 font-medium">
                     Configure global platform parameters and security.
                 </p>

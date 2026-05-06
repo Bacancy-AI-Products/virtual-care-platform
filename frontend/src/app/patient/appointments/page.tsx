@@ -249,7 +249,7 @@ export default function PatientAppointments() {
         >
             <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-center md:justify-between">
                 <div className="min-w-0">
-                    <h2 className="mb-1.5 text-2xl font-bold text-slate-900 sm:mb-2 sm:text-3xl">
+                    <h2 className="mb-1.5 text-xl font-bold tracking-tight text-slate-900 sm:mb-2 sm:text-2xl">
                         My Appointments
                     </h2>
                     <p className="text-sm font-medium text-slate-500 sm:text-base">

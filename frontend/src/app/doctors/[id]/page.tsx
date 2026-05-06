@@ -133,7 +133,7 @@ export default function PublicDoctorProfilePage() {
 
                             <div className="flex-1 min-w-0">
                                 <div className="flex flex-wrap items-center gap-3 mb-2">
-                                    <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">
+                                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
                                         {doctor.user.name}
                                     </h1>
                                     <div className="flex items-center gap-1 text-amber-500 bg-amber-50 px-3 py-1 rounded-full text-sm font-bold">
@@ -200,7 +200,7 @@ export default function PublicDoctorProfilePage() {
                                 <p className="text-2xl font-bold text-slate-900 mb-1">
                                     Consultation Fee
                                 </p>
-                                <p className="text-3xl font-bold text-brand-600">
+                                <p className="text-2xl font-bold text-brand-600">
                                     {doctor.consultationFee
                                         ? `$${Number(doctor.consultationFee).toFixed(0)}`
                                         : 'Free'}

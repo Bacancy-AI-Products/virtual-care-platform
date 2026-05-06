@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { AlertTriangle, Home, RotateCw } from 'lucide-react';
+import { AlertTriangle, ChevronLeft, RotateCw } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 
 export default function GlobalError({
@@ -31,7 +31,7 @@ export default function GlobalError({
                     <p className="text-xs font-bold text-red-500 uppercase tracking-widest mb-3">
                         Something went wrong
                     </p>
-                    <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
                         We hit an unexpected error
                     </h1>
                     <p className="text-slate-500 font-medium mb-8 max-w-md mx-auto leading-relaxed">
@@ -55,9 +55,10 @@ export default function GlobalError({
                         </button>
                         <Link
                             href="/"
-                            className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-white text-slate-700 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all active:scale-[0.98]"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-white text-slate-700 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all active:scale-[0.98] group"
                         >
-                            <Home className="w-5 h-5" /> Back to home
+                            <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
+                            Back to home
                         </Link>
                     </div>
                 </div>

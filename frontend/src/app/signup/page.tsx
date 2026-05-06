@@ -3,12 +3,21 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, ArrowRight, ChevronLeft, Loader2 } from 'lucide-react';
-import { motion } from 'motion/react';
+import { Mail, Lock, User, Stethoscope, ArrowRight, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { authApi } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
+import clsx from 'clsx';
 import { BrandLogo } from '@/components/BrandLogo';
 import { AuthVisualPanel } from '@/components/AuthVisualPanel';
+import { BackToHomeLink } from '@/components/BackToHomeLink';
+import {
+    FORM_CONTROL_CLASS,
+    FORM_CONTROL_LEADING_ICON,
+    FORM_SELECT_CLASS,
+    FORM_AUTH_PRIMARY_BUTTON,
+    NO_BROWSER_INPUT_HELPERS,
+} from '@/constants/form-controls';
 
 const COUNTRY_OPTIONS = [
     '+1 (USA)',
@@ -29,9 +38,44 @@ const COUNTRY_OPTIONS = [
     '+91 (IND)',
 ];
 
+const ROLE_TOGGLE_SPRING = {
+    type: 'spring' as const,
+    stiffness: 520,
+    damping: 30,
+    mass: 0.72,
+};
+
 export default function SignupPage() {
     const router = useRouter();
+    const prefersReducedMotion = useReducedMotion();
+    const toggleTransition = prefersReducedMotion ? { duration: 0 } : ROLE_TOGGLE_SPRING;
     const [role, setRole] = React.useState<'patient' | 'doctor'>('patient');
+    const prevRoleRef = React.useRef<'patient' | 'doctor' | null>(null);
+    const [toggleBurstId, setToggleBurstId] = React.useState(0);
+
+    React.useEffect(() => {
+        if (prevRoleRef.current !== null && prevRoleRef.current !== role) {
+            setToggleBurstId((n) => n + 1);
+        }
+        prevRoleRef.current = role;
+    }, [role]);
+
+    const pillInnerKey =
+        prefersReducedMotion || toggleBurstId === 0
+            ? 'pill-static'
+            : `burst-${toggleBurstId}`;
+
+    /** Replay icon nudge when burst or segment identity changes */
+    const patientIconKey = `patient-icon-${toggleBurstId}-${role}`;
+    const doctorIconKey = `doctor-icon-${toggleBurstId}-${role}`;
+    const iconNudgeTransition =
+        prefersReducedMotion || toggleBurstId === 0
+            ? { duration: 0 }
+            : {
+                  duration: 0.42,
+                  times: [0, 0.28, 0.62, 1],
+                  ease: [0.22, 1, 0.36, 1] as const,
+              };
 
     const [fullName, setFullName] = React.useState('');
     const [countryCode, setCountryCode] = React.useState('+1 (USA)');
@@ -110,29 +154,17 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+        <div className="min-h-screen lg:min-h-0 lg:h-dvh lg:max-h-dvh lg:overflow-hidden bg-slate-50 flex flex-col lg:flex-row">
             {/* Left Side - Form */}
-            <div className="flex-1 flex flex-col px-6 py-6 lg:py-12 lg:px-24 bg-white relative overflow-hidden">
+            <div className="flex-1 flex flex-col min-h-0 px-6 py-6 lg:py-12 lg:px-24 bg-white relative lg:overflow-y-auto">
                 {/* Mobile top bar */}
-                <div className="flex items-center justify-between lg:hidden mb-6">
-                    <Link
-                        href="/"
-                        className="flex items-center gap-2 text-slate-500 hover:text-brand-500 transition-colors font-semibold group"
-                    >
-                        <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                        Back
-                    </Link>
+                <div className="flex items-center justify-between lg:hidden mb-6 shrink-0">
+                    <BackToHomeLink className="lg:hidden">Back</BackToHomeLink>
                     <BrandLogo />
                 </div>
 
                 {/* Desktop back button */}
-                <Link
-                    href="/"
-                    className="hidden lg:flex absolute top-8 left-8 items-center gap-2 text-slate-500 hover:text-brand-500 transition-colors font-semibold group"
-                >
-                    <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                    Back to Home
-                </Link>
+                <BackToHomeLink desktopFixed>Back to home</BackToHomeLink>
 
                 <div className="flex-1 flex flex-col justify-center">
                     <motion.div
@@ -146,54 +178,218 @@ export default function SignupPage() {
                             <BrandLogo />
                         </div>
 
-                        <h2 className="text-4xl font-bold text-slate-900 mb-2">
+                        <h2 className="text-3xl font-bold text-slate-900 mb-2">
                             Join BacancyTeleCare
                         </h2>
                         <p className="text-slate-500 mb-10">
                             Create your account and get started with secure online consultations.
                         </p>
 
-                        {/* Role Switcher (Patient / Doctor only) */}
-                        <div className="flex p-1 bg-slate-100 rounded-2xl mb-8">
-                            <button
-                                type="button"
-                                onClick={() => setRole('patient')}
-                                className={`flex-1 py-3 rounded-xl font-bold transition-all ${
-                                    role === 'patient'
-                                        ? 'bg-white text-brand-600 shadow-sm'
-                                        : 'text-slate-500 hover:text-slate-700'
-                                }`}
+                        {/* Role: patient / doctor - segmented control with sliding indicator */}
+                        <div className="mb-6 flex flex-col items-center gap-2">
+                            <div
+                                role="group"
+                                aria-label="Sign up as patient or doctor"
+                                className="relative grid w-max min-w-[10.75rem] grid-cols-2 gap-0.5 overflow-hidden rounded-xl border-2 border-slate-200 bg-slate-50 p-1 shadow-sm"
                             >
-                                Patient
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setRole('doctor')}
-                                className={`flex-1 py-3 rounded-xl font-bold transition-all ${
-                                    role === 'doctor'
-                                        ? 'bg-white text-brand-600 shadow-sm'
-                                        : 'text-slate-500 hover:text-slate-700'
-                                }`}
-                            >
-                                Doctor
-                            </button>
+                                <AnimatePresence initial={false}>
+                                    {!prefersReducedMotion && toggleBurstId > 0 ? (
+                                        <motion.div
+                                            key={toggleBurstId}
+                                            aria-hidden
+                                            className="pointer-events-none absolute inset-0 z-[1] rounded-[10px] bg-brand-400/25"
+                                            initial={{ opacity: 0.55, scale: 0.88 }}
+                                            animate={{ opacity: 0, scale: 1.12 }}
+                                            transition={{
+                                                duration: 0.6,
+                                                ease: [0.22, 1, 0.36, 1],
+                                            }}
+                                        />
+                                    ) : null}
+                                </AnimatePresence>
+                                <motion.div
+                                    aria-hidden
+                                    layout={false}
+                                    initial={false}
+                                    className="pointer-events-none absolute inset-y-1 left-1 z-[2] w-[calc(50%-5px)]"
+                                    animate={{
+                                        x:
+                                            role === 'patient'
+                                                ? 0
+                                                : 'calc(100% + 0.125rem)',
+                                    }}
+                                    transition={toggleTransition}
+                                >
+                                    <motion.div
+                                        key={pillInnerKey}
+                                        className="h-full w-full rounded-lg bg-brand-500 shadow-md shadow-brand-500/25"
+                                        initial={
+                                            prefersReducedMotion || toggleBurstId === 0
+                                                ? false
+                                                : { scale: 0.82, opacity: 0.88 }
+                                        }
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        transition={
+                                            prefersReducedMotion
+                                                ? { duration: 0 }
+                                                : toggleBurstId === 0
+                                                  ? { duration: 0 }
+                                                  : {
+                                                        type: 'spring',
+                                                        stiffness: 580,
+                                                        damping: 22,
+                                                    }
+                                        }
+                                    />
+                                </motion.div>
+                                <motion.button
+                                    type="button"
+                                    aria-pressed={role === 'patient'}
+                                    onClick={() => setRole('patient')}
+                                    whileTap={
+                                        prefersReducedMotion
+                                            ? undefined
+                                            : { scale: 0.94 }
+                                    }
+                                    transition={{
+                                        type: 'spring',
+                                        stiffness: 600,
+                                        damping: 28,
+                                    }}
+                                    className={clsx(
+                                        'relative z-10 flex min-w-[5rem] cursor-pointer items-center justify-center gap-1 rounded-lg px-3 py-1.5 text-xs font-bold transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-brand-500/35 focus-visible:ring-offset-2',
+                                        role === 'patient'
+                                            ? 'text-white'
+                                            : 'text-slate-500 hover:text-slate-800',
+                                    )}
+                                >
+                                    <motion.span
+                                        key={patientIconKey}
+                                        aria-hidden
+                                        initial={false}
+                                        animate={{
+                                            scale: role === 'patient' ? 1.08 : 1,
+                                            opacity: role === 'patient' ? 1 : 0.82,
+                                            rotate:
+                                                prefersReducedMotion ||
+                                                toggleBurstId === 0 ||
+                                                role !== 'patient'
+                                                    ? 0
+                                                    : [0, -3.5, 3.5, 0],
+                                        }}
+                                        transition={{
+                                            scale: toggleTransition,
+                                            opacity: toggleTransition,
+                                            rotate: iconNudgeTransition,
+                                        }}
+                                        className="inline-flex origin-center"
+                                    >
+                                        <User className="size-3 shrink-0" />
+                                    </motion.span>
+                                    Patient
+                                </motion.button>
+                                <motion.button
+                                    type="button"
+                                    aria-pressed={role === 'doctor'}
+                                    onClick={() => setRole('doctor')}
+                                    whileTap={
+                                        prefersReducedMotion
+                                            ? undefined
+                                            : { scale: 0.94 }
+                                    }
+                                    transition={{
+                                        type: 'spring',
+                                        stiffness: 600,
+                                        damping: 28,
+                                    }}
+                                    className={clsx(
+                                        'relative z-10 flex min-w-[5rem] cursor-pointer items-center justify-center gap-1 rounded-lg px-3 py-1.5 text-xs font-bold transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-brand-500/35 focus-visible:ring-offset-2',
+                                        role === 'doctor'
+                                            ? 'text-white'
+                                            : 'text-slate-500 hover:text-slate-800',
+                                    )}
+                                >
+                                    <motion.span
+                                        key={doctorIconKey}
+                                        aria-hidden
+                                        initial={false}
+                                        animate={{
+                                            scale: role === 'doctor' ? 1.08 : 1,
+                                            opacity: role === 'doctor' ? 1 : 0.82,
+                                            rotate:
+                                                prefersReducedMotion ||
+                                                toggleBurstId === 0 ||
+                                                role !== 'doctor'
+                                                    ? 0
+                                                    : [0, 3.5, -3.5, 0],
+                                        }}
+                                        transition={{
+                                            scale: toggleTransition,
+                                            opacity: toggleTransition,
+                                            rotate: iconNudgeTransition,
+                                        }}
+                                        className="inline-flex origin-center"
+                                    >
+                                        <Stethoscope className="size-3 shrink-0" />
+                                    </motion.span>
+                                    Doctor
+                                </motion.button>
+                            </div>
+                            <p className="sr-only" aria-live="polite" aria-atomic="true">
+                                {role === 'patient'
+                                    ? 'Patient account selected.'
+                                    : 'Healthcare provider account selected.'}
+                            </p>
+                            <AnimatePresence mode="wait" initial={false}>
+                                <motion.p
+                                    key={role}
+                                    role="status"
+                                    initial={
+                                        prefersReducedMotion
+                                            ? false
+                                            : { opacity: 0, y: 4 }
+                                    }
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={
+                                        prefersReducedMotion
+                                            ? undefined
+                                            : { opacity: 0, y: -4 }
+                                    }
+                                    transition={
+                                        prefersReducedMotion
+                                            ? { duration: 0 }
+                                            : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
+                                    }
+                                    className="max-w-sm text-center text-xs font-medium leading-snug text-slate-500"
+                                >
+                                    {role === 'patient'
+                                        ? 'Book visits, manage records, and message your care team.'
+                                        : 'Deliver consultations, availability, and prescriptions in one place.'}
+                                </motion.p>
+                            </AnimatePresence>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                        <form
+                            onSubmit={handleSubmit}
+                            className="space-y-4"
+                            noValidate
+                            autoComplete="off"
+                        >
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
                                     Full Name
                                 </label>
                                 <div className="relative group">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+                                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
                                     <input
                                         type="text"
                                         placeholder="John Doe"
-                                        className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
-                                            errors.fullName
-                                                ? 'border-red-500'
-                                                : 'border-slate-200 focus:border-brand-500'
-                                        }`}
+                                        className={clsx(
+                                            FORM_CONTROL_LEADING_ICON,
+                                            errors.fullName &&
+                                                'border-red-500 focus:border-red-500 focus:ring-red-500/15',
+                                        )}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                         value={fullName}
                                         onChange={(e) => setFullName(e.target.value)}
                                     />
@@ -212,7 +408,10 @@ export default function SignupPage() {
                                 <div className="flex gap-3">
                                     <div className="w-40">
                                         <select
-                                            className="w-full min-h-[58px] h-full px-3 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-brand-500 outline-none text-sm font-medium text-slate-700"
+                                            className={clsx(
+                                                FORM_SELECT_CLASS,
+                                                'h-auto text-slate-700',
+                                            )}
                                             value={countryCode}
                                             onChange={(e) => setCountryCode(e.target.value)}
                                         >
@@ -227,11 +426,12 @@ export default function SignupPage() {
                                         <input
                                             type="tel"
                                             placeholder="10-digit mobile number"
-                                            className={`w-full px-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
-                                                errors.mobile
-                                                    ? 'border-red-500'
-                                                    : 'border-slate-200 focus:border-brand-500'
-                                            }`}
+                                            className={clsx(
+                                                FORM_CONTROL_CLASS,
+                                                errors.mobile &&
+                                                    'border-red-500 focus:border-red-500 focus:ring-red-500/15',
+                                            )}
+                                            {...NO_BROWSER_INPUT_HELPERS}
                                             value={mobile}
                                             onChange={(e) =>
                                                 setMobile(e.target.value.replace(/\D/g, ''))
@@ -252,15 +452,16 @@ export default function SignupPage() {
                                     Email Address
                                 </label>
                                 <div className="relative group">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+                                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
                                     <input
                                         type="email"
                                         placeholder="name@example.com"
-                                        className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
-                                            errors.email
-                                                ? 'border-red-500'
-                                                : 'border-slate-200 focus:border-brand-500'
-                                        }`}
+                                        className={clsx(
+                                            FORM_CONTROL_LEADING_ICON,
+                                            errors.email &&
+                                                'border-red-500 focus:border-red-500 focus:ring-red-500/15',
+                                        )}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                     />
@@ -277,15 +478,16 @@ export default function SignupPage() {
                                     Create Password
                                 </label>
                                 <div className="relative group">
-                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+                                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
                                     <input
                                         type="password"
                                         placeholder="Minimum 8 characters"
-                                        className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
-                                            errors.password
-                                                ? 'border-red-500'
-                                                : 'border-slate-200 focus:border-brand-500'
-                                        }`}
+                                        className={clsx(
+                                            FORM_CONTROL_LEADING_ICON,
+                                            errors.password &&
+                                                'border-red-500 focus:border-red-500 focus:ring-red-500/15',
+                                        )}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                     />
@@ -306,30 +508,47 @@ export default function SignupPage() {
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full py-5 bg-brand-500 text-white font-bold rounded-2xl shadow-xl shadow-brand-100 hover:bg-brand-600 hover:shadow-brand-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
+                                className={`${FORM_AUTH_PRIMARY_BUTTON} flex group`}
                             >
                                 {isSubmitting ? (
                                     <>
-                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        <Loader2 className="w-4 h-4 animate-spin" />
                                         Creating account...
                                     </>
                                 ) : (
                                     <>
                                         Create Account
-                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                     </>
                                 )}
                             </button>
                         </form>
 
-                        <div className="mt-10 text-center">
+                        <div className="mt-6 text-center space-y-4">
                             <p className="text-slate-500 font-medium">
                                 Already have an account?
                                 <Link
                                     href="/login"
-                                    className="ml-2 text-brand-600 font-bold hover:text-brand-700 underline decoration-2 underline-offset-4"
+                                    className="ml-2 text-brand-600 font-bold hover:text-brand-700"
                                 >
                                     Log In
+                                </Link>
+                            </p>
+                            <p className="text-xs text-slate-400">
+                                <Link
+                                    href="/privacy"
+                                    className="hover:text-slate-600 underline-offset-2 hover:underline"
+                                >
+                                    Privacy Policy
+                                </Link>
+                                <span className="mx-2 text-slate-300" aria-hidden>
+                                    ·
+                                </span>
+                                <Link
+                                    href="/terms"
+                                    className="hover:text-slate-600 underline-offset-2 hover:underline"
+                                >
+                                    Terms &amp; Conditions
                                 </Link>
                             </p>
                         </div>
@@ -338,15 +557,15 @@ export default function SignupPage() {
             </div>
 
             <AuthVisualPanel
+                landingAligned
                 title={
                     <>
-                        Start Your{' '}
-                        <span className="text-brand-500">Care Journey.</span>
+                        Start Your <span className="text-brand-500">Care Journey.</span>
                     </>
                 }
-                description="Create your BacancyTeleCare account in minutes — book consultations, manage prescriptions, and connect with verified specialists from anywhere."
+                description="Create your BacancyTeleCare account in minutes: book consultations, manage prescriptions, and connect with verified specialists from anywhere."
                 imageSrc="/auth-signup.svg"
-                imageAlt="Onboarding checklist — building your profile"
+                imageAlt="Onboarding checklist, building your profile"
             />
         </div>
     );

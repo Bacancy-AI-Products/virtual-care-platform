@@ -26,9 +26,7 @@ import {
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { getStates, getCities } from '@/constants/us-locations';
-
-const SELECT_CLASS =
-    'w-full appearance-none pl-4 pr-10 py-3 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all font-medium text-slate-900 text-sm disabled:opacity-60 disabled:cursor-not-allowed';
+import { FORM_CONTROL_CLASS, FORM_SELECT_CLASS, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
 export default function DoctorProfile() {
     const { user, token } = useAuth();
@@ -222,7 +220,9 @@ export default function DoctorProfile() {
             className="space-y-10"
         >
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">My Profile</h2>
+                <h2 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+                    My Profile
+                </h2>
                 {isEditing ? (
                     <div className="flex items-center gap-3 w-full sm:w-auto">
                         <button
@@ -362,6 +362,7 @@ export default function DoctorProfile() {
                             id="doctor-profile-form"
                             onSubmit={handleSubmit}
                             className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm space-y-8"
+                            autoComplete="off"
                         >
                             <h3 className="text-xl font-bold text-slate-900">
                                 Professional Information
@@ -380,7 +381,7 @@ export default function DoctorProfile() {
                                                     specialization: e.target.value,
                                                 }))
                                             }
-                                            className={SELECT_CLASS}
+                                            className={FORM_SELECT_CLASS}
                                             required
                                         >
                                             <option value="">Select specialization</option>
@@ -404,7 +405,8 @@ export default function DoctorProfile() {
                                         type="text"
                                         value={form.degree ?? ''}
                                         onChange={onChange('degree')}
-                                        className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 focus:border-brand-500 outline-none text-sm font-medium"
+                                        className={FORM_CONTROL_CLASS}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                 </div>
 
@@ -417,7 +419,8 @@ export default function DoctorProfile() {
                                         min={0}
                                         value={form.experienceYears ?? ''}
                                         onChange={onChange('experienceYears')}
-                                        className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 focus:border-brand-500 outline-none text-sm font-medium"
+                                        className={FORM_CONTROL_CLASS}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                 </div>
 
@@ -430,7 +433,8 @@ export default function DoctorProfile() {
                                         min={0}
                                         value={form.consultationFee ?? ''}
                                         onChange={onChange('consultationFee')}
-                                        className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 focus:border-brand-500 outline-none text-sm font-medium"
+                                        className={FORM_CONTROL_CLASS}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                 </div>
 
@@ -442,7 +446,8 @@ export default function DoctorProfile() {
                                         type="text"
                                         value={form.registrationNumber ?? ''}
                                         onChange={onChange('registrationNumber')}
-                                        className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 focus:border-brand-500 outline-none text-sm font-medium"
+                                        className={FORM_CONTROL_CLASS}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                 </div>
 
@@ -454,7 +459,7 @@ export default function DoctorProfile() {
                                         <select
                                             value={selectedStateCode}
                                             onChange={(e) => onStateChange(e.target.value)}
-                                            className={SELECT_CLASS}
+                                            className={FORM_SELECT_CLASS}
                                         >
                                             <option value="">Select state</option>
                                             {states.map((state) => (
@@ -481,7 +486,7 @@ export default function DoctorProfile() {
                                                 }))
                                             }
                                             disabled={!selectedStateCode}
-                                            className={SELECT_CLASS}
+                                            className={FORM_SELECT_CLASS}
                                         >
                                             <option value="">Select city</option>
                                             {citiesForState.map((city) => (
@@ -503,7 +508,8 @@ export default function DoctorProfile() {
                                     rows={4}
                                     value={form.bio ?? ''}
                                     onChange={onChange('bio')}
-                                    className="w-full px-4 py-3 rounded-2xl border-2 border-slate-100 focus:border-brand-500 outline-none text-sm font-medium resize-none"
+                                    className={`${FORM_CONTROL_CLASS} resize-none`}
+                                    {...NO_BROWSER_INPUT_HELPERS}
                                 />
                             </div>
                         </form>

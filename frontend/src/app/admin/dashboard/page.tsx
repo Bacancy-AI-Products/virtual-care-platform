@@ -51,7 +51,9 @@ export default function AdminDashboard() {
         >
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h2 className="text-3xl font-bold text-slate-900 mb-2">Admin Overview</h2>
+                    <h2 className="mb-2 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+                        Admin Overview
+                    </h2>
                     <p className="text-slate-500 font-medium">
                         Manage your platform's doctors, patients, and appointments.
                     </p>

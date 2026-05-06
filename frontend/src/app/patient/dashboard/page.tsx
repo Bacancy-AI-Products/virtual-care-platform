@@ -28,9 +28,6 @@ import {
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 
-const SELECT_CLASS =
-    'w-full appearance-none pl-4 pr-10 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all font-medium text-slate-900 text-sm disabled:opacity-60 disabled:cursor-not-allowed';
-
 // ─── Stat card ────────────────────────────────────────────────────────────────
 
 function StatCard({
@@ -61,7 +58,7 @@ function StatCard({
                 )}
             </div>
             <p className="mb-1 text-xs font-medium text-slate-500 sm:text-sm">{label}</p>
-            <p className="break-words text-lg font-bold text-slate-900 sm:text-xl lg:text-2xl">
+            <p className="break-words text-base font-bold text-slate-900 sm:text-lg lg:text-xl">
                 {value}
             </p>
         </div>
@@ -161,8 +158,8 @@ export default function PatientDashboard() {
             {/* Welcome */}
             <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-center md:justify-between">
                 <div className="min-w-0">
-                    <h2 className="mb-1.5 text-2xl font-bold text-slate-900 sm:mb-2 sm:text-3xl">
-                        Hello, {user?.name ?? '...'} 👋
+                    <h2 className="mb-1.5 text-xl font-bold tracking-tight text-slate-900 sm:mb-2 sm:text-2xl">
+                        Hello, {user?.name ?? '...'}
                     </h2>
                     <p className="text-sm font-medium text-slate-500 sm:text-base">
                         How are you feeling today? Here&apos;s your health summary.
@@ -210,7 +207,7 @@ export default function PatientDashboard() {
                 {/* Upcoming Appointments */}
                 <div className="lg:col-span-2 space-y-6">
                     <div className="flex flex-col gap-3 min-w-0 sm:flex-row sm:items-center sm:justify-between">
-                        <h3 className="text-xl font-bold text-slate-900 sm:text-2xl">
+                        <h3 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
                             Upcoming Appointments
                         </h3>
                         <Link
@@ -255,7 +252,9 @@ export default function PatientDashboard() {
 
                     {/* Quick Actions */}
                     <div className="pt-4">
-                        <h3 className="text-2xl font-bold text-slate-900 mb-6">Quick Actions</h3>
+                        <h3 className="mb-6 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+                            Quick Actions
+                        </h3>
                         <div className="grid sm:grid-cols-2 gap-4">
                             <Link
                                 href="/patient/doctors"
@@ -288,7 +287,7 @@ export default function PatientDashboard() {
                 {/* Sidebar — Past consultations + tip */}
                 <div className="space-y-8">
                     <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
-                        <h3 className="text-xl font-bold text-slate-900 mb-6">
+                        <h3 className="mb-6 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
                             Past Consultations
                         </h3>
                         {allAppointments.filter((a) => a.status === 'COMPLETED').length === 0 ? (
@@ -338,7 +337,7 @@ export default function PatientDashboard() {
 
                     <div className="bg-brand-600 p-8 rounded-[32px] text-white relative overflow-hidden shadow-xl shadow-brand-100">
                         <div className="relative z-10">
-                            <h3 className="text-xl font-bold mb-3">Health Tip of the Day</h3>
+                            <h3 className="text-lg font-bold mb-3">Health Tip of the Day</h3>
                             <p className="text-brand-100 text-sm leading-relaxed mb-6">
                                 Drinking at least 8 glasses of water daily helps maintain energy
                                 levels and improves skin health.
