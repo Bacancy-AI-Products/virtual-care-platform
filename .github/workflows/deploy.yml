@@ -60,7 +60,8 @@ jobs:
             cd "$APP_DIR" || { echo "Error: app directory not found: $APP_DIR"; exit 1; }
             test -f docker-compose.yml || { echo "Error: docker-compose.yml not found in $(pwd)"; exit 1; }
 
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
 
             echo '${{ secrets.APP_ENV_FILE }}' > .env
 
