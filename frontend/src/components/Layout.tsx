@@ -125,9 +125,9 @@ function SidebarItem({
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/35 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
                 isHighlighted
                     ? 'py-3 font-semibold text-brand-900 bg-brand-100 shadow-[inset_0_0_0_1px_rgba(245,130,32,0.25)]'
-                    : 'py-2.5 font-medium text-slate-600 motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0',
+                    : 'py-2.5 font-semibold text-slate-900 motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0',
                 !isHighlighted &&
-                    'hover:bg-white/75 hover:text-slate-900 hover:shadow-sm hover:shadow-slate-300/40',
+                    'bg-white/55 shadow-sm shadow-slate-900/5 ring-1 ring-white/80 backdrop-blur-[2px] hover:bg-white/88 hover:shadow-md hover:shadow-slate-900/8',
             )}
         >
             <span
@@ -140,11 +140,13 @@ function SidebarItem({
             <Icon
                 className={cn(
                     'relative z-[1] h-5 w-5 shrink-0 transition-transform duration-200 motion-safe:group-hover:scale-[1.05]',
-                    isHighlighted ? 'text-brand-700' : 'text-slate-400 group-hover:text-brand-600/90',
+                    isHighlighted ? 'text-brand-700' : 'text-slate-600 group-hover:text-brand-600',
                 )}
                 aria-hidden
             />
-            <span className="relative z-[1] min-w-0 flex-1 leading-snug">{label}</span>
+            <span className="relative z-[1] min-w-0 flex-1 leading-snug [text-shadow:0_1px_0_rgb(255_255_255_/_.75)]">
+                {label}
+            </span>
         </Link>
     );
 }
@@ -257,11 +259,10 @@ export const Layout = ({ children, role }: LayoutProps) => {
         router.push('/login');
     }
 
-    const sidebarLogoRow = (
-        <div className="-mx-4 mb-3 flex h-[66px] shrink-0 items-center px-4">
+    /** Paren + `<div` share one line so SWC never parses `=` newline `<` as an expression. */
+    const sidebarLogoRow = (<div className="-mx-4 mb-3 flex h-[66px] shrink-0 items-center px-4">
             <BrandLogo href={brandLogoHref} />
-        </div>
-    );
+        </div>);
 
     const Sidebar = ({
         header,
@@ -269,53 +270,62 @@ export const Layout = ({ children, role }: LayoutProps) => {
     }: {
         header?: React.ReactNode;
         onNavClick?: () => void;
-    } = {}) => (
-        <>
-            {header ?? sidebarLogoRow}
+    } = {}) => {
+        return (
+            <>
+                {header ?? sidebarLogoRow}
 
-            <nav
-                className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto no-scrollbar pb-1"
-                aria-label="Primary"
-            >
-                {navItems.map((item) => (
-                    <SidebarItem
-                        key={item.to}
-                        {...item}
-                        active={pathname === item.to}
-                        onClick={onNavClick}
-                    />
-                ))}
-            </nav>
-
-            <div className="shrink-0 border-t border-slate-200/70 pt-3">
-                <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="group flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-left text-sm font-medium text-slate-600 transition-all duration-200 hover:border-red-100 hover:bg-red-50/90 hover:text-red-700 motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0"
+                <nav
+                    className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto no-scrollbar pb-1"
+                    aria-label="Primary"
                 >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100/90 text-slate-500 transition-colors group-hover:bg-red-100 group-hover:text-red-600">
-                        <LogOut className="h-[18px] w-[18px]" aria-hidden />
-                    </span>
-                    <span className="flex min-w-0 flex-col">
-                        <span className="leading-tight">Sign out</span>
-                        <span className="text-[11px] font-normal text-slate-400 group-hover:text-red-500/90">
-                            End your session securely
+                    {navItems.map((item) => (
+                        <SidebarItem
+                            key={item.to}
+                            {...item}
+                            active={pathname === item.to}
+                            onClick={onNavClick}
+                        />
+                    ))}
+                </nav>
+
+                <div className="shrink-0 border-t border-slate-200/80 pt-3">
+                    <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="group flex w-full items-center gap-3 rounded-xl border border-slate-200/60 bg-white/55 px-3 py-2.5 text-left text-sm font-semibold text-slate-900 shadow-sm shadow-slate-900/5 ring-1 ring-white/80 backdrop-blur-[2px] transition-all duration-200 hover:border-red-200/90 hover:bg-red-50/95 hover:text-red-700 motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0"
+                    >
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100/95 text-slate-600 transition-colors group-hover:bg-red-100 group-hover:text-red-600">
+                            <LogOut className="h-[18px] w-[18px]" aria-hidden />
                         </span>
-                    </span>
-                </button>
-            </div>
-        </>
-    );
+                        <span className="flex min-w-0 flex-col">
+                            <span className="leading-tight [text-shadow:0_1px_0_rgb(255_255_255_/_.75)]">
+                                Sign out
+                            </span>
+                            <span className="text-[11px] font-medium text-slate-600 group-hover:text-red-600/90">
+                                End your session securely
+                            </span>
+                        </span>
+                    </button>
+                </div>
+            </>
+        );
+    };
 
     return (
         <div className="min-h-screen bg-slate-50 flex w-full max-w-full overflow-x-hidden">
             {/* Sidebar — Desktop */}
-            <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 shrink-0 flex-col overflow-hidden border-r border-slate-200/80 bg-white/95 shadow-[6px_0_32px_-18px_rgba(15,23,42,0.12)] backdrop-blur-md lg:flex lg:flex-col">
+            <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 shrink-0 flex-col overflow-hidden border-r border-slate-200/80 bg-white/92 shadow-[6px_0_32px_-18px_rgba(15,23,42,0.12)] backdrop-blur-md lg:flex lg:flex-col">
                 <div
                     className="pointer-events-none absolute bottom-0 left-0 top-0 w-1 bg-gradient-to-b from-medical-teal via-brand-400 to-brand-500"
                     aria-hidden
                 />
                 <SidebarDecoration />
+                {/* Between photo (z-0) and nav (z-10): vertical fades only — no left scrim */}
+                <div className="pointer-events-none absolute inset-0 z-[8]" aria-hidden>
+                    <div className="absolute inset-x-0 top-0 h-[min(58vh,24rem)] bg-gradient-to-b from-white/[0.82] via-white/[0.48] via-[52%] to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 h-[6.5rem] bg-gradient-to-t from-white/[0.72] via-white/[0.28] to-transparent" />
+                </div>
                 <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pb-4 pt-0">
                     <Sidebar />
                 </div>
@@ -414,12 +424,16 @@ export const Layout = ({ children, role }: LayoutProps) => {
                         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
                         onClick={() => setIsMobileMenuOpen(false)}
                     />
-                    <aside className="absolute inset-y-0 left-0 flex max-h-full w-[min(20.5rem,calc(100vw-1.25rem))] flex-col overflow-hidden border-l-[3px] border-l-medical-teal bg-white/95 shadow-[6px_0_40px_-22px_rgba(15,23,42,0.2)] backdrop-blur-md">
+                    <aside className="absolute inset-y-0 left-0 flex max-h-full w-[min(20.5rem,calc(100vw-1.25rem))] flex-col overflow-hidden border-l-[3px] border-l-medical-teal bg-white/92 shadow-[6px_0_40px_-22px_rgba(15,23,42,0.2)] backdrop-blur-md">
                         <div
                             className="pointer-events-none absolute bottom-0 left-0 top-0 w-1 bg-gradient-to-b from-medical-teal via-brand-400 to-brand-500 opacity-90"
                             aria-hidden
                         />
                         <SidebarDecoration />
+                        <div className="pointer-events-none absolute inset-0 z-[8]" aria-hidden>
+                            <div className="absolute inset-x-0 top-0 h-[min(58vh,24rem)] bg-gradient-to-b from-white/[0.82] via-white/[0.48] via-[52%] to-transparent" />
+                            <div className="absolute inset-x-0 bottom-0 h-[6.5rem] bg-gradient-to-t from-white/[0.72] via-white/[0.28] to-transparent" />
+                        </div>
                         <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pb-4 pt-0">
                             <Sidebar
                                 header={
