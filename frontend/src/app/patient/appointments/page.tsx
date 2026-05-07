@@ -65,7 +65,7 @@ function StatusBadge({ status }: { status: string }) {
     };
     return (
         <span
-            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${cfg.className}`}
+            className={`inline-flex max-w-full items-center justify-center whitespace-normal break-words rounded-full px-3 py-1 text-center text-xs font-bold ${cfg.className}`}
         >
             {cfg.label}
         </span>
@@ -88,95 +88,106 @@ function AppointmentCard({
     const isUpcoming = getTab(appt.status) === 'Upcoming';
 
     return (
-        <div className="bg-white px-8 py-6 rounded-[28px] border border-slate-100 shadow-sm hover:shadow-md transition-all group grid grid-cols-[260px_1fr_auto] items-center gap-8">
-            {/* ── Doctor info – fixed 260px ── */}
-            <div className="flex items-center gap-4 min-w-0">
+        <div
+            className="group flex min-w-0 flex-col gap-4 rounded-[28px] border border-slate-100 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6 lg:grid lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_auto] lg:items-center lg:gap-6 lg:px-8 lg:py-6 xl:gap-8"
+        >
+            {/* Doctor */}
+            <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                 <img
                     src={`https://picsum.photos/seed/${appt.doctor.id}/100/100`}
-                    className="w-14 h-14 rounded-2xl object-cover shadow-sm flex-shrink-0"
+                    className="h-12 w-12 shrink-0 rounded-2xl object-cover shadow-sm sm:h-14 sm:w-14"
                     alt={appt.doctor.user.name}
                     referrerPolicy="no-referrer"
                 />
-                <div className="min-w-0">
-                    <h4 className="text-base font-bold text-slate-900 group-hover:text-brand-600 transition-colors truncate leading-snug">
+                <div className="min-w-0 flex-1">
+                    <h4 className="truncate text-base font-bold leading-snug text-slate-900 transition-colors group-hover:text-brand-600">
                         {appt.doctor.user.name}
                     </h4>
-                    <p className="text-xs text-slate-400 truncate mt-0.5 mb-2">
-                        {specializationLabel}
-                    </p>
-                    <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 bg-brand-50 px-3 py-1 rounded-full">
-                        <Video className="w-3 h-3" /> Video Consultation
+                    <p className="mt-0.5 truncate text-xs text-slate-400">{specializationLabel}</p>
+                    <div className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-1 text-[11px] font-semibold text-brand-600 sm:px-3 sm:text-xs">
+                        <Video className="h-3 w-3 shrink-0" />
+                        <span className="truncate">Video Consultation</span>
                     </div>
                 </div>
             </div>
 
-            {/* ── Info columns – always anchored at same x ── */}
-            <div className="flex items-center border-l border-slate-100 pl-8">
-                <div className="w-[130px]">
-                    <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-                        <Calendar className="w-3.5 h-3.5" /> Date
-                    </p>
-                    <p className="text-sm font-bold text-slate-800">
-                        {format(new Date(appt.scheduledAt), 'MMM d, yyyy')}
-                    </p>
-                </div>
+            {/* Date / time / status / reason — stack on mobile; single row on lg via lg:contents */}
+            <div className="min-w-0 border-t border-slate-100 pt-4 lg:flex lg:items-center lg:gap-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0 xl:gap-8">
+                <div className="grid w-full grid-cols-2 gap-3 sm:gap-4 lg:contents">
+                    <div className="min-w-0 lg:w-[130px] lg:shrink-0">
+                        <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                            <Calendar className="h-3.5 w-3.5 shrink-0" /> Date
+                        </p>
+                        <p className="text-sm font-bold text-slate-800">
+                            {format(new Date(appt.scheduledAt), 'MMM d, yyyy')}
+                        </p>
+                    </div>
 
-                <div className="w-[110px]">
-                    <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-                        <Clock className="w-3.5 h-3.5" /> Time
-                    </p>
-                    <p className="text-sm font-bold text-slate-800">
-                        {format(new Date(appt.scheduledAt), 'hh:mm a')}
-                    </p>
-                </div>
+                    <div className="min-w-0 lg:w-[110px] lg:shrink-0">
+                        <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                            <Clock className="h-3.5 w-3.5 shrink-0" /> Time
+                        </p>
+                        <p className="text-sm font-bold text-slate-800">
+                            {format(new Date(appt.scheduledAt), 'hh:mm a')}
+                        </p>
+                    </div>
 
-                <div className="w-[190px]">
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-                        Status
-                    </p>
-                    <StatusBadge status={appt.status} />
-                </div>
+                    <div className="col-span-2 min-w-0 lg:col-span-1 lg:w-[190px] lg:shrink-0">
+                        <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                            Status
+                        </p>
+                        <div className="min-w-0">
+                            <StatusBadge status={appt.status} />
+                        </div>
+                    </div>
 
-                <div className="flex-1">
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-                        {appt.status === 'CANCELLED_BY_DOCTOR' && appt.declineReason
-                            ? "Doctor's Reason"
-                            : '\u00A0'}
-                    </p>
-                    <p className="text-sm text-slate-600 italic leading-snug">
-                        {appt.status === 'CANCELLED_BY_DOCTOR' && appt.declineReason
-                            ? `"${appt.declineReason}"`
-                            : ''}
-                    </p>
+                    <div className="col-span-2 min-w-0 lg:col-span-1 lg:flex-1">
+                        <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                            {appt.status === 'CANCELLED_BY_DOCTOR' && appt.declineReason
+                                ? "Doctor's Reason"
+                                : '\u00A0'}
+                        </p>
+                        <p className="text-sm italic leading-snug text-slate-600 break-words">
+                            {appt.status === 'CANCELLED_BY_DOCTOR' && appt.declineReason
+                                ? `"${appt.declineReason}"`
+                                : ''}
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            {/* ── Actions ── */}
-            <div className="flex items-center gap-2">
+            {/* Actions */}
+            <div className="flex min-w-0 flex-wrap items-center gap-2 border-t border-slate-100 pt-4 lg:border-t-0 lg:pt-0 lg:justify-end">
                 {appt.status === 'CONFIRMED' && (
                     <Link
                         href={`/patient/consultation/${appt.id}`}
-                        className="px-5 py-2.5 bg-brand-500 text-white font-bold rounded-xl hover:bg-brand-600 transition-all shadow-lg shadow-brand-100 active:scale-95 text-sm flex items-center gap-2"
+                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-brand-100 transition-all hover:bg-brand-600 active:scale-95 sm:flex-initial sm:px-5"
                     >
-                        <Video className="w-4 h-4" /> Join Call
+                        <Video className="h-4 w-4 shrink-0" /> Join Call
                     </Link>
                 )}
                 {appt.status === 'PENDING' && (
-                    <span className="flex items-center gap-1.5 px-4 py-2 bg-amber-50 border border-amber-200 text-amber-600 text-xs font-bold rounded-xl whitespace-nowrap">
-                        <AlertCircle className="w-3.5 h-3.5" /> Awaiting confirmation
+                    <span className="inline-flex max-w-full items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-600">
+                        <AlertCircle className="h-3.5 w-3.5 shrink-0" />{' '}
+                        <span className="min-w-0 sm:whitespace-nowrap">Awaiting confirmation</span>
                     </span>
                 )}
                 {isUpcoming && (
                     <button
+                        type="button"
                         onClick={onCancel}
                         disabled={cancelling}
-                        className="px-4 py-2.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all text-sm font-bold disabled:opacity-50"
+                        className="rounded-xl px-4 py-2.5 text-sm font-bold text-red-400 transition-all hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
                     >
-                        {cancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Cancel'}
+                        {cancelling ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Cancel'}
                     </button>
                 )}
-                <button className="p-2.5 text-slate-300 hover:text-slate-500 hover:bg-slate-50 rounded-xl transition-all">
-                    <MoreVertical className="w-4 h-4" />
+                <button
+                    type="button"
+                    className="rounded-xl p-2.5 text-slate-300 transition-all hover:bg-slate-50 hover:text-slate-500"
+                    aria-label="More options"
+                >
+                    <MoreVertical className="h-4 w-4" />
                 </button>
             </div>
         </div>
@@ -234,16 +245,18 @@ export default function PatientAppointments() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="space-y-8"
+            className="w-full min-w-0 space-y-6 sm:space-y-8"
         >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h2 className="text-3xl font-bold text-slate-900 mb-2">My Appointments</h2>
-                    <p className="text-slate-500 font-medium">
+            <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-center md:justify-between">
+                <div className="min-w-0">
+                    <h2 className="mb-1.5 text-xl font-bold tracking-tight text-slate-900 sm:mb-2 sm:text-2xl">
+                        My Appointments
+                    </h2>
+                    <p className="text-sm font-medium text-slate-500 sm:text-base">
                         Keep track of your upcoming and past consultations.
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex w-full min-w-0 flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
                     <button
                         type="button"
                         onClick={() =>
@@ -251,27 +264,28 @@ export default function PatientAppointments() {
                                 queryKey: ['appointments', 'patient', 'all'],
                             })
                         }
-                        className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50 active:scale-95 transition-all"
+                        className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 px-6 text-sm font-bold text-slate-600 transition-all hover:bg-slate-50 active:scale-95 sm:w-auto"
                     >
-                        <RotateCw className="w-4 h-4" />
+                        <RotateCw className="h-5 w-5 shrink-0" />
                         Refresh
                     </button>
                     <Link
                         href="/patient/doctors"
-                        className="px-6 py-4 bg-brand-500 text-white font-bold rounded-2xl shadow-xl shadow-brand-100 hover:bg-brand-600 transition-all flex items-center gap-2 active:scale-95"
+                        className="inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-brand-500 px-6 text-sm font-bold text-white shadow-xl shadow-brand-100 transition-all hover:bg-brand-600 active:scale-95 sm:w-auto"
                     >
-                        <Plus className="w-5 h-5" /> Book New Appointment
+                        <Plus className="h-5 w-5 shrink-0" /> Book New Appointment
                     </Link>
                 </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex items-center gap-8 border-b border-slate-200">
+            <div className="no-scrollbar -mx-1 flex min-w-0 items-center gap-4 overflow-x-auto border-b border-slate-200 px-1 pb-px sm:gap-8">
                 {TABS.map((tab) => (
                     <button
                         key={tab}
+                        type="button"
                         onClick={() => setActiveTab(tab)}
-                        className={`pb-4 text-sm font-bold transition-all relative ${
+                        className={`relative shrink-0 whitespace-nowrap pb-4 text-sm font-bold transition-all ${
                             activeTab === tab
                                 ? 'text-brand-600'
                                 : 'text-slate-400 hover:text-slate-600'
@@ -297,7 +311,18 @@ export default function PatientAppointments() {
 
             {isError && (
                 <div className="p-12 bg-red-50 rounded-[40px] text-center">
-                    <p className="text-red-500 font-bold">Failed to load appointments.</p>
+                    <p className="text-red-500 font-bold mb-6">Failed to load appointments.</p>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            qClient.invalidateQueries({
+                                queryKey: ['appointments', 'patient', 'all'],
+                            })
+                        }
+                        className="inline-flex items-center gap-2 px-5 py-3 bg-white text-red-600 font-bold rounded-2xl border border-red-200 hover:bg-red-50 transition-all active:scale-95"
+                    >
+                        <RotateCw className="w-4 h-4" /> Retry
+                    </button>
                 </div>
             )}
 

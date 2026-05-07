@@ -9,23 +9,25 @@ interface PublicHeaderProps {
 export function PublicHeader({ bordered }: PublicHeaderProps) {
     return (
         <nav
-            className={`h-20 sm:h-24 flex items-center justify-between${
-                bordered ? ' border-b border-slate-100' : ''
+            className={`flex items-center justify-between gap-4 py-3 sm:gap-8 sm:py-3.5${
+                bordered ? ' border-b border-slate-200/50' : ''
             }`}
         >
-            <BrandLogo href="/doctors" />
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="min-w-0 shrink">
+                <BrandLogo href="/doctors" />
+            </div>
+            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
                 <Link
                     href="/login"
-                    className="border border-slate-200 rounded-2xl px-4 sm:px-6 py-2 sm:py-3 text-slate-600 font-semibold hover:bg-slate-50 hover:text-brand-500 transition-all"
+                    className="inline-flex items-center justify-center rounded-lg px-3.5 py-2 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/35 focus-visible:ring-offset-2 sm:px-4 sm:text-[15px] whitespace-nowrap"
                 >
-                    Login
+                    Log in
                 </Link>
                 <Link
                     href="/signup"
-                    className="bg-brand-500 text-white font-bold rounded-2xl px-6 sm:px-8 py-2.5 sm:py-3 shadow-md hover:bg-brand-600 transition-all active:scale-95"
+                    className="inline-flex items-center justify-center rounded-lg bg-brand-500 px-3.5 py-2 text-sm font-semibold text-white shadow-sm shadow-brand-500/20 transition-colors hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 active:scale-[0.98] sm:px-5 sm:text-[15px] whitespace-nowrap"
                 >
-                    Get Started
+                    Get started
                 </Link>
             </div>
         </nav>

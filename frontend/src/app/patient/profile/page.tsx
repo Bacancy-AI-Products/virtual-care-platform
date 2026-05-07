@@ -25,6 +25,7 @@ import { format } from 'date-fns';
 import { usersApi, patientsApi, appointmentsApi, filesApi } from '@/services/api';
 import { getStates, getCities } from '@/constants/us-locations';
 import { useAuth } from '@/hooks/useAuth';
+import { FORM_CONTROL_CLASS, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -36,9 +37,6 @@ const GENDERS = [
 ] as const;
 
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-
-const INPUT_CLASS =
-    'w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 outline-none transition-all text-sm font-medium text-slate-900';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -320,7 +318,9 @@ export default function PatientProfile() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-slate-900">My Profile</h2>
+                    <h2 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+                        My Profile
+                    </h2>
                     <p className="text-slate-500 mt-1 font-medium">
                         Manage your personal and medical information
                     </p>
@@ -547,7 +547,7 @@ export default function PatientProfile() {
                                     <span className="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
                                         <User className="w-3.5 h-3.5" /> Full Name
                                     </span>
-                                    <p className="px-3.5 py-2.5 bg-slate-50 rounded-xl text-sm font-medium text-slate-400 border-2 border-slate-100">
+                                    <p className="px-3.5 py-[11px] bg-slate-50 rounded-xl text-sm font-medium text-slate-400 border-2 border-slate-100">
                                         {me?.name}
                                     </p>
                                 </div>
@@ -555,7 +555,7 @@ export default function PatientProfile() {
                                     <span className="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
                                         <Mail className="w-3.5 h-3.5" /> Email
                                     </span>
-                                    <p className="px-3.5 py-2.5 bg-slate-50 rounded-xl text-sm font-medium text-slate-400 border-2 border-slate-100">
+                                    <p className="px-3.5 py-[11px] bg-slate-50 rounded-xl text-sm font-medium text-slate-400 border-2 border-slate-100">
                                         {me?.email}
                                     </p>
                                 </div>
@@ -569,7 +569,8 @@ export default function PatientProfile() {
                                         onChange={(e) =>
                                             setForm((f) => ({ ...f, phone: e.target.value }))
                                         }
-                                        className={INPUT_CLASS}
+                                        className={FORM_CONTROL_CLASS}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                 </FormField>
 
@@ -585,7 +586,8 @@ export default function PatientProfile() {
                                                 dateOfBirth: undefined,
                                             }));
                                         }}
-                                        className={`${INPUT_CLASS} ${fieldErrors.dateOfBirth ? 'border-red-400 focus:border-red-400' : ''}`}
+                                        className={`${FORM_CONTROL_CLASS} ${fieldErrors.dateOfBirth ? 'border-red-400 focus:border-red-400' : ''}`}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                     {fieldErrors.dateOfBirth && (
                                         <p className="text-xs text-red-500 font-semibold mt-1">
@@ -600,7 +602,7 @@ export default function PatientProfile() {
                                         onChange={(e) =>
                                             setForm((f) => ({ ...f, gender: e.target.value }))
                                         }
-                                        className={INPUT_CLASS}
+                                        className={FORM_CONTROL_CLASS}
                                     >
                                         <option value="">Select gender</option>
                                         {GENDERS.map((g) => (
@@ -617,7 +619,7 @@ export default function PatientProfile() {
                                         onChange={(e) =>
                                             setForm((f) => ({ ...f, bloodGroup: e.target.value }))
                                         }
-                                        className={INPUT_CLASS}
+                                        className={FORM_CONTROL_CLASS}
                                     >
                                         <option value="">Select blood group</option>
                                         {BLOOD_GROUPS.map((bg) => (
@@ -640,7 +642,8 @@ export default function PatientProfile() {
                                             setForm((f) => ({ ...f, height: e.target.value }));
                                             setFieldErrors((fe) => ({ ...fe, height: undefined }));
                                         }}
-                                        className={`${INPUT_CLASS} ${fieldErrors.height ? 'border-red-400 focus:border-red-400' : ''}`}
+                                        className={`${FORM_CONTROL_CLASS} ${fieldErrors.height ? 'border-red-400 focus:border-red-400' : ''}`}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                     {fieldErrors.height && (
                                         <p className="text-xs text-red-500 font-semibold mt-1">
@@ -661,7 +664,8 @@ export default function PatientProfile() {
                                             setForm((f) => ({ ...f, weight: e.target.value }));
                                             setFieldErrors((fe) => ({ ...fe, weight: undefined }));
                                         }}
-                                        className={`${INPUT_CLASS} ${fieldErrors.weight ? 'border-red-400 focus:border-red-400' : ''}`}
+                                        className={`${FORM_CONTROL_CLASS} ${fieldErrors.weight ? 'border-red-400 focus:border-red-400' : ''}`}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                     {fieldErrors.weight && (
                                         <p className="text-xs text-red-500 font-semibold mt-1">
@@ -675,7 +679,7 @@ export default function PatientProfile() {
                                         <select
                                             value={selectedStateCode}
                                             onChange={(e) => onStateChange(e.target.value)}
-                                            className={INPUT_CLASS}
+                                            className={FORM_CONTROL_CLASS}
                                         >
                                             <option value="">Select state</option>
                                             {states.map((state) => (
@@ -695,7 +699,7 @@ export default function PatientProfile() {
                                                 setForm((f) => ({ ...f, city: e.target.value }))
                                             }
                                             disabled={!selectedStateCode}
-                                            className={INPUT_CLASS}
+                                            className={FORM_CONTROL_CLASS}
                                         >
                                             <option value="">Select city</option>
                                             {citiesForState.map((city) => (
@@ -716,7 +720,8 @@ export default function PatientProfile() {
                                             onChange={(e) =>
                                                 setForm((f) => ({ ...f, address: e.target.value }))
                                             }
-                                            className={INPUT_CLASS}
+                                            className={FORM_CONTROL_CLASS}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                         />
                                     </FormField>
                                 </div>
@@ -754,7 +759,8 @@ export default function PatientProfile() {
                                                 emergencyContactName: e.target.value,
                                             }))
                                         }
-                                        className={INPUT_CLASS}
+                                        className={FORM_CONTROL_CLASS}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                 </FormField>
                                 <FormField label="Contact Phone" icon={PhoneCall}>
@@ -768,7 +774,8 @@ export default function PatientProfile() {
                                                 emergencyContactPhone: e.target.value,
                                             }))
                                         }
-                                        className={INPUT_CLASS}
+                                        className={FORM_CONTROL_CLASS}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                 </FormField>
                             </div>

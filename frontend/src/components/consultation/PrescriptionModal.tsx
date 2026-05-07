@@ -6,6 +6,12 @@ import { motion } from 'motion/react';
 import { filesApi, prescriptionsApi, FileRecord, VideoInfoResponse } from '@/services/api';
 import { consultationSocket } from '@/services/socket';
 import { buildPrescriptionPng } from '@/utils/prescriptionCanvas';
+import {
+    FORM_CONTROL_CLASS,
+    FORM_CONTROL_COMPACT_CELL,
+    FORM_CONTROL_COMPACT_ROW,
+    NO_BROWSER_INPUT_HELPERS,
+} from '@/constants/form-controls';
 
 interface Props {
     appointmentId: string;
@@ -143,7 +149,8 @@ export function PrescriptionModal({ appointmentId, appointmentInfo, onFileSaved,
                                         placeholder="Medicine name (e.g. Paracetamol 500mg)"
                                         value={med.name}
                                         onChange={(e) => updateMed(i, 'name', e.target.value)}
-                                        className="flex-1 p-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-500 font-medium"
+                                        className={FORM_CONTROL_COMPACT_ROW}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                     {medicines.length > 1 && (
                                         <button
@@ -161,21 +168,24 @@ export function PrescriptionModal({ appointmentId, appointmentInfo, onFileSaved,
                                         placeholder="Dosage (e.g. 1-0-1)"
                                         value={med.dosage}
                                         onChange={(e) => updateMed(i, 'dosage', e.target.value)}
-                                        className="p-2.5 bg-white border border-slate-200 rounded-xl text-xs outline-none focus:border-brand-500"
+                                        className={FORM_CONTROL_COMPACT_CELL}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                     <input
                                         type="text"
                                         placeholder="Frequency"
                                         value={med.frequency}
                                         onChange={(e) => updateMed(i, 'frequency', e.target.value)}
-                                        className="p-2.5 bg-white border border-slate-200 rounded-xl text-xs outline-none focus:border-brand-500"
+                                        className={FORM_CONTROL_COMPACT_CELL}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                     <input
                                         type="text"
                                         placeholder="Duration (e.g. 5 days)"
                                         value={med.duration}
                                         onChange={(e) => updateMed(i, 'duration', e.target.value)}
-                                        className="p-2.5 bg-white border border-slate-200 rounded-xl text-xs outline-none focus:border-brand-500"
+                                        className={FORM_CONTROL_COMPACT_CELL}
+                                        {...NO_BROWSER_INPUT_HELPERS}
                                     />
                                 </div>
                             </div>
@@ -189,7 +199,8 @@ export function PrescriptionModal({ appointmentId, appointmentInfo, onFileSaved,
                             placeholder="Additional instructions, diet advice, follow-up notes..."
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
-                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm outline-none focus:border-brand-500 h-28 resize-none font-medium"
+                            className={`${FORM_CONTROL_CLASS} h-28 resize-none`}
+                            {...NO_BROWSER_INPUT_HELPERS}
                         />
                     </div>
 
@@ -207,7 +218,7 @@ export function PrescriptionModal({ appointmentId, appointmentInfo, onFileSaved,
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex-1 py-3.5 bg-white border border-slate-200 text-slate-600 font-bold rounded-2xl hover:bg-slate-100 transition-all text-sm"
+                        className="flex-1 py-[17px] bg-white border border-slate-200 text-slate-600 font-bold rounded-2xl hover:bg-slate-100 transition-all text-sm"
                     >
                         Cancel
                     </button>
@@ -215,7 +226,7 @@ export function PrescriptionModal({ appointmentId, appointmentInfo, onFileSaved,
                         type="button"
                         onClick={handleSave}
                         disabled={!canSave}
-                        className="flex-1 py-3.5 bg-brand-500 text-white font-bold rounded-2xl hover:bg-brand-600 transition-all shadow-lg shadow-brand-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                        className="flex-1 py-[17px] bg-brand-500 text-white font-bold rounded-2xl hover:bg-brand-600 transition-all shadow-lg shadow-brand-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
                     >
                         {isSaving ? (
                             <>

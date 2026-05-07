@@ -31,9 +31,34 @@
     }
 }
 
+/** Landing “How it works” journey — CSS only, one path; cheap vs JS motion */
+@keyframes journey-dash-march {
+    to {
+        stroke-dashoffset: -40;
+    }
+}
+
 @layer utilities {
     .animate-dialog-in {
         animation: dialog-in 0.18s ease-out forwards;
+    }
+
+    .animate-journey-dash {
+        animation: journey-dash-march 2.6s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .animate-journey-dash {
+            animation: none;
+        }
+    }
+
+    .no-scrollbar {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
     }
 }
 
@@ -47,7 +72,28 @@
     h4,
     h5,
     h6 {
-        @apply font-display;
+        @apply font-sans font-semibold;
+    }
+
+    button:not(:disabled),
+    [role='button']:not([aria-disabled='true']),
+    a[href],
+    label[for],
+    select:not(:disabled),
+    summary,
+    input[type='checkbox']:not(:disabled),
+    input[type='radio']:not(:disabled),
+    input[type='submit']:not(:disabled),
+    input[type='reset']:not(:disabled),
+    input[type='button']:not(:disabled) {
+        cursor: pointer;
+    }
+
+    button:disabled,
+    [role='button'][aria-disabled='true'],
+    select:disabled,
+    input:disabled {
+        cursor: not-allowed;
     }
 }
 

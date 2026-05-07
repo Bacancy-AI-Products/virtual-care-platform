@@ -36,8 +36,8 @@ function StatCard({
     trend?: string;
 }) {
     return (
-        <div className="bg-white p-6 sm:p-8 rounded-[32px] sm:rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl transition-all">
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <div className="bg-white p-5 sm:p-8 rounded-[28px] sm:rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl transition-all text-center sm:text-left">
+            <div className="flex items-center justify-center sm:justify-between gap-2 mb-3 sm:mb-6">
                 <div
                     className={`w-12 h-12 sm:w-14 sm:h-14 rounded-[20px] sm:rounded-[24px] flex items-center justify-center ${color}`}
                 >
@@ -49,10 +49,10 @@ function StatCard({
                     </div>
                 )}
             </div>
-            <p className="text-xs sm:text-sm font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+            <p className="text-[11px] sm:text-sm font-bold text-slate-400 uppercase tracking-widest mb-1 sm:mb-1.5">
                 {label}
             </p>
-            <p className="text-2xl sm:text-3xl font-bold text-slate-900">{value}</p>
+            <p className="text-xl sm:text-2xl font-bold text-slate-900">{value}</p>
         </div>
     );
 }
@@ -150,8 +150,8 @@ export default function DoctorDashboard() {
             {/* Welcome */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
                 <div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-1.5 sm:mb-2">
-                        Welcome back, {formatDoctorDisplayName(user?.name)} 👋
+                    <h2 className="mb-1.5 text-xl font-bold tracking-tight text-slate-900 sm:mb-2 sm:text-2xl">
+                        Welcome back, {formatDoctorDisplayName(user?.name)}
                     </h2>
                     <p className="text-sm sm:text-base text-slate-500 font-medium">
                         {isLoading
@@ -162,7 +162,7 @@ export default function DoctorDashboard() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                 <StatCard
                     icon={Users}
                     label="Total Patients"
@@ -193,7 +193,7 @@ export default function DoctorDashboard() {
                 {/* Today's Appointments */}
                 <div className="lg:col-span-2 space-y-6 lg:space-y-8">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 px-1 sm:px-2">
-                        <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
+                        <h3 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
                             Today&apos;s Appointments
                         </h3>
                         <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
@@ -230,7 +230,7 @@ export default function DoctorDashboard() {
 
                 {/* Recent Patients */}
                 <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm">
-                    <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-6 sm:mb-8">
+                    <h3 className="mb-6 text-xl font-bold tracking-tight text-slate-900 sm:mb-8 sm:text-2xl">
                         Recent Patients
                     </h3>
                     {isLoading ? (
@@ -242,9 +242,10 @@ export default function DoctorDashboard() {
                     ) : (
                         <div className="space-y-6 sm:space-y-8">
                             {recentPatients.map((patient) => (
-                                <div
+                                <Link
                                     key={patient.user.id}
-                                    className="flex items-center justify-between gap-3 group cursor-pointer"
+                                    href="/doctor/patients"
+                                    className="flex items-center justify-between gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-xl"
                                 >
                                     <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                                         <div className="relative w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
@@ -266,7 +267,7 @@ export default function DoctorDashboard() {
                                         </div>
                                     </div>
                                     <ArrowRight className="w-4 h-4 text-slate-300 flex-shrink-0 group-hover:text-brand-500 group-hover:translate-x-1 transition-all" />
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     )}

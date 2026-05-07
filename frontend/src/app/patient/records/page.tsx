@@ -12,9 +12,10 @@ import {
     ChevronDown,
     ChevronUp,
     CheckCircle2,
+    RotateCw,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import {
     prescriptionsApi,
@@ -23,6 +24,7 @@ import {
     type SpecializationOption,
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
+import { FORM_CONTROL_SEARCH_ON_WHITE, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
 // ─── Canvas prescription generator ───────────────────────────────────────────
 
@@ -316,6 +318,7 @@ function PrescriptionCard({
 
 export default function MedicalRecords() {
     const { token } = useAuth();
+    const qClient = useQueryClient();
     const [search, setSearch] = useState('');
 
     const { data, isLoading, isError } = useQuery({
@@ -365,7 +368,9 @@ export default function MedicalRecords() {
             {/* Header */}
             <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold text-slate-900 mb-1">Medical Records</h2>
+                    <h2 className="mb-1 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+                        Medical Records
+                    </h2>
                     <p className="text-slate-500 font-medium">
                         {isLoading
                             ? 'Loading...'
@@ -375,13 +380,14 @@ export default function MedicalRecords() {
 
                 {/* Search */}
                 <div className="relative w-full lg:w-80">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                         type="text"
                         placeholder="Search by doctor or medicine..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:border-brand-500 outline-none transition-all font-medium text-sm shadow-sm"
+                        className={FORM_CONTROL_SEARCH_ON_WHITE}
+                        {...NO_BROWSER_INPUT_HELPERS}
                     />
                 </div>
             </div>
@@ -397,7 +403,21 @@ export default function MedicalRecords() {
             {isError && (
                 <div className="p-12 bg-red-50 rounded-[32px] text-center">
                     <AlertCircle className="w-10 h-10 text-red-400 mx-auto mb-3" />
-                    <p className="text-red-600 font-bold">Failed to load records</p>
+                    <p className="text-red-600 font-bold mb-1">Failed to load records.</p>
+                    <p className="text-sm text-red-500/80 font-medium mb-6">
+                        Please check your connection and try again.
+                    </p>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            qClient.invalidateQueries({
+                                queryKey: ['prescriptions', 'mine', 50],
+                            })
+                        }
+                        className="inline-flex items-center gap-2 px-5 py-3 bg-white text-red-600 font-bold rounded-2xl border border-red-200 hover:bg-red-50 transition-all active:scale-95"
+                    >
+                        <RotateCw className="w-4 h-4" /> Retry
+                    </button>
                 </div>
             )}
 

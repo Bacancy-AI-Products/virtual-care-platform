@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { appointmentsApi, type Appointment } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
+import { NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
 // ─── Tab types ────────────────────────────────────────────────────────────────
 
@@ -129,8 +130,9 @@ function DeclineModal({
                         onChange={(e) => setReason(e.target.value)}
                         placeholder="e.g. I'm not available at this time, please rebook for another slot…"
                         rows={4}
-                        className="w-full px-4 py-3 border border-slate-200 rounded-2xl text-sm text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-300 resize-none transition-all"
+                        className="w-full rounded-xl px-3 py-2 border border-slate-200 text-sm text-slate-700 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-300 resize-none transition-all"
                         maxLength={500}
+                        {...NO_BROWSER_INPUT_HELPERS}
                     />
                     <p className="text-xs text-slate-400 text-right mt-1">{reason.length}/500</p>
                 </div>
@@ -545,7 +547,9 @@ export default function DoctorAppointments() {
         >
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-slate-900 mb-1">Appointments</h2>
+                    <h2 className="mb-1 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+                        Appointments
+                    </h2>
                     <p className="text-slate-500 font-medium">
                         Review requests and manage your consultations.
                     </p>
@@ -619,7 +623,18 @@ export default function DoctorAppointments() {
             {/* Error */}
             {isError && (
                 <div className="p-12 bg-red-50 rounded-[40px] text-center">
-                    <p className="text-red-500 font-bold">Failed to load appointments.</p>
+                    <p className="text-red-500 font-bold mb-6">Failed to load appointments.</p>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            qClient.invalidateQueries({
+                                queryKey: ['appointments', 'doctor', 'all'],
+                            })
+                        }
+                        className="inline-flex items-center gap-2 px-5 py-3 bg-white text-red-600 font-bold rounded-2xl border border-red-200 hover:bg-red-50 transition-all active:scale-95"
+                    >
+                        <RotateCw className="w-4 h-4" /> Retry
+                    </button>
                 </div>
             )}
 

@@ -7,6 +7,7 @@ import { motion } from 'motion/react';
 import { VideoInfoResponse } from '@/services/api';
 import { useConsultationChat } from '@/hooks/useConsultationChat';
 import { FilePreviewModal } from '@/components/FilePreviewModal';
+import { FORM_CONTROL_CHAT_COMPOSER, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
 interface Props {
     appointmentInfo: VideoInfoResponse | null;
@@ -280,18 +281,19 @@ export function ChatPanel({ appointmentInfo, chat, onClose }: Props) {
 
                 {/* Chat input */}
                 <div className="p-6 border-t border-slate-100">
-                    <form onSubmit={handleSendMessage} className="relative group">
+                    <form onSubmit={handleSendMessage} className="relative group" autoComplete="off">
                         <input
                             type="text"
                             placeholder="Type a message..."
-                            className="w-full pl-6 pr-14 py-4 bg-slate-100 border-2 border-transparent rounded-2xl focus:bg-white focus:border-brand-500 outline-none transition-all font-medium text-sm"
+                            className={FORM_CONTROL_CHAT_COMPOSER}
+                            {...NO_BROWSER_INPUT_HELPERS}
                             value={message}
                             onChange={(e) => handleTyping(e.target.value)}
                         />
                         <button
                             type="submit"
                             disabled={!message.trim()}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-all shadow-lg shadow-brand-100 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-[11px] bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-all shadow-lg shadow-brand-100 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Send className="w-5 h-5" />
                         </button>

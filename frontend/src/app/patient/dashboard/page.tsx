@@ -28,9 +28,6 @@ import {
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 
-const SELECT_CLASS =
-    'w-full appearance-none pl-4 pr-10 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all font-medium text-slate-900 text-sm disabled:opacity-60 disabled:cursor-not-allowed';
-
 // ─── Stat card ────────────────────────────────────────────────────────────────
 
 function StatCard({
@@ -47,19 +44,23 @@ function StatCard({
     sub?: string;
 }) {
     return (
-        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
-            <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${color}`}>
-                    <Icon className="w-6 h-6" />
+        <div className="flex min-w-0 flex-col rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:rounded-3xl sm:p-5 lg:p-6">
+            <div className="mb-3 flex items-start justify-between gap-2 sm:mb-4">
+                <div
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl sm:h-12 sm:w-12 sm:rounded-2xl ${color}`}
+                >
+                    <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
                 {sub && (
-                    <span className="text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded-full">
+                    <span className="max-w-[58%] truncate rounded-full bg-green-50 px-2 py-0.5 text-center text-[10px] font-bold text-green-600 sm:max-w-[min(100%,11rem)] sm:py-1 sm:text-xs">
                         {sub}
                     </span>
                 )}
             </div>
-            <p className="text-sm font-medium text-slate-500 mb-1">{label}</p>
-            <p className="text-2xl font-bold text-slate-900">{value}</p>
+            <p className="mb-1 text-xs font-medium text-slate-500 sm:text-sm">{label}</p>
+            <p className="break-words text-base font-bold text-slate-900 sm:text-lg lg:text-xl">
+                {value}
+            </p>
         </div>
     );
 }
@@ -74,9 +75,9 @@ function UpcomingCard({
     specializationLabel: string;
 }) {
     return (
-        <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all flex items-center justify-between group">
-            <div className="flex items-center gap-4">
-                <div className="relative w-14 h-14 flex-shrink-0">
+        <div className="group flex flex-col gap-4 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+                <div className="relative h-12 w-12 shrink-0 sm:h-14 sm:w-14">
                     <Image
                         src={`https://picsum.photos/seed/${appt.doctor.id}/100/100`}
                         alt={appt.doctor.user.name}
@@ -85,16 +86,16 @@ function UpcomingCard({
                         referrerPolicy="no-referrer"
                     />
                 </div>
-                <div>
-                    <h4 className="font-bold text-slate-900">{appt.doctor.user.name}</h4>
-                    <p className="text-sm text-slate-500">{specializationLabel}</p>
-                    <div className="flex items-center gap-3 mt-1">
+                <div className="min-w-0">
+                    <h4 className="truncate font-bold text-slate-900">{appt.doctor.user.name}</h4>
+                    <p className="truncate text-sm text-slate-500">{specializationLabel}</p>
+                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
                         <span className="flex items-center gap-1 text-xs font-medium text-slate-400">
-                            <Calendar className="w-3 h-3" />
+                            <Calendar className="h-3 w-3 shrink-0" />
                             {format(new Date(appt.scheduledAt), 'MMM d, yyyy')}
                         </span>
                         <span className="flex items-center gap-1 text-xs font-medium text-slate-400">
-                            <Clock className="w-3 h-3" />
+                            <Clock className="h-3 w-3 shrink-0" />
                             {format(new Date(appt.scheduledAt), 'hh:mm a')}
                         </span>
                     </div>
@@ -102,9 +103,9 @@ function UpcomingCard({
             </div>
             <Link
                 href={`/patient/consultation/${appt.id}`}
-                className="px-6 py-3 bg-brand-500 text-white text-sm font-bold rounded-2xl hover:bg-brand-600 transition-all shadow-lg shadow-brand-100 active:scale-95 flex items-center gap-2"
+                className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-brand-100 transition-all hover:bg-brand-600 active:scale-95 sm:w-auto sm:px-6"
             >
-                <Video className="w-4 h-4" /> Join Call
+                <Video className="h-4 w-4 shrink-0" /> Join Call
             </Link>
         </div>
     );
@@ -152,28 +153,28 @@ export default function PatientDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="space-y-10"
+            className="w-full min-w-0 space-y-8 lg:space-y-10"
         >
             {/* Welcome */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h2 className="text-3xl font-bold text-slate-900 mb-2">
-                        Hello, {user?.name ?? '...'} 👋
+            <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-center md:justify-between">
+                <div className="min-w-0">
+                    <h2 className="mb-1.5 text-xl font-bold tracking-tight text-slate-900 sm:mb-2 sm:text-2xl">
+                        Hello, {user?.name ?? '...'}
                     </h2>
-                    <p className="text-slate-500 font-medium">
+                    <p className="text-sm font-medium text-slate-500 sm:text-base">
                         How are you feeling today? Here&apos;s your health summary.
                     </p>
                 </div>
                 <Link
                     href="/patient/doctors"
-                    className="px-6 py-4 bg-brand-500 text-white font-bold rounded-2xl shadow-xl shadow-brand-100 hover:bg-brand-600 transition-all flex items-center gap-2 active:scale-95"
+                    className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-brand-100 transition-all hover:bg-brand-600 active:scale-95 sm:py-4 sm:text-base md:w-auto"
                 >
-                    <Plus className="w-5 h-5" /> Book Appointment
+                    <Plus className="h-5 w-5 shrink-0" /> Book Appointment
                 </Link>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Stats — mobile: single column stack; tablet (sm+): 2×2; desktop (lg+): four across */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
                 <StatCard
                     icon={Heart}
                     label="Heart Rate"
@@ -205,14 +206,16 @@ export default function PatientDashboard() {
             <div className="grid lg:grid-cols-3 gap-10">
                 {/* Upcoming Appointments */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-2xl font-bold text-slate-900">Upcoming Appointments</h3>
+                    <div className="flex flex-col gap-3 min-w-0 sm:flex-row sm:items-center sm:justify-between">
+                        <h3 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+                            Upcoming Appointments
+                        </h3>
                         <Link
                             href="/patient/appointments"
-                            className="text-sm font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1 group"
+                            className="inline-flex shrink-0 items-center gap-1 text-sm font-bold text-brand-600 transition-colors hover:text-brand-700 group"
                         >
                             View All{' '}
-                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </Link>
                     </div>
 
@@ -249,7 +252,9 @@ export default function PatientDashboard() {
 
                     {/* Quick Actions */}
                     <div className="pt-4">
-                        <h3 className="text-2xl font-bold text-slate-900 mb-6">Quick Actions</h3>
+                        <h3 className="mb-6 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+                            Quick Actions
+                        </h3>
                         <div className="grid sm:grid-cols-2 gap-4">
                             <Link
                                 href="/patient/doctors"
@@ -282,7 +287,7 @@ export default function PatientDashboard() {
                 {/* Sidebar — Past consultations + tip */}
                 <div className="space-y-8">
                     <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
-                        <h3 className="text-xl font-bold text-slate-900 mb-6">
+                        <h3 className="mb-6 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
                             Past Consultations
                         </h3>
                         {allAppointments.filter((a) => a.status === 'COMPLETED').length === 0 ? (
@@ -332,7 +337,7 @@ export default function PatientDashboard() {
 
                     <div className="bg-brand-600 p-8 rounded-[32px] text-white relative overflow-hidden shadow-xl shadow-brand-100">
                         <div className="relative z-10">
-                            <h3 className="text-xl font-bold mb-3">Health Tip of the Day</h3>
+                            <h3 className="text-lg font-bold mb-3">Health Tip of the Day</h3>
                             <p className="text-brand-100 text-sm leading-relaxed mb-6">
                                 Drinking at least 8 glasses of water daily helps maintain energy
                                 levels and improves skin health.

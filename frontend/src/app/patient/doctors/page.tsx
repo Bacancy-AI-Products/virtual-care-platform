@@ -13,14 +13,18 @@ import {
     Loader2,
     ChevronDown,
     XCircle,
+    RotateCw,
+    SlidersHorizontal,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { doctorsApi, type DoctorSummary, type SpecializationOption } from '@/services/api';
 import { getStates, getCities } from '@/constants/us-locations';
-
-const SELECT_CLASS =
-    'w-full appearance-none pl-4 pr-10 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all font-medium text-slate-900 text-sm disabled:opacity-60 disabled:cursor-not-allowed';
+import {
+    FORM_CONTROL_SEARCH,
+    FORM_SELECT_CLASS,
+    NO_BROWSER_INPUT_HELPERS,
+} from '@/constants/form-controls';
 
 function DoctorCard({
     doctor,
@@ -96,11 +100,13 @@ function DoctorCard({
 
 function DoctorDiscoveryContent() {
     const router = useRouter();
+    const qClient = useQueryClient();
     const searchParams = useSearchParams();
     const [searchTerm, setSearchTerm] = React.useState('');
     const [selectedSpecialtyId, setSelectedSpecialtyId] = React.useState<string>('all');
     const [selectedStateCode, setSelectedStateCode] = React.useState('');
     const [selectedCity, setSelectedCity] = React.useState('');
+    const [mobileFiltersOpen, setMobileFiltersOpen] = React.useState(false);
 
     const {
         data: specializationData,
@@ -134,7 +140,18 @@ function DoctorDiscoveryContent() {
         } else {
             setSelectedSpecialtyId('all');
         }
+        if (stateCode || city || specialty) {
+            setMobileFiltersOpen(true);
+        }
     }, [searchParams, specializationData]);
+
+    const activeFilterCount = React.useMemo(() => {
+        let n = 0;
+        if (selectedStateCode) n += 1;
+        if (selectedCity) n += 1;
+        if (selectedSpecialtyId !== 'all') n += 1;
+        return n;
+    }, [selectedStateCode, selectedCity, selectedSpecialtyId]);
 
     const states = React.useMemo(() => getStates(), []);
     const selectedStateName = React.useMemo(
@@ -176,19 +193,20 @@ function DoctorDiscoveryContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="w-full max-w-full overflow-x-hidden space-y-8 sm:space-y-10"
+            className="w-full max-w-full overflow-x-hidden space-y-5 sm:space-y-10"
         >
-            {/* Search & Filter */}
-            <div className="w-full max-w-full bg-white p-4 sm:p-6 lg:p-8 rounded-3xl sm:rounded-[40px] border border-slate-100 shadow-sm space-y-6 overflow-x-hidden">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex-1 w-full relative group">
-                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+            {/* Search & Filter — compact on mobile; filters collapsible to show results sooner */}
+            <div className="w-full max-w-full bg-white p-3 sm:p-6 lg:p-8 rounded-2xl sm:rounded-[40px] border border-slate-100 shadow-sm space-y-3 sm:space-y-6 overflow-x-hidden">
+                <div className="flex flex-row gap-2 items-center sm:gap-3 sm:justify-between">
+                    <div className="min-w-0 flex-1 relative group">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:left-4 sm:w-5 sm:h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
                         <input
                             type="text"
-                            placeholder="Search by doctor name or specialization..."
-                            className="w-full max-w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-slate-50 border-2 border-transparent rounded-2xl sm:rounded-[24px] focus:bg-white focus:border-brand-500 outline-none transition-all font-medium text-base sm:text-lg"
+                            placeholder="Name or specialty..."
+                            className={`${FORM_CONTROL_SEARCH} max-w-full py-2.5 pl-9 text-sm sm:py-[11px] sm:pl-10 sm:text-base`}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            {...NO_BROWSER_INPUT_HELPERS}
                         />
                     </div>
                     <button
@@ -198,21 +216,53 @@ function DoctorDiscoveryContent() {
                             setSelectedStateCode('');
                             setSelectedCity('');
                             setSelectedSpecialtyId('all');
+                            setMobileFiltersOpen(false);
                             router.push('/patient/doctors');
                         }}
-                        className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-500 hover:bg-slate-50 whitespace-nowrap"
+                        className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2.5 py-2 text-[11px] font-bold text-slate-500 hover:bg-slate-50 sm:gap-2 sm:px-3 sm:text-xs whitespace-nowrap"
+                        aria-label="Clear all filters"
                     >
-                        <XCircle className="w-3.5 h-3.5" />
-                        Clear filters
+                        <XCircle className="w-3.5 h-3.5 shrink-0" aria-hidden />
+                        Clear
                     </button>
                 </div>
 
+                <button
+                    type="button"
+                    onClick={() => setMobileFiltersOpen((o) => !o)}
+                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/90 px-3 py-2.5 text-left sm:hidden"
+                    aria-expanded={mobileFiltersOpen}
+                >
+                    <span className="flex min-w-0 items-center gap-2 text-sm font-bold text-slate-800">
+                        <SlidersHorizontal className="h-4 w-4 shrink-0 text-brand-600" aria-hidden />
+                        <span className="truncate">
+                            Location &amp; specialty
+                            {activeFilterCount > 0 ? (
+                                <span className="font-semibold text-brand-600">
+                                    {' '}
+                                    ({activeFilterCount})
+                                </span>
+                            ) : null}
+                        </span>
+                    </span>
+                    <ChevronDown
+                        className={`h-5 w-5 shrink-0 text-slate-500 transition-transform ${
+                            mobileFiltersOpen ? 'rotate-180' : ''
+                        }`}
+                        aria-hidden
+                    />
+                </button>
+
                 {/* State, City & Specialty dropdowns */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div
+                    className={`grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 ${
+                        !mobileFiltersOpen ? 'max-sm:hidden' : ''
+                    }`}
+                >
                     <div>
                         <label
                             htmlFor="state-select"
-                            className="block text-sm font-bold text-slate-700 mb-2"
+                            className="block text-xs font-bold text-slate-700 mb-1 sm:text-sm sm:mb-2"
                         >
                             State
                         </label>
@@ -221,7 +271,7 @@ function DoctorDiscoveryContent() {
                                 id="state-select"
                                 value={selectedStateCode}
                                 onChange={(e) => onStateChange(e.target.value)}
-                                className={SELECT_CLASS}
+                                className={FORM_SELECT_CLASS}
                             >
                                 <option value="">All states</option>
                                 {states.map((state) => (
@@ -230,13 +280,13 @@ function DoctorDiscoveryContent() {
                                     </option>
                                 ))}
                             </select>
-                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                         </div>
                     </div>
                     <div>
                         <label
                             htmlFor="city-select"
-                            className="block text-sm font-bold text-slate-700 mb-2"
+                            className="block text-xs font-bold text-slate-700 mb-1 sm:text-sm sm:mb-2"
                         >
                             City
                         </label>
@@ -246,7 +296,7 @@ function DoctorDiscoveryContent() {
                                 value={selectedCity}
                                 onChange={(e) => setSelectedCity(e.target.value)}
                                 disabled={!selectedStateCode}
-                                className={SELECT_CLASS}
+                                className={FORM_SELECT_CLASS}
                             >
                                 <option value="">All cities</option>
                                 {citiesForState.map((city) => (
@@ -255,13 +305,13 @@ function DoctorDiscoveryContent() {
                                     </option>
                                 ))}
                             </select>
-                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                         </div>
                     </div>
                     <div>
                         <label
                             htmlFor="patient-specialty-select"
-                            className="block text-sm font-bold text-slate-700 mb-2"
+                            className="block text-xs font-bold text-slate-700 mb-1 sm:text-sm sm:mb-2"
                         >
                             Specialty
                         </label>
@@ -270,7 +320,7 @@ function DoctorDiscoveryContent() {
                                 id="patient-specialty-select"
                                 value={selectedSpecialtyId}
                                 onChange={(e) => setSelectedSpecialtyId(e.target.value)}
-                                className={SELECT_CLASS}
+                                className={FORM_SELECT_CLASS}
                                 disabled={isLoadingSpecializations || isErrorSpecializations}
                             >
                                 <option value="all">
@@ -286,15 +336,15 @@ function DoctorDiscoveryContent() {
                                         </option>
                                     ))}
                             </select>
-                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Results */}
-            <div className="space-y-6">
-                <h3 className="text-2xl font-bold text-slate-900 px-2">
+            <div className="space-y-4 sm:space-y-6">
+                <h3 className="text-xl font-bold text-slate-900 px-0.5 sm:text-2xl sm:px-2">
                     {isLoading ? 'Loading...' : `${filtered.length} Specialists Found`}
                 </h3>
 
@@ -306,9 +356,20 @@ function DoctorDiscoveryContent() {
 
                 {isError && (
                     <div className="p-6 sm:p-12 bg-red-50 rounded-3xl sm:rounded-[40px] text-center">
-                        <p className="text-red-500 font-bold">
+                        <p className="text-red-500 font-bold mb-6">
                             Failed to load doctors. Please try again.
                         </p>
+                        <button
+                            type="button"
+                            onClick={() =>
+                                qClient.invalidateQueries({
+                                    queryKey: ['doctors'],
+                                })
+                            }
+                            className="inline-flex items-center gap-2 px-5 py-3 bg-white text-red-600 font-bold rounded-2xl border border-red-200 hover:bg-red-50 transition-all active:scale-95"
+                        >
+                            <RotateCw className="w-4 h-4" /> Retry
+                        </button>
                     </div>
                 )}
 

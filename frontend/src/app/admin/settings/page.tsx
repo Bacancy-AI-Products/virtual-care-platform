@@ -1,16 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-    Shield,
-    Bell,
-    Database,
-    Globe,
-    Lock,
-    Mail,
-    CheckCircle2,
-    ChevronRight,
-} from 'lucide-react';
+import { Shield, Bell, Database, Globe, Lock, Mail, CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const SettingItem = ({
@@ -19,25 +10,28 @@ const SettingItem = ({
     description,
     color,
 }: {
-    icon: any;
+    icon: React.ElementType;
     label: string;
     description: string;
     color: string;
 }) => (
-    <button className="w-full flex items-center justify-between p-6 rounded-[32px] bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-brand-100 transition-all group text-left">
+    <div
+        aria-disabled="true"
+        className="w-full flex items-center justify-between p-6 rounded-[32px] bg-white border border-slate-100 shadow-sm cursor-not-allowed opacity-90"
+    >
         <div className="flex items-center gap-5">
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${color}`}>
                 <Icon className="w-6 h-6" />
             </div>
             <div>
-                <h4 className="font-bold text-slate-900 group-hover:text-brand-600 transition-colors">
-                    {label}
-                </h4>
+                <h4 className="font-bold text-slate-900">{label}</h4>
                 <p className="text-sm text-slate-500 font-medium">{description}</p>
             </div>
         </div>
-        <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-brand-500 group-hover:translate-x-1 transition-all" />
-    </button>
+        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full uppercase tracking-widest">
+            Coming soon
+        </span>
+    </div>
 );
 
 export default function AdminSettings() {
@@ -49,7 +43,9 @@ export default function AdminSettings() {
             className="max-w-4xl mx-auto space-y-10"
         >
             <div>
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">Platform Settings</h2>
+                <h2 className="mb-2 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+                    Platform Settings
+                </h2>
                 <p className="text-slate-500 font-medium">
                     Configure global platform parameters and security.
                 </p>
@@ -111,21 +107,21 @@ export default function AdminSettings() {
                 </div>
             </div>
 
-            <div className="bg-brand-50 p-8 rounded-[32px] border border-brand-100 flex items-center justify-between">
+            <div className="bg-brand-50 p-8 rounded-[32px] border border-brand-100 flex items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-brand-500 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-100">
                         <CheckCircle2 className="text-white w-6 h-6" />
                     </div>
                     <div>
-                        <h4 className="font-bold text-slate-900">System Status: Healthy</h4>
+                        <h4 className="font-bold text-slate-900">System status: healthy</h4>
                         <p className="text-sm text-slate-500 font-medium">
                             All services are running normally.
                         </p>
                     </div>
                 </div>
-                <button className="px-6 py-3 bg-white text-brand-600 font-bold rounded-xl border border-brand-200 hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all active:scale-95">
-                    Run Diagnostics
-                </button>
+                <span className="text-[10px] font-bold text-slate-500 bg-white px-3 py-1.5 rounded-full uppercase tracking-widest border border-brand-100 whitespace-nowrap">
+                    Coming soon
+                </span>
             </div>
         </motion.div>
     );

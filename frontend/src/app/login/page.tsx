@@ -3,11 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Mail, Lock, ArrowRight, ChevronLeft, Loader2, Stethoscope } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { authApi } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { BrandLogo } from '@/components/BrandLogo';
+import { AuthVisualPanel } from '@/components/AuthVisualPanel';
+import { BackToHomeLink } from '@/components/BackToHomeLink';
+import { FORM_CONTROL_LEADING_ICON, FORM_AUTH_PRIMARY_BUTTON, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
 /** Allow redirect after login only to these prefixes (avoid open redirect). */
 const ALLOWED_REDIRECT_PREFIXES = ['/patient/', '/doctor/', '/admin/', '/doctors'];
@@ -79,29 +82,17 @@ export default function LoginPage() {
 
     return (
         <React.Suspense fallback={null}>
-            <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+            <div className="min-h-screen lg:min-h-0 lg:h-dvh lg:max-h-dvh lg:overflow-hidden bg-slate-50 flex flex-col lg:flex-row">
                 {/* Left Side - Form */}
-                <div className="flex-1 flex flex-col px-6 py-6 lg:py-12 lg:px-24 bg-white relative overflow-hidden">
+                <div className="flex-1 flex flex-col min-h-0 px-6 py-6 lg:py-12 lg:px-24 bg-white relative lg:overflow-y-auto">
                     {/* Mobile top bar */}
-                    <div className="flex items-center justify-between lg:hidden mb-6">
-                        <Link
-                            href="/"
-                            className="flex items-center gap-2 text-slate-500 hover:text-brand-500 transition-colors font-semibold group"
-                        >
-                            <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                            Back
-                        </Link>
+                    <div className="flex items-center justify-between lg:hidden mb-6 shrink-0">
+                        <BackToHomeLink className="lg:hidden">Back</BackToHomeLink>
                         <BrandLogo />
                     </div>
 
                     {/* Desktop back button */}
-                    <Link
-                        href="/"
-                        className="hidden lg:flex absolute top-8 left-8 items-center gap-2 text-slate-500 hover:text-brand-500 transition-colors font-semibold group"
-                    >
-                        <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                        Back to Home
-                    </Link>
+                    <BackToHomeLink desktopFixed>Back to home</BackToHomeLink>
 
                     <div className="flex-1 flex flex-col justify-center">
                         <motion.div
@@ -115,28 +106,29 @@ export default function LoginPage() {
                                 <BrandLogo />
                             </div>
 
-                            <h2 className="text-4xl font-bold text-slate-900 mb-2">
+                            <h2 className="text-3xl font-bold text-slate-900 mb-2">
                                 Welcome Back!
                             </h2>
                             <p className="text-slate-500 mb-10">
                                 Enter your account details to access BacancyTeleCare.
                             </p>
 
-                            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                            <form onSubmit={handleSubmit} className="space-y-4" noValidate autoComplete="off">
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-slate-700 ml-1">
                                         Email or Mobile Number
                                     </label>
                                     <div className="relative group">
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+                                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
                                         <input
                                             type="text"
                                             placeholder="name@example.com or 9876543210"
-                                            className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
+                                            className={`${FORM_CONTROL_LEADING_ICON} ${
                                                 errors.identifier
-                                                    ? 'border-red-500'
-                                                    : 'border-slate-200 focus:border-brand-500'
+                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/15'
+                                                    : ''
                                             }`}
+                                            {...NO_BROWSER_INPUT_HELPERS}
                                             value={identifier}
                                             onChange={(e) => setIdentifier(e.target.value)}
                                         />
@@ -149,28 +141,20 @@ export default function LoginPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <div className="flex justify-between items-center ml-1">
-                                        <label className="text-sm font-bold text-slate-700">
-                                            Password
-                                        </label>
-                                        <Link
-                                            href="/forgot-password"
-                                            title="Forgot password?"
-                                            className="text-xs font-bold text-brand-600 hover:text-brand-700"
-                                        >
-                                            Forgot Password?
-                                        </Link>
-                                    </div>
+                                    <label className="text-sm font-bold text-slate-700 ml-1">
+                                        Password
+                                    </label>
                                     <div className="relative group">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
+                                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
                                         <input
                                             type="password"
                                             placeholder="••••••••"
-                                            className={`w-full pl-12 pr-4 py-4 bg-slate-50 border-2 rounded-2xl focus:bg-white outline-none transition-all font-medium ${
+                                            className={`${FORM_CONTROL_LEADING_ICON} ${
                                                 errors.password
-                                                    ? 'border-red-500'
-                                                    : 'border-slate-200 focus:border-brand-500'
+                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/15'
+                                                    : ''
                                             }`}
+                                            {...NO_BROWSER_INPUT_HELPERS}
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                         />
@@ -180,6 +164,15 @@ export default function LoginPage() {
                                             {errors.password}
                                         </p>
                                     )}
+                                    <div className="flex justify-end">
+                                        <Link
+                                            href="/forgot-password"
+                                            title="Forgot password?"
+                                            className="text-base font-bold text-brand-600 hover:text-brand-700"
+                                        >
+                                            Forgot Password?
+                                        </Link>
+                                    </div>
                                 </div>
 
                                 {errors.form && (
@@ -191,30 +184,41 @@ export default function LoginPage() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="w-full py-5 bg-brand-500 text-white font-bold rounded-2xl shadow-xl shadow-brand-100 hover:bg-brand-600 hover:shadow-brand-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className={`${FORM_AUTH_PRIMARY_BUTTON} flex group`}
                                 >
                                     {isSubmitting ? (
                                         <>
-                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                            <Loader2 className="w-4 h-4 animate-spin" />
                                             Logging in...
                                         </>
                                     ) : (
                                         <>
                                             Login
-                                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                         </>
                                     )}
                                 </button>
                             </form>
 
-                            <div className="mt-10 text-center">
+                            <div className="mt-10 text-center space-y-4">
                                 <p className="text-slate-500 font-medium">
                                     Don&apos;t have an account?
                                     <Link
                                         href="/signup"
-                                        className="ml-2 text-brand-600 font-bold hover:text-brand-700 underline decoration-2 underline-offset-4"
+                                        className="ml-2 text-brand-600 font-bold hover:text-brand-700"
                                     >
                                         Register
+                                    </Link>
+                                </p>
+                                <p className="text-xs text-slate-400">
+                                    <Link href="/privacy" className="hover:text-slate-600 underline-offset-2 hover:underline">
+                                        Privacy Policy
+                                    </Link>
+                                    <span className="mx-2 text-slate-300" aria-hidden>
+                                        ·
+                                    </span>
+                                    <Link href="/terms" className="hover:text-slate-600 underline-offset-2 hover:underline">
+                                        Terms &amp; Conditions
                                     </Link>
                                 </p>
                             </div>
@@ -222,31 +226,18 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                {/* Right Side - Visual */}
-                <div className="hidden lg:flex flex-1 bg-brand-600 relative overflow-hidden items-center justify-center p-24">
-                    <div className="relative z-10 max-w-lg text-center">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.8 }}
-                        >
-                            <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-[32px] flex items-center justify-center mx-auto mb-12 border border-white/30">
-                                <Stethoscope className="text-white w-12 h-12" />
-                            </div>
-                            <h3 className="text-5xl font-bold text-white mb-8 leading-tight">
-                                Your Health, Our Priority.
-                            </h3>
-                            <p className="text-xl text-brand-100 leading-relaxed">
-                                Experience the future of healthcare with BacancyTeleCare. Connect
-                                with experts in minutes and manage your health records seamlessly.
-                            </p>
-                        </motion.div>
-                    </div>
-
-                    {/* Abstract Background Shapes */}
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-900/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-                </div>
+                <AuthVisualPanel
+                    landingAligned
+                    title={
+                        <>
+                            Your Health,{' '}
+                            <span className="text-brand-500">Our Priority.</span>
+                        </>
+                    }
+                    description="Experience the future of healthcare with BacancyTeleCare. Connect with verified specialists, manage prescriptions, and access your records, all in one place."
+                    imageSrc="/auth-login.svg"
+                    imageAlt="Friendly doctor waving, welcome back"
+                />
             </div>
         </React.Suspense>
     );
