@@ -1,11 +1,5 @@
 import { prisma } from '../../db';
-
-function serviceError(message: string, status: number, code: string): never {
-    const err = new Error(message) as Error & { status?: number; code?: string };
-    err.status = status;
-    err.code = code;
-    throw err;
-}
+import { AppError } from '../../utils/errors';
 
 const doctorProfileSelect = {
     id: true,
@@ -63,7 +57,7 @@ export async function getMe(userId: string) {
     });
 
     if (!user) {
-        serviceError('User not found', 404, 'NOT_FOUND');
+        throw new AppError('User not found', 404, 'NOT_FOUND');
     }
 
     const { doctorProfile, patient, ...base } = user;

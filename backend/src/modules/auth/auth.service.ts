@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { config } from '../../config';
 import { prisma } from '../../db';
 import { hashPassword, signToken, verifyPassword } from '../../utils';
+import { AppError } from '../../utils/errors';
 import { Role } from '../../../generated/prisma';
 import type { User } from '../../../generated/prisma';
 import { sendPasswordReset } from '../email';
@@ -12,13 +13,6 @@ const DOCTOR_PROFILE_PLACEHOLDER_SPECIALIZATION = 'Pending';
 
 /** Generic message to avoid leaking whether email exists (timing/count attacks). */
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
-
-function authError(message: string, status: number, code: string): never {
-    const err = new Error(message) as Error & { status?: number; code?: string };
-    err.status = status;
-    err.code = code;
-    throw err;
-}
 
 export interface AuthResult {
     token: string;
@@ -43,12 +37,12 @@ function toAuthResult(user: User): AuthResult {
 export async function login(email: string, password: string): Promise<AuthResult> {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-        throw authError(INVALID_CREDENTIALS_MESSAGE, 401, 'UNAUTHORIZED');
+        throw new AppError(INVALID_CREDENTIALS_MESSAGE, 401, 'UNAUTHORIZED');
     }
 
     const valid = await verifyPassword(password, user.passwordHash);
     if (!valid) {
-        throw authError(INVALID_CREDENTIALS_MESSAGE, 401, 'UNAUTHORIZED');
+        throw new AppError(INVALID_CREDENTIALS_MESSAGE, 401, 'UNAUTHORIZED');
     }
 
     return toAuthResult(user);
@@ -65,7 +59,7 @@ export async function signup(
 ): Promise<AuthResult> {
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
-        throw authError('Email already registered', 409, 'CONFLICT');
+        throw new AppError('Email already registered', 409, 'CONFLICT');
     }
 
     const passwordHash = await hashPassword(password);
@@ -147,7 +141,7 @@ export async function resetPassword(
         },
     });
     if (!user) {
-        throw authError('Invalid or expired reset token', 400, 'BAD_REQUEST');
+        throw new AppError('Invalid or expired reset token', 400, 'BAD_REQUEST');
     }
 
     const passwordHash = await hashPassword(newPassword);

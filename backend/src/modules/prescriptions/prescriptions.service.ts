@@ -1,11 +1,5 @@
 import { prisma } from '../../db';
-
-function serviceError(message: string, status: number, code: string): never {
-    const err = new Error(message) as Error & { status?: number; code?: string };
-    err.status = status;
-    err.code = code;
-    throw err;
-}
+import { AppError } from '../../utils/errors';
 
 const prescriptionSelect = {
     id: true,
@@ -37,7 +31,7 @@ async function resolveParticipantIds(userId: string, role: string) {
         },
     });
     if (!user) {
-        serviceError('User not found', 404, 'NOT_FOUND');
+        throw new AppError('User not found', 404, 'NOT_FOUND');
     }
     return {
         doctorId: user.doctorProfile?.id ?? null,
@@ -106,7 +100,7 @@ export async function createPrescription(
     data: CreatePrescriptionData,
 ) {
     if (role !== 'DOCTOR') {
-        serviceError('Only doctors can create prescriptions', 403, 'FORBIDDEN');
+        throw new AppError('Only doctors can create prescriptions', 403, 'FORBIDDEN');
     }
 
     const appointment = await prisma.appointment.findUnique({
@@ -114,12 +108,12 @@ export async function createPrescription(
         select: { id: true, doctorId: true, patientId: true },
     });
     if (!appointment) {
-        serviceError('Appointment not found', 404, 'NOT_FOUND');
+        throw new AppError('Appointment not found', 404, 'NOT_FOUND');
     }
 
     const { doctorId } = await resolveParticipantIds(userId, role);
     if (!doctorId || doctorId !== appointment.doctorId) {
-        serviceError(
+        throw new AppError(
             'You can only create prescriptions for your own appointments',
             403,
             'FORBIDDEN',
@@ -152,7 +146,7 @@ export async function createPrescription(
 export async function listByAppointment(appointmentId: string, userId: string, role: string) {
     const allowed = await canAccessAppointment(appointmentId, userId, role);
     if (!allowed) {
-        serviceError('You do not have access to this appointment', 403, 'FORBIDDEN');
+        throw new AppError('You do not have access to this appointment', 403, 'FORBIDDEN');
     }
 
     const appointment = await prisma.appointment.findUnique({
@@ -160,7 +154,7 @@ export async function listByAppointment(appointmentId: string, userId: string, r
         select: { id: true },
     });
     if (!appointment) {
-        serviceError('Appointment not found', 404, 'NOT_FOUND');
+        throw new AppError('Appointment not found', 404, 'NOT_FOUND');
     }
 
     const prescriptions = await prisma.prescription.findMany({
@@ -178,12 +172,12 @@ export async function getById(prescriptionId: string, userId: string, role: stri
         select: prescriptionSelect,
     });
     if (!prescription) {
-        serviceError('Prescription not found', 404, 'NOT_FOUND');
+        throw new AppError('Prescription not found', 404, 'NOT_FOUND');
     }
 
     const allowed = await canAccessPrescription(prescriptionId, userId, role);
     if (!allowed) {
-        serviceError('You do not have access to this prescription', 403, 'FORBIDDEN');
+        throw new AppError('You do not have access to this prescription', 403, 'FORBIDDEN');
     }
 
     return prescription;

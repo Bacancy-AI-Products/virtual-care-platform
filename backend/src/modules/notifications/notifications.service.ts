@@ -1,4 +1,5 @@
 import { prisma } from '../../db';
+import { AppError } from '../../utils/errors';
 
 /** Matches Prisma NotificationType enum; use local type so module compiles before prisma generate. */
 export type NotificationType =
@@ -7,13 +8,6 @@ export type NotificationType =
     | 'APPOINTMENT_DECLINED'
     | 'APPOINTMENT_REQUESTED'
     | 'APPOINTMENT_CANCELLED';
-
-function serviceError(message: string, status: number, code: string): never {
-    const err = new Error(message) as Error & { status?: number; code?: string };
-    err.status = status;
-    err.code = code;
-    throw err;
-}
 
 export interface CreateNotificationData {
     title: string;
@@ -86,10 +80,10 @@ export async function markRead(userId: string, notificationId: string) {
         select: { userId: true },
     });
     if (!notification) {
-        serviceError('Notification not found', 404, 'NOT_FOUND');
+        throw new AppError('Notification not found', 404, 'NOT_FOUND');
     }
     if (notification.userId !== userId) {
-        serviceError('Not authorized to update this notification', 403, 'FORBIDDEN');
+        throw new AppError('Not authorized to update this notification', 403, 'FORBIDDEN');
     }
     await (prisma as any).notification.update({
         where: { id: notificationId },
