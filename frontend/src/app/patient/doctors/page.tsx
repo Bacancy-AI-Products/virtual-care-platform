@@ -352,10 +352,7 @@ function DoctorDiscoveryContent() {
                             htmlFor="city-select"
                             className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500"
                         >
-                            <Building2
-                                className="h-3.5 w-3.5 shrink-0 text-sky-600"
-                                aria-hidden
-                            />
+                            <Building2 className="h-3.5 w-3.5 shrink-0 text-sky-600" aria-hidden />
                             City
                         </label>
                         <div className="relative">
@@ -526,9 +523,7 @@ function DoctorDiscoveryContent() {
                                         <div className="order-1 flex items-center gap-2 sm:order-2">
                                             <button
                                                 type="button"
-                                                onClick={() =>
-                                                    setPage((p) => Math.max(1, p - 1))
-                                                }
+                                                onClick={() => setPage((p) => Math.max(1, p - 1))}
                                                 disabled={page <= 1 || showResultsLoadingOverlay}
                                                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
                                             >
@@ -570,7 +565,9 @@ function DoctorDiscoveryContent() {
                                                     type="button"
                                                     onClick={() => setPage(item)}
                                                     disabled={showResultsLoadingOverlay}
-                                                    aria-current={page === item ? 'page' : undefined}
+                                                    aria-current={
+                                                        page === item ? 'page' : undefined
+                                                    }
                                                     className={`inline-flex min-w-[2.5rem] items-center justify-center rounded-xl px-3 py-2 text-sm font-bold shadow-sm transition-all disabled:pointer-events-none disabled:opacity-40 ${
                                                         page === item
                                                             ? 'bg-brand-500 text-white shadow-brand-100 ring-2 ring-brand-500/20'

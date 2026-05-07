@@ -753,9 +753,7 @@ export default function DoctorAppointments() {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() =>
-                                            setPage((p) => Math.min(totalPages, p + 1))
-                                        }
+                                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                         disabled={page >= totalPages}
                                         className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
                                     >

@@ -161,8 +161,7 @@ export default function DoctorPatients() {
             return 'No patients match your search.';
         }
 
-        const from =
-            totalFiltered === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+        const from = totalFiltered === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
         const to = Math.min(page * PAGE_SIZE, totalFiltered);
 
         if (hasSearch) {
@@ -183,14 +182,7 @@ export default function DoctorPatients() {
                 : `${totalOverall} patients across all your appointments`;
         }
         return `Showing ${from}–${to} of ${totalOverall} patients across all your appointments`;
-    }, [
-        filtered.length,
-        isLoading,
-        page,
-        patientRows.length,
-        search,
-        totalPages,
-    ]);
+    }, [filtered.length, isLoading, page, patientRows.length, search, totalPages]);
 
     return (
         <motion.div
@@ -247,7 +239,9 @@ export default function DoctorPatients() {
                         </>
                     ) : (
                         <>
-                            <h4 className="text-xl font-bold text-slate-900 mb-2">No patients yet</h4>
+                            <h4 className="text-xl font-bold text-slate-900 mb-2">
+                                No patients yet
+                            </h4>
                             <p className="text-slate-500">
                                 Patients who book appointments with you will appear here.
                             </p>
@@ -414,9 +408,7 @@ export default function DoctorPatients() {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() =>
-                                            setPage((p) => Math.min(totalPages, p + 1))
-                                        }
+                                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                         disabled={page >= totalPages}
                                         className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
                                     >

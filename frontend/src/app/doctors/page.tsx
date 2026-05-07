@@ -26,7 +26,6 @@ import { doctorsApi, type DoctorSummary, type SpecializationOption } from '@/ser
 import { getStates, getCities } from '@/constants/us-locations';
 import { PublicHeader } from '@/components/PublicHeader';
 import {
-    FORM_CONTROL_SEARCH,
     FORM_SELECT_CLASS,
     NO_BROWSER_INPUT_HELPERS,
     FORM_CONTROL_LEADING_ICON,
@@ -528,95 +527,103 @@ function PublicDoctorsContent() {
                                     className={`space-y-6 ${showResultsLoadingOverlay ? 'min-h-[280px] sm:min-h-[320px]' : ''}`}
                                 >
                                     <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-                                {doctors.map((doctor) => {
-                                    const specializationLabel =
-                                        specializationNameById.get(doctor.specialization) ??
-                                        doctor.specialization;
-                                    return (
-                                        <DoctorCard
-                                            key={doctor.id}
-                                            doctor={doctor}
-                                            specializationLabel={specializationLabel}
-                                        />
-                                    );
-                                })}
-                                </div>
+                                        {doctors.map((doctor) => {
+                                            const specializationLabel =
+                                                specializationNameById.get(doctor.specialization) ??
+                                                doctor.specialization;
+                                            return (
+                                                <DoctorCard
+                                                    key={doctor.id}
+                                                    doctor={doctor}
+                                                    specializationLabel={specializationLabel}
+                                                />
+                                            );
+                                        })}
+                                    </div>
 
-                                {totalPages > 1 && (
-                                    <nav
-                                        className="flex flex-col items-stretch gap-4 border-t border-slate-100 pt-6"
-                                        aria-label="Pagination"
-                                    >
-                                        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
-                                            <p className="order-2 text-sm text-slate-500 sm:order-1">
-                                                Page {page} of {totalPages}
-                                            </p>
-                                            <div className="order-1 flex items-center gap-2 sm:order-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        setPage((p) => Math.max(1, p - 1))
-                                                    }
-                                                    disabled={page <= 1 || showResultsLoadingOverlay}
-                                                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
-                                                >
-                                                    <ChevronLeft className="h-4 w-4" aria-hidden />
-                                                    Previous
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        setPage((p) =>
-                                                            Math.min(totalPages, p + 1),
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        page >= totalPages || showResultsLoadingOverlay
-                                                    }
-                                                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
-                                                >
-                                                    Next
-                                                    <ChevronRight
-                                                        className="h-4 w-4"
-                                                        aria-hidden
-                                                    />
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div
-                                            className="flex flex-wrap items-center justify-center gap-1.5"
-                                            role="group"
-                                            aria-label="Go to page"
+                                    {totalPages > 1 && (
+                                        <nav
+                                            className="flex flex-col items-stretch gap-4 border-t border-slate-100 pt-6"
+                                            aria-label="Pagination"
                                         >
-                                            {paginationItems.map((item, idx) =>
-                                                item === 'ellipsis' ? (
-                                                    <span
-                                                        key={`e-${idx}`}
-                                                        className="px-1.5 py-2 text-sm font-semibold text-slate-400"
-                                                        aria-hidden
-                                                    >
-                                                        …
-                                                    </span>
-                                                ) : (
+                                            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
+                                                <p className="order-2 text-sm text-slate-500 sm:order-1">
+                                                    Page {page} of {totalPages}
+                                                </p>
+                                                <div className="order-1 flex items-center gap-2 sm:order-2">
                                                     <button
-                                                        key={item}
                                                         type="button"
-                                                        onClick={() => setPage(item)}
-                                                        disabled={showResultsLoadingOverlay}
-                                                        aria-current={page === item ? 'page' : undefined}
-                                                        className={`inline-flex min-w-[2.5rem] items-center justify-center rounded-xl px-3 py-2 text-sm font-bold shadow-sm transition-all disabled:pointer-events-none disabled:opacity-40 ${
-                                                            page === item
-                                                                ? 'bg-brand-500 text-white shadow-brand-100 ring-2 ring-brand-500/20'
-                                                                : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                                                        }`}
+                                                        onClick={() =>
+                                                            setPage((p) => Math.max(1, p - 1))
+                                                        }
+                                                        disabled={
+                                                            page <= 1 || showResultsLoadingOverlay
+                                                        }
+                                                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
                                                     >
-                                                        {item}
+                                                        <ChevronLeft
+                                                            className="h-4 w-4"
+                                                            aria-hidden
+                                                        />
+                                                        Previous
                                                     </button>
-                                                ),
-                                            )}
-                                        </div>
-                                    </nav>
-                                )}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setPage((p) =>
+                                                                Math.min(totalPages, p + 1),
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            page >= totalPages ||
+                                                            showResultsLoadingOverlay
+                                                        }
+                                                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
+                                                    >
+                                                        Next
+                                                        <ChevronRight
+                                                            className="h-4 w-4"
+                                                            aria-hidden
+                                                        />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div
+                                                className="flex flex-wrap items-center justify-center gap-1.5"
+                                                role="group"
+                                                aria-label="Go to page"
+                                            >
+                                                {paginationItems.map((item, idx) =>
+                                                    item === 'ellipsis' ? (
+                                                        <span
+                                                            key={`e-${idx}`}
+                                                            className="px-1.5 py-2 text-sm font-semibold text-slate-400"
+                                                            aria-hidden
+                                                        >
+                                                            …
+                                                        </span>
+                                                    ) : (
+                                                        <button
+                                                            key={item}
+                                                            type="button"
+                                                            onClick={() => setPage(item)}
+                                                            disabled={showResultsLoadingOverlay}
+                                                            aria-current={
+                                                                page === item ? 'page' : undefined
+                                                            }
+                                                            className={`inline-flex min-w-[2.5rem] items-center justify-center rounded-xl px-3 py-2 text-sm font-bold shadow-sm transition-all disabled:pointer-events-none disabled:opacity-40 ${
+                                                                page === item
+                                                                    ? 'bg-brand-500 text-white shadow-brand-100 ring-2 ring-brand-500/20'
+                                                                    : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                                            }`}
+                                                        >
+                                                            {item}
+                                                        </button>
+                                                    ),
+                                                )}
+                                            </div>
+                                        </nav>
+                                    )}
                                 </div>
                             </div>
                         )}
