@@ -4,7 +4,16 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { Search, Video, Calendar, Mail, Loader2, Users } from 'lucide-react';
+import {
+    Search,
+    Video,
+    Calendar,
+    Mail,
+    Loader2,
+    Users,
+    ChevronLeft,
+    ChevronRight,
+} from 'lucide-react';
 import { motion } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -16,6 +25,32 @@ import {
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { FORM_CONTROL_SEARCH_ON_WHITE, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
+
+const PAGE_SIZE = 9;
+
+/** Compact pagination: all pages if ≤9, otherwise 1 … window … last. */
+function getPaginationItems(totalPages: number, currentPage: number): Array<number | 'ellipsis'> {
+    if (totalPages <= 1) return [];
+    if (totalPages <= 9) {
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const delta = 1;
+    const pages = new Set<number>();
+    pages.add(1);
+    pages.add(totalPages);
+    for (let i = currentPage - delta; i <= currentPage + delta; i++) {
+        if (i >= 1 && i <= totalPages) pages.add(i);
+    }
+    const sorted = [...pages].sort((a, b) => a - b);
+    const out: Array<number | 'ellipsis'> = [];
+    for (let i = 0; i < sorted.length; i++) {
+        if (i > 0 && sorted[i] - sorted[i - 1] > 1) {
+            out.push('ellipsis');
+        }
+        out.push(sorted[i]);
+    }
+    return out;
+}
 
 // ─── Derive unique patients from appointment list ─────────────────────────────
 
@@ -79,8 +114,9 @@ function StatusPill({ status }: { status: string }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DoctorPatients() {
-    const { user, token } = useAuth();
+    const { token } = useAuth();
     const [search, setSearch] = React.useState('');
+    const [page, setPage] = React.useState(1);
     const [selectedPatient, setSelectedPatient] = React.useState<PatientRow | null>(null);
 
     const { data, isLoading, isError } = useQuery({
@@ -99,6 +135,63 @@ export default function DoctorPatients() {
           )
         : patientRows;
 
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    const pagedRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+    const paginationItems = React.useMemo(
+        () => getPaginationItems(totalPages, page),
+        [totalPages, page],
+    );
+
+    React.useEffect(() => {
+        setPage(1);
+    }, [search]);
+
+    React.useEffect(() => {
+        if (page > totalPages) setPage(totalPages);
+    }, [page, totalPages]);
+
+    const subtitle = React.useMemo(() => {
+        if (isLoading) return 'Loading...';
+        const totalFiltered = filtered.length;
+        const totalOverall = patientRows.length;
+        const hasSearch = search.trim().length > 0;
+
+        if (hasSearch && totalFiltered === 0) {
+            return 'No patients match your search.';
+        }
+
+        const from =
+            totalFiltered === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+        const to = Math.min(page * PAGE_SIZE, totalFiltered);
+
+        if (hasSearch) {
+            if (totalPages <= 1) {
+                return totalFiltered === 1
+                    ? '1 matching patient'
+                    : `${totalFiltered} matching patients`;
+            }
+            return `Showing ${from}–${to} of ${totalFiltered} matching patients`;
+        }
+
+        if (totalOverall === 0) {
+            return 'Patients from your appointments will appear here.';
+        }
+        if (totalPages <= 1) {
+            return totalOverall === 1
+                ? '1 patient across all your appointments'
+                : `${totalOverall} patients across all your appointments`;
+        }
+        return `Showing ${from}–${to} of ${totalOverall} patients across all your appointments`;
+    }, [
+        filtered.length,
+        isLoading,
+        page,
+        patientRows.length,
+        search,
+        totalPages,
+    ]);
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -112,11 +205,7 @@ export default function DoctorPatients() {
                     <h2 className="mb-2 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
                         Patient Records
                     </h2>
-                    <p className="text-slate-500 font-medium">
-                        {isLoading
-                            ? 'Loading...'
-                            : `${patientRows.length} patients across all your appointments`}
-                    </p>
+                    <p className="text-slate-500 font-medium">{subtitle}</p>
                 </div>
 
                 {/* Search */}
@@ -149,10 +238,21 @@ export default function DoctorPatients() {
             {!isLoading && !isError && filtered.length === 0 && (
                 <div className="p-20 bg-white rounded-[40px] border border-dashed border-slate-200 text-center">
                     <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">No patients yet</h4>
-                    <p className="text-slate-500">
-                        Patients who book appointments with you will appear here.
-                    </p>
+                    {patientRows.length > 0 && search.trim() ? (
+                        <>
+                            <h4 className="text-xl font-bold text-slate-900 mb-2">No matches</h4>
+                            <p className="text-slate-500">
+                                Try a different name or email to find a patient.
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <h4 className="text-xl font-bold text-slate-900 mb-2">No patients yet</h4>
+                            <p className="text-slate-500">
+                                Patients who book appointments with you will appear here.
+                            </p>
+                        </>
+                    )}
                 </div>
             )}
 
@@ -182,7 +282,7 @@ export default function DoctorPatients() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
-                                {filtered.map((patient) => (
+                                {pagedRows.map((patient) => (
                                     <tr
                                         key={patient.userId}
                                         className="hover:bg-slate-50 transition-colors group"
@@ -250,7 +350,7 @@ export default function DoctorPatients() {
 
                     {/* Mobile cards */}
                     <div className="md:hidden space-y-4">
-                        {filtered.map((patient) => (
+                        {pagedRows.map((patient) => (
                             <div
                                 key={patient.userId}
                                 className="bg-white p-6 rounded-[28px] border border-slate-100 shadow-sm"
@@ -292,6 +392,72 @@ export default function DoctorPatients() {
                             </div>
                         ))}
                     </div>
+
+                    {totalPages > 1 && (
+                        <nav
+                            className="flex flex-col items-stretch gap-4 border-t border-slate-100 pt-6"
+                            aria-label="Pagination"
+                        >
+                            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
+                                <p className="order-2 text-sm text-slate-500 sm:order-1">
+                                    Page {page} of {totalPages}
+                                </p>
+                                <div className="order-1 flex items-center gap-2 sm:order-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                        disabled={page <= 1}
+                                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
+                                    >
+                                        <ChevronLeft className="h-4 w-4" aria-hidden />
+                                        Previous
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setPage((p) => Math.min(totalPages, p + 1))
+                                        }
+                                        disabled={page >= totalPages}
+                                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
+                                    >
+                                        Next
+                                        <ChevronRight className="h-4 w-4" aria-hidden />
+                                    </button>
+                                </div>
+                            </div>
+                            <div
+                                className="flex flex-wrap items-center justify-center gap-1.5"
+                                role="group"
+                                aria-label="Go to page"
+                            >
+                                {paginationItems.map((item, idx) =>
+                                    item === 'ellipsis' ? (
+                                        <span
+                                            key={`e-${idx}`}
+                                            className="px-1.5 py-2 text-sm font-semibold text-slate-400"
+                                            aria-hidden
+                                        >
+                                            …
+                                        </span>
+                                    ) : (
+                                        <button
+                                            key={item}
+                                            type="button"
+                                            onClick={() => setPage(item)}
+                                            aria-current={page === item ? 'page' : undefined}
+                                            className={`inline-flex min-w-[2.5rem] items-center justify-center rounded-xl px-3 py-2 text-sm font-bold shadow-sm transition-all ${
+                                                page === item
+                                                    ? 'bg-brand-500 text-white shadow-brand-100 ring-2 ring-brand-500/20'
+                                                    : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                            }`}
+                                        >
+                                            {item}
+                                        </button>
+                                    ),
+                                )}
+                            </div>
+                        </nav>
+                    )}
                 </>
             )}
             {selectedPatient && (

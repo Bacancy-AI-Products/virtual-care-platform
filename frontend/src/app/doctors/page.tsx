@@ -3,21 +3,25 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import {
     Search,
     Star,
     Clock,
     MapPin,
+    Building2,
+    Stethoscope,
     ArrowRight,
     Loader2,
     ChevronDown,
-    XCircle,
+    X,
     RotateCw,
     SlidersHorizontal,
+    ChevronLeft,
+    ChevronRight,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { doctorsApi, type DoctorSummary, type SpecializationOption } from '@/services/api';
 import { getStates, getCities } from '@/constants/us-locations';
 import { PublicHeader } from '@/components/PublicHeader';
@@ -25,7 +29,36 @@ import {
     FORM_CONTROL_SEARCH,
     FORM_SELECT_CLASS,
     NO_BROWSER_INPUT_HELPERS,
+    FORM_CONTROL_LEADING_ICON,
 } from '@/constants/form-controls';
+import { twMerge } from 'tailwind-merge';
+
+/** Server page size for the public doctors grid (3 columns × 3 rows at xl). */
+const PAGE_SIZE = 9;
+
+/** Compact pagination: all pages if ≤9, otherwise 1 … window … last. */
+function getPaginationItems(totalPages: number, currentPage: number): Array<number | 'ellipsis'> {
+    if (totalPages <= 1) return [];
+    if (totalPages <= 9) {
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const delta = 1;
+    const pages = new Set<number>();
+    pages.add(1);
+    pages.add(totalPages);
+    for (let i = currentPage - delta; i <= currentPage + delta; i++) {
+        if (i >= 1 && i <= totalPages) pages.add(i);
+    }
+    const sorted = [...pages].sort((a, b) => a - b);
+    const out: Array<number | 'ellipsis'> = [];
+    for (let i = 0; i < sorted.length; i++) {
+        if (i > 0 && sorted[i] - sorted[i - 1] > 1) {
+            out.push('ellipsis');
+        }
+        out.push(sorted[i]);
+    }
+    return out;
+}
 
 function DoctorCard({
     doctor,
@@ -100,14 +133,24 @@ function DoctorCard({
 }
 
 function PublicDoctorsContent() {
-    const router = useRouter();
     const qClient = useQueryClient();
     const searchParams = useSearchParams();
     const [searchTerm, setSearchTerm] = React.useState('');
+    const [debouncedQ, setDebouncedQ] = React.useState('');
+    const [page, setPage] = React.useState(1);
     const [selectedSpecialtyId, setSelectedSpecialtyId] = React.useState<string>('all');
     const [selectedStateCode, setSelectedStateCode] = React.useState('');
     const [selectedCity, setSelectedCity] = React.useState('');
     const [mobileFiltersOpen, setMobileFiltersOpen] = React.useState(false);
+
+    React.useEffect(() => {
+        const t = setTimeout(() => setDebouncedQ(searchTerm.trim()), 300);
+        return () => clearTimeout(t);
+    }, [searchTerm]);
+
+    React.useEffect(() => {
+        setPage(1);
+    }, [debouncedQ, selectedSpecialtyId, selectedStateCode, selectedCity]);
 
     const {
         data: specializationData,
@@ -169,25 +212,44 @@ function PublicDoctorsContent() {
         setSelectedCity('');
     };
 
-    const { data, isLoading, isError } = useQuery({
-        queryKey: ['doctors', 'public', selectedSpecialtyId, selectedStateName, selectedCity],
+    const { data, isLoading, isFetching, isError } = useQuery({
+        queryKey: [
+            'doctors',
+            'public',
+            selectedSpecialtyId,
+            selectedStateName,
+            selectedCity,
+            debouncedQ,
+            page,
+        ],
         queryFn: () =>
             doctorsApi.list({
                 specialization: selectedSpecialtyId !== 'all' ? selectedSpecialtyId : undefined,
                 state: selectedStateName || undefined,
                 city: selectedCity || undefined,
-                limit: 50,
+                q: debouncedQ || undefined,
+                page,
+                limit: PAGE_SIZE,
             }),
+        placeholderData: keepPreviousData,
     });
 
     const doctors = data?.data ?? [];
-    const filtered = searchTerm.trim()
-        ? doctors.filter(
-              (d) =>
-                  d.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  d.specialization.toLowerCase().includes(searchTerm.toLowerCase()),
-          )
-        : doctors;
+    const total = data?.total ?? 0;
+    const limit = data?.limit ?? PAGE_SIZE;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const showResultsLoadingOverlay = isFetching && !isLoading;
+    const paginationItems = React.useMemo(
+        () => getPaginationItems(totalPages, page),
+        [totalPages, page],
+    );
+
+    React.useEffect(() => {
+        if (data == null) return;
+        if (page > totalPages) {
+            setPage(totalPages);
+        }
+    }, [data, page, totalPages]);
 
     return (
         <div className="min-h-screen bg-white">
@@ -201,9 +263,16 @@ function PublicDoctorsContent() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="space-y-5 sm:space-y-10"
+                    className="space-y-4 sm:space-y-6"
                 >
                     <div>
+                        <Link
+                            href="/"
+                            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors group mb-2 sm:mb-3"
+                        >
+                            <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
+                            Back to home
+                        </Link>
                         <h1 className="text-xl font-bold text-slate-900 mb-1 sm:text-2xl sm:mb-2">
                             Find a doctor
                         </h1>
@@ -212,41 +281,37 @@ function PublicDoctorsContent() {
                             in to book an appointment.
                         </p>
                     </div>
-                    <div className="bg-white p-3 sm:p-8 rounded-2xl sm:rounded-[40px] border border-slate-100 shadow-sm space-y-3 sm:space-y-6">
-                        <div className="flex flex-row gap-2 items-center sm:gap-3 sm:justify-between">
-                            <div className="min-w-0 flex-1 relative group">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:left-4 sm:w-5 sm:h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors" />
-                                <input
-                                    type="text"
-                                    placeholder="Name or specialty..."
-                                    className={`${FORM_CONTROL_SEARCH} max-w-full py-2.5 pl-9 text-sm sm:py-[11px] sm:pl-10 sm:text-base`}
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    {...NO_BROWSER_INPUT_HELPERS}
-                                />
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setSearchTerm('');
-                                    setSelectedStateCode('');
-                                    setSelectedCity('');
-                                    setSelectedSpecialtyId('all');
-                                    setMobileFiltersOpen(false);
-                                    router.push('/doctors');
-                                }}
-                                className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl border border-slate-200 px-2.5 py-2 text-[11px] font-bold text-slate-500 hover:bg-slate-50 sm:gap-2 sm:px-3 sm:text-xs whitespace-nowrap"
-                                aria-label="Clear all filters"
-                            >
-                                <XCircle className="w-3.5 h-3.5 shrink-0" aria-hidden />
-                                Clear
-                            </button>
+                    <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm space-y-2 sm:space-y-3">
+                        <div className="relative min-w-0 group">
+                            <Search className="absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors pointer-events-none group-focus-within:text-brand-500" />
+                            <input
+                                type="text"
+                                placeholder="Name or specialty..."
+                                className={twMerge(
+                                    FORM_CONTROL_LEADING_ICON,
+                                    'py-2 text-sm',
+                                    searchTerm.trim() ? 'pr-10' : 'pr-3.5',
+                                )}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                {...NO_BROWSER_INPUT_HELPERS}
+                            />
+                            {searchTerm.trim() ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setSearchTerm('')}
+                                    className="absolute right-1.5 top-1/2 z-10 -translate-y-1/2 rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-200/80 hover:text-slate-700 sm:right-2"
+                                    aria-label="Clear search"
+                                >
+                                    <X className="h-4 w-4" aria-hidden />
+                                </button>
+                            ) : null}
                         </div>
 
                         <button
                             type="button"
                             onClick={() => setMobileFiltersOpen((o) => !o)}
-                            className="flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/90 px-3 py-2.5 text-left sm:hidden"
+                            className="flex w-full items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50/90 px-2.5 py-2 text-left sm:hidden"
                             aria-expanded={mobileFiltersOpen}
                         >
                             <span className="flex min-w-0 items-center gap-2 text-sm font-bold text-slate-800">
@@ -273,15 +338,19 @@ function PublicDoctorsContent() {
                         </button>
 
                         <div
-                            className={`grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 ${
+                            className={`grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3 ${
                                 !mobileFiltersOpen ? 'max-sm:hidden' : ''
                             }`}
                         >
                             <div>
                                 <label
                                     htmlFor="public-state-select"
-                                    className="block text-xs font-bold text-slate-700 mb-1 sm:text-sm sm:mb-2"
+                                    className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500"
                                 >
+                                    <MapPin
+                                        className="h-3.5 w-3.5 shrink-0 text-medical-teal"
+                                        aria-hidden
+                                    />
                                     State
                                 </label>
                                 <div className="relative">
@@ -289,7 +358,7 @@ function PublicDoctorsContent() {
                                         id="public-state-select"
                                         value={selectedStateCode}
                                         onChange={(e) => onStateChange(e.target.value)}
-                                        className={FORM_SELECT_CLASS}
+                                        className={twMerge(FORM_SELECT_CLASS, 'py-2')}
                                     >
                                         <option value="">All states</option>
                                         {states.map((state) => (
@@ -304,8 +373,12 @@ function PublicDoctorsContent() {
                             <div>
                                 <label
                                     htmlFor="public-city-select"
-                                    className="block text-xs font-bold text-slate-700 mb-1 sm:text-sm sm:mb-2"
+                                    className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500"
                                 >
+                                    <Building2
+                                        className="h-3.5 w-3.5 shrink-0 text-sky-600"
+                                        aria-hidden
+                                    />
                                     City
                                 </label>
                                 <div className="relative">
@@ -314,7 +387,7 @@ function PublicDoctorsContent() {
                                         value={selectedCity}
                                         onChange={(e) => setSelectedCity(e.target.value)}
                                         disabled={!selectedStateCode}
-                                        className={FORM_SELECT_CLASS}
+                                        className={twMerge(FORM_SELECT_CLASS, 'py-2')}
                                     >
                                         <option value="">All cities</option>
                                         {citiesForState.map((city) => (
@@ -329,8 +402,12 @@ function PublicDoctorsContent() {
                             <div>
                                 <label
                                     htmlFor="public-specialty-select"
-                                    className="block text-xs font-bold text-slate-700 mb-1 sm:text-sm sm:mb-2"
+                                    className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500"
                                 >
+                                    <Stethoscope
+                                        className="h-3.5 w-3.5 shrink-0 text-brand-500"
+                                        aria-hidden
+                                    />
                                     Specialty
                                 </label>
                                 <div className="relative">
@@ -338,7 +415,7 @@ function PublicDoctorsContent() {
                                         id="public-specialty-select"
                                         value={selectedSpecialtyId}
                                         onChange={(e) => setSelectedSpecialtyId(e.target.value)}
-                                        className={FORM_SELECT_CLASS}
+                                        className={twMerge(FORM_SELECT_CLASS, 'py-2')}
                                         disabled={
                                             isLoadingSpecializations || isErrorSpecializations
                                         }
@@ -365,9 +442,28 @@ function PublicDoctorsContent() {
                     </div>
 
                     <div className="space-y-4 sm:space-y-6">
-                        <h3 className="text-xl font-bold text-slate-900 px-0.5 sm:text-2xl sm:px-2">
-                            {isLoading ? 'Loading...' : `${filtered.length} Specialists Found`}
-                        </h3>
+                        <div className="flex flex-col gap-1 px-0.5 sm:px-2">
+                            <h3 className="text-xl font-bold text-slate-900 sm:text-2xl">
+                                {isLoading
+                                    ? 'Loading...'
+                                    : `${total} Specialist${total === 1 ? '' : 's'} found`}
+                            </h3>
+                            {!isLoading && total > 0 && (
+                                <p className="text-sm text-slate-500">
+                                    {showResultsLoadingOverlay ? (
+                                        <span className="inline-flex items-center gap-2">
+                                            <Loader2 className="h-4 w-4 animate-spin text-brand-500" />
+                                            Loading results…
+                                        </span>
+                                    ) : (
+                                        <>
+                                            Showing {(page - 1) * limit + 1}–
+                                            {Math.min(page * limit, total)} of {total}
+                                        </>
+                                    )}
+                                </p>
+                            )}
+                        </div>
 
                         {isLoading && (
                             <div className="flex justify-center py-24">
@@ -394,7 +490,7 @@ function PublicDoctorsContent() {
                             </div>
                         )}
 
-                        {!isLoading && !isError && filtered.length === 0 && (
+                        {!isLoading && !isError && doctors.length === 0 && (
                             <div className="p-20 bg-white rounded-[40px] border border-dashed border-slate-200 text-center">
                                 <Search className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                                 <h4 className="text-xl font-bold text-slate-900 mb-2">
@@ -406,9 +502,33 @@ function PublicDoctorsContent() {
                             </div>
                         )}
 
-                        {!isLoading && !isError && filtered.length > 0 && (
-                            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-                                {filtered.map((doctor) => {
+                        {!isLoading && !isError && doctors.length > 0 && (
+                            <div
+                                className="relative space-y-6"
+                                aria-busy={showResultsLoadingOverlay}
+                            >
+                                {showResultsLoadingOverlay && (
+                                    <div
+                                        className="absolute inset-0 z-20 flex items-center justify-center rounded-[24px] bg-white/70 backdrop-blur-[2px] sm:rounded-[40px]"
+                                        role="status"
+                                        aria-live="polite"
+                                    >
+                                        <div className="flex flex-col items-center gap-3 rounded-2xl border border-slate-100 bg-white px-8 py-6 shadow-lg">
+                                            <Loader2
+                                                className="h-10 w-10 text-brand-500 animate-spin"
+                                                aria-hidden
+                                            />
+                                            <span className="text-sm font-semibold text-slate-600">
+                                                Loading doctors…
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
+                                <div
+                                    className={`space-y-6 ${showResultsLoadingOverlay ? 'min-h-[280px] sm:min-h-[320px]' : ''}`}
+                                >
+                                    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
+                                {doctors.map((doctor) => {
                                     const specializationLabel =
                                         specializationNameById.get(doctor.specialization) ??
                                         doctor.specialization;
@@ -420,6 +540,84 @@ function PublicDoctorsContent() {
                                         />
                                     );
                                 })}
+                                </div>
+
+                                {totalPages > 1 && (
+                                    <nav
+                                        className="flex flex-col items-stretch gap-4 border-t border-slate-100 pt-6"
+                                        aria-label="Pagination"
+                                    >
+                                        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
+                                            <p className="order-2 text-sm text-slate-500 sm:order-1">
+                                                Page {page} of {totalPages}
+                                            </p>
+                                            <div className="order-1 flex items-center gap-2 sm:order-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setPage((p) => Math.max(1, p - 1))
+                                                    }
+                                                    disabled={page <= 1 || showResultsLoadingOverlay}
+                                                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
+                                                >
+                                                    <ChevronLeft className="h-4 w-4" aria-hidden />
+                                                    Previous
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setPage((p) =>
+                                                            Math.min(totalPages, p + 1),
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        page >= totalPages || showResultsLoadingOverlay
+                                                    }
+                                                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
+                                                >
+                                                    Next
+                                                    <ChevronRight
+                                                        className="h-4 w-4"
+                                                        aria-hidden
+                                                    />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div
+                                            className="flex flex-wrap items-center justify-center gap-1.5"
+                                            role="group"
+                                            aria-label="Go to page"
+                                        >
+                                            {paginationItems.map((item, idx) =>
+                                                item === 'ellipsis' ? (
+                                                    <span
+                                                        key={`e-${idx}`}
+                                                        className="px-1.5 py-2 text-sm font-semibold text-slate-400"
+                                                        aria-hidden
+                                                    >
+                                                        …
+                                                    </span>
+                                                ) : (
+                                                    <button
+                                                        key={item}
+                                                        type="button"
+                                                        onClick={() => setPage(item)}
+                                                        disabled={showResultsLoadingOverlay}
+                                                        aria-current={page === item ? 'page' : undefined}
+                                                        className={`inline-flex min-w-[2.5rem] items-center justify-center rounded-xl px-3 py-2 text-sm font-bold shadow-sm transition-all disabled:pointer-events-none disabled:opacity-40 ${
+                                                            page === item
+                                                                ? 'bg-brand-500 text-white shadow-brand-100 ring-2 ring-brand-500/20'
+                                                                : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                                        }`}
+                                                    >
+                                                        {item}
+                                                    </button>
+                                                ),
+                                            )}
+                                        </div>
+                                    </nav>
+                                )}
+                                </div>
                             </div>
                         )}
                     </div>
