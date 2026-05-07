@@ -29,7 +29,11 @@ import { useQuery } from '@tanstack/react-query';
 import { doctorsApi, type SpecializationOption } from '@/services/api';
 import { getStates, getCities } from '@/constants/us-locations';
 import { PublicHeader } from '@/components/PublicHeader';
-import { HowItWorksJourneyArt, SpecialtyChipGlyph, specializationIdToGlyphKind } from '@/components/landing/LandingSectionSvgs';
+import {
+    HowItWorksJourneyArt,
+    SpecialtyChipGlyph,
+    specializationIdToGlyphKind,
+} from '@/components/landing/LandingSectionSvgs';
 
 const FeatureCard = ({
     icon: Icon,
@@ -45,7 +49,10 @@ const FeatureCard = ({
             className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-medical-teal via-brand-400 to-brand-500 opacity-90 sm:block hidden"
             aria-hidden
         />
-        <div className="pointer-events-none absolute -right-12 -top-12 h-28 w-28 rounded-full bg-medical-teal/[0.06] blur-2xl" aria-hidden />
+        <div
+            className="pointer-events-none absolute -right-12 -top-12 h-28 w-28 rounded-full bg-medical-teal/[0.06] blur-2xl"
+            aria-hidden
+        />
         <div className="w-14 h-14 bg-gradient-to-br from-brand-50 to-medical-soft rounded-2xl flex items-center justify-center mb-6 mx-auto sm:mx-0 ring-1 ring-brand-100/80 group-hover:from-brand-500 group-hover:to-brand-600 transition-all duration-300">
             <Icon className="w-7 h-7 text-brand-600 group-hover:text-white transition-colors duration-300" />
         </div>
@@ -61,7 +68,10 @@ function HeroHighlights() {
         'Separate secure workspaces for patients and doctors, with encryption and access controls.',
     ];
     return (
-        <ul className="mb-6 max-w-lg space-y-2.5 sm:mb-7" aria-label="What you can do on BacancyTeleCare">
+        <ul
+            className="mb-6 max-w-lg space-y-2.5 sm:mb-7"
+            aria-label="What you can do on BacancyTeleCare"
+        >
             {items.map((text) => (
                 <li
                     key={text}
@@ -97,7 +107,10 @@ function TrustStatsStrip() {
     ];
     return (
         <section className="relative border-y border-slate-200/70 bg-white/80 backdrop-blur-sm">
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgb(255_255_255)_0%,rgb(240_253_250_/_0.5)_50%,rgb(255_255_255)_100%)]" aria-hidden />
+            <div
+                className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgb(255_255_255)_0%,rgb(240_253_250_/_0.5)_50%,rgb(255_255_255)_100%)]"
+                aria-hidden
+            />
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
                     {items.map(({ icon: Icon, title, subtitle }) => (
@@ -110,7 +123,9 @@ function TrustStatsStrip() {
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-sm font-bold text-slate-900">{title}</p>
-                                <p className="mt-0.5 text-xs text-slate-600 leading-snug">{subtitle}</p>
+                                <p className="mt-0.5 text-xs text-slate-600 leading-snug">
+                                    {subtitle}
+                                </p>
                             </div>
                         </div>
                     ))}
@@ -232,7 +247,10 @@ function WhoItsForSection() {
                             </ul>
                             <Link href={r.href} className={r.buttonClass}>
                                 {r.cta}
-                                <ArrowRight className="h-3.5 w-3.5 shrink-0 opacity-90" aria-hidden />
+                                <ArrowRight
+                                    className="h-3.5 w-3.5 shrink-0 opacity-90"
+                                    aria-hidden
+                                />
                             </Link>
                         </div>
                     ))}
@@ -284,8 +302,8 @@ function HowItWorksSection() {
                         How BacancyTeleCare works
                     </h2>
                     <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
-                        A clear path from discovery to care, similar to leading health platforms, built
-                        for speed and trust.
+                        A clear path from discovery to care, similar to leading health platforms,
+                        built for speed and trust.
                     </p>
                 </div>
                 <HowItWorksJourneyArt className="mx-auto mb-8 hidden h-[72px] w-full max-w-3xl md:block lg:max-w-4xl lg:mb-10" />
@@ -403,7 +421,11 @@ function PopularSpecialtiesSection() {
                         ))}
                     {!isLoading &&
                         chips.map((s: SpecializationOption) => (
-                            <motion.div key={s.id} variants={chipVariants} className="[contain:layout]">
+                            <motion.div
+                                key={s.id}
+                                variants={chipVariants}
+                                className="[contain:layout]"
+                            >
                                 <Link
                                     href={`/doctors?specialty=${encodeURIComponent(s.id)}`}
                                     className="group inline-flex items-center gap-2 rounded-full border border-slate-200/90 bg-white/95 px-3.5 py-2 sm:px-4 text-sm font-semibold text-slate-800 shadow-sm shadow-slate-200/30 backdrop-blur-sm transition-all hover:border-brand-200 hover:bg-brand-50 hover:text-brand-800 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98]"
@@ -414,7 +436,9 @@ function PopularSpecialtiesSection() {
                                             className="h-4 w-4 shrink-0 text-medical-teal group-hover:text-brand-600"
                                         />
                                     </span>
-                                    <span className="max-w-[200px] truncate sm:max-w-[240px]">{s.name}</span>
+                                    <span className="max-w-[200px] truncate sm:max-w-[240px]">
+                                        {s.name}
+                                    </span>
                                 </Link>
                             </motion.div>
                         ))}
@@ -461,11 +485,7 @@ function FindDoctorsBlock() {
         'flex min-h-0 min-w-0 flex-1 flex-col justify-end gap-2 bg-white px-4 py-3 sm:px-5 sm:py-4';
 
     return (
-        <div
-            role="search"
-            aria-label="Find doctors by location and specialty"
-            className="relative"
-        >
+        <div role="search" aria-label="Find doctors by location and specialty" className="relative">
             <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-lg shadow-slate-200/35 ring-1 ring-slate-100">
                 <div className="flex flex-col divide-y divide-slate-200 lg:flex-row lg:divide-x lg:divide-y-0 lg:items-stretch">
                     <div className={fieldCell}>
@@ -473,7 +493,10 @@ function FindDoctorsBlock() {
                             htmlFor="landing-state"
                             className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500"
                         >
-                            <MapPin className="w-3.5 h-3.5 shrink-0 text-medical-teal" aria-hidden />{' '}
+                            <MapPin
+                                className="w-3.5 h-3.5 shrink-0 text-medical-teal"
+                                aria-hidden
+                            />{' '}
                             State
                         </label>
                         <div className="relative">
@@ -526,7 +549,10 @@ function FindDoctorsBlock() {
                             htmlFor="landing-specialty"
                             className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500"
                         >
-                            <Stethoscope className="w-3.5 h-3.5 shrink-0 text-brand-500" aria-hidden />{' '}
+                            <Stethoscope
+                                className="w-3.5 h-3.5 shrink-0 text-brand-500"
+                                aria-hidden
+                            />{' '}
                             Specialty
                         </label>
                         <div className="relative">
@@ -612,298 +638,309 @@ export default function Landing() {
                     className="relative scroll-mt-28 sm:scroll-mt-32 bg-gradient-to-b from-slate-100/60 via-slate-50/40 to-transparent"
                     aria-labelledby="find-doctor-heading"
                 >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-6">
-                    <div className="relative border-b border-slate-200/70 pb-8">
-                        <h2
-                            id="find-doctor-heading"
-                            className="mb-2 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl"
-                        >
-                            Find a doctor
-                        </h2>
-                        <p className="text-slate-600 mb-6 max-w-3xl text-sm sm:text-[15px] leading-snug">
-                            Search by location and specialty, open results on a new page, and no
-                            sign-in needed.
-                        </p>
-                        <FindDoctorsBlock />
-                    </div>
-                </div>
-            </section>
-
-            <section
-                id="hero"
-                className="relative pb-6 sm:pb-10 lg:pb-12"
-                aria-labelledby="hero-heading"
-            >
-                <div
-                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgb(20_184_166_/_0.12),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_50%,rgb(245_130_32_/_0.06),transparent_50%)]"
-                    aria-hidden
-                />
-                <div className="pointer-events-none absolute left-1/2 top-1/4 h-64 w-64 -translate-x-1/2 rounded-full bg-medical-teal/[0.07] blur-3xl sm:h-80 sm:w-80" aria-hidden />
-                <div className="relative max-w-7xl mx-auto grid grid-cols-1 items-start gap-8 px-4 sm:px-6 sm:gap-10 lg:grid-cols-2 lg:grid-flow-row lg:gap-x-12 lg:gap-y-0 xl:gap-x-16">
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="min-w-0"
-                    >
-                        <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-50 to-medical-soft px-4 py-2 text-sm font-bold text-brand-700 ring-1 ring-brand-100/80 shadow-sm shadow-brand-100/40 mb-5 sm:mb-6">
-                            <span className="flex h-2 w-2 shrink-0 rounded-full bg-medical-teal animate-pulse ring-2 ring-medical-teal/30" />
-                            Trusted by 10,000+ Patients
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-6">
+                        <div className="relative border-b border-slate-200/70 pb-8">
+                            <h2
+                                id="find-doctor-heading"
+                                className="mb-2 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl"
+                            >
+                                Find a doctor
+                            </h2>
+                            <p className="text-slate-600 mb-6 max-w-3xl text-sm sm:text-[15px] leading-snug">
+                                Search by location and specialty, open results on a new page, and no
+                                sign-in needed.
+                            </p>
+                            <FindDoctorsBlock />
                         </div>
-                        <h1
-                            id="hero-heading"
-                            className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-[1.15] mb-5 sm:mb-6 tracking-tight"
-                        >
-                            Quality Healthcare,{' '}
-                            <span className="text-brand-500">Anywhere, Anytime.</span>
-                        </h1>
-                        <p className="mb-4 max-w-lg text-sm font-normal leading-relaxed text-slate-600 sm:text-[15px]">
-                            Connect with top-rated doctors for instant video consultations, digital
-                            prescriptions, and personalized care from the comfort of your home.
-                        </p>
-                        <p className="mb-6 max-w-lg text-sm leading-relaxed text-slate-600 sm:mb-7 sm:text-[15px]">
-                            BacancyTeleCare is built for end-to-end virtual care: discover a clinician,
-                            request or confirm a time, join a secure visit, then track notes and
-                            prescriptions alongside your health record.
-                        </p>
-                        <HeroHighlights />
-                        <Link
-                            href="/signup"
-                            className="inline-flex w-fit items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-500 via-brand-500 to-brand-600 px-7 py-3 text-sm font-bold text-white shadow-md shadow-brand-200/45 ring-1 ring-brand-400/35 transition-all hover:from-brand-600 hover:to-brand-700 hover:shadow-lg hover:shadow-brand-300/30 sm:px-8 sm:py-3.5 sm:text-[15px] group"
-                        >
-                            Book an Appointment
-                            <ArrowRight className="h-4 w-4 shrink-0 sm:h-[1.05rem] sm:w-[1.05rem] group-hover:translate-x-0.5 transition-transform" />
-                        </Link>
-                        <HeroCompliancePills />
-                    </motion.div>
+                    </div>
+                </section>
 
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="relative w-full min-w-0 justify-self-center max-w-md lg:max-w-none lg:justify-self-stretch"
-                    >
-                        <div className="relative mx-auto w-full max-w-sm sm:max-w-md lg:mx-0 lg:ml-auto lg:max-w-lg xl:max-w-xl">
-                            <div className="relative z-10 aspect-[4/5] w-full">
-                                <Image
-                                    src="/hero-telemedicine.svg"
-                                    alt="Online doctor consultation illustration"
-                                    fill
-                                    className="object-contain object-top object-center"
-                                    priority
+                <section
+                    id="hero"
+                    className="relative pb-6 sm:pb-10 lg:pb-12"
+                    aria-labelledby="hero-heading"
+                >
+                    <div
+                        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgb(20_184_166_/_0.12),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_50%,rgb(245_130_32_/_0.06),transparent_50%)]"
+                        aria-hidden
+                    />
+                    <div
+                        className="pointer-events-none absolute left-1/2 top-1/4 h-64 w-64 -translate-x-1/2 rounded-full bg-medical-teal/[0.07] blur-3xl sm:h-80 sm:w-80"
+                        aria-hidden
+                    />
+                    <div className="relative max-w-7xl mx-auto grid grid-cols-1 items-start gap-8 px-4 sm:px-6 sm:gap-10 lg:grid-cols-2 lg:grid-flow-row lg:gap-x-12 lg:gap-y-0 xl:gap-x-16">
+                        <motion.div
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.8 }}
+                            className="min-w-0"
+                        >
+                            <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-50 to-medical-soft px-4 py-2 text-sm font-bold text-brand-700 ring-1 ring-brand-100/80 shadow-sm shadow-brand-100/40 mb-5 sm:mb-6">
+                                <span className="flex h-2 w-2 shrink-0 rounded-full bg-medical-teal animate-pulse ring-2 ring-medical-teal/30" />
+                                Trusted by 10,000+ Patients
+                            </div>
+                            <h1
+                                id="hero-heading"
+                                className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 leading-[1.15] mb-5 sm:mb-6 tracking-tight"
+                            >
+                                Quality Healthcare,{' '}
+                                <span className="text-brand-500">Anywhere, Anytime.</span>
+                            </h1>
+                            <p className="mb-4 max-w-lg text-sm font-normal leading-relaxed text-slate-600 sm:text-[15px]">
+                                Connect with top-rated doctors for instant video consultations,
+                                digital prescriptions, and personalized care from the comfort of
+                                your home.
+                            </p>
+                            <p className="mb-6 max-w-lg text-sm leading-relaxed text-slate-600 sm:mb-7 sm:text-[15px]">
+                                BacancyTeleCare is built for end-to-end virtual care: discover a
+                                clinician, request or confirm a time, join a secure visit, then
+                                track notes and prescriptions alongside your health record.
+                            </p>
+                            <HeroHighlights />
+                            <Link
+                                href="/signup"
+                                className="inline-flex w-fit items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-500 via-brand-500 to-brand-600 px-7 py-3 text-sm font-bold text-white shadow-md shadow-brand-200/45 ring-1 ring-brand-400/35 transition-all hover:from-brand-600 hover:to-brand-700 hover:shadow-lg hover:shadow-brand-300/30 sm:px-8 sm:py-3.5 sm:text-[15px] group"
+                            >
+                                Book an Appointment
+                                <ArrowRight className="h-4 w-4 shrink-0 sm:h-[1.05rem] sm:w-[1.05rem] group-hover:translate-x-0.5 transition-transform" />
+                            </Link>
+                            <HeroCompliancePills />
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="relative w-full min-w-0 justify-self-center max-w-md lg:max-w-none lg:justify-self-stretch"
+                        >
+                            <div className="relative mx-auto w-full max-w-sm sm:max-w-md lg:mx-0 lg:ml-auto lg:max-w-lg xl:max-w-xl">
+                                <div className="relative z-10 aspect-[4/5] w-full">
+                                    <Image
+                                        src="/hero-telemedicine.svg"
+                                        alt="Online doctor consultation illustration"
+                                        fill
+                                        className="object-contain object-top object-center"
+                                        priority
+                                    />
+                                </div>
+                                <div
+                                    className="pointer-events-none absolute left-1/2 top-[18%] -z-10 h-[min(100%,28rem)] w-[min(140%,24rem)] -translate-x-1/2 rounded-full opacity-70 blur-3xl bg-[radial-gradient(circle,rgb(240_253_250)_0%,rgb(255_248_244)_45%,transparent_70%)]"
+                                    aria-hidden
                                 />
                             </div>
-                            <div
-                                className="pointer-events-none absolute left-1/2 top-[18%] -z-10 h-[min(100%,28rem)] w-[min(140%,24rem)] -translate-x-1/2 rounded-full opacity-70 blur-3xl bg-[radial-gradient(circle,rgb(240_253_250)_0%,rgb(255_248_244)_45%,transparent_70%)]"
-                                aria-hidden
-                            />
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
-
-            <TrustStatsStrip />
-            <WhoItsForSection />
-            <HowItWorksSection />
-            <PopularSpecialtiesSection />
-
-            {/* Features Section */}
-            <section
-                id="features"
-                className="relative py-16 sm:py-24 overflow-hidden bg-gradient-to-b from-slate-100/90 via-medical-soft/25 to-slate-50"
-            >
-                <div
-                    className="pointer-events-none absolute inset-0 opacity-[0.4] bg-[linear-gradient(to_right,rgb(148_163_184_/_0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgb(148_163_184_/_0.06)_1px,transparent_1px)] bg-[size:48px_48px]"
-                    aria-hidden
-                />
-                <div className="max-w-7xl mx-auto px-6 relative">
-                    <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
-                        <div className="flex justify-center mb-4">
-                            <span className="h-1 w-12 rounded-full bg-gradient-to-r from-medical-teal to-brand-500" />
-                        </div>
-                        <p className="text-sm font-semibold uppercase tracking-widest text-brand-600 mb-2">
-                            Clinical-grade convenience
-                        </p>
-                        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-4">
-                            Why Choose BacancyTeleCare?
-                        </h2>
-                        <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
-                            We combine cutting-edge technology with compassionate care to provide
-                            the best healthcare experience.
-                        </p>
+                        </motion.div>
                     </div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                        <FeatureCard
-                            icon={Video}
-                            title="Video Consultations"
-                            description="High-quality video calls with specialized doctors from anywhere in the world."
-                        />
-                        <FeatureCard
-                            icon={Shield}
-                            title="Secure & Private"
-                            description="Your medical data is encrypted and stored securely, ensuring complete privacy."
-                        />
-                        <FeatureCard
-                            icon={Clock}
-                            title="24/7 Availability"
-                            description="Access healthcare services around the clock, even on weekends and holidays."
-                        />
-                        <FeatureCard
-                            icon={FileText}
-                            title="Digital Prescriptions"
-                            description="Receive and manage your prescriptions digitally, ready for any pharmacy."
-                        />
-                        <FeatureCard
-                            icon={Users}
-                            title="Expert Doctors"
-                            description="Our platform hosts verified specialists across multiple medical fields."
-                        />
-                        <FeatureCard
-                            icon={Calendar}
-                            title="Easy Scheduling"
-                            description="Book appointments in seconds with our intuitive calendar interface."
-                        />
-                    </div>
-                </div>
-            </section>
+                </section>
 
-            {/* CTA */}
-            <section
-                className="relative py-12 sm:py-16 lg:py-20"
-                aria-labelledby="cta-heading"
-            >
-                <div className="mx-auto max-w-7xl px-4 sm:px-6">
-                    <div className="relative overflow-hidden rounded-[1.75rem] bg-brand-500 shadow-lg shadow-brand-900/25 sm:rounded-[2rem]">
-                        <div className="relative z-10 grid gap-10 p-8 sm:p-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:p-12">
-                            <div className="max-w-xl text-left">
-                                <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white/95 ring-1 ring-white/25 backdrop-blur-sm sm:text-xs">
-                                    <Sparkles
-                                        className="h-3.5 w-3.5 text-brand-100"
-                                        aria-hidden
-                                    />
-                                    Get started
-                                </p>
-                                <h2
-                                    id="cta-heading"
-                                    className="mt-5 text-3xl font-bold leading-[1.12] tracking-tight text-white sm:text-4xl lg:text-[2.35rem]"
-                                >
-                                    Your next visit starts{' '}
-                                    <span className="text-white/85">here.</span>
-                                </h2>
-                                <p className="mt-4 max-w-lg text-base leading-relaxed text-white/88 sm:text-[17px]">
-                                    Open a free account to book HD video care with verified
-                                    clinicians. Manage appointments and prescriptions in one secure
-                                    workspace.
-                                </p>
-                                <ul className="mt-8 flex flex-col gap-3.5 sm:gap-4" role="list">
-                                    {[
-                                        {
-                                            icon: Video,
-                                            text: 'Crystal clear video visits from anywhere',
-                                        },
-                                        {
-                                            icon: BadgeCheck,
-                                            text: 'Specialists vetted for this platform',
-                                        },
-                                        {
-                                            icon: Shield,
-                                            text: 'Sessions and records protected by design',
-                                        },
-                                    ].map(({ icon: Icon, text }) => (
-                                        <li
-                                            key={text}
-                                            className="flex items-center gap-3.5 text-sm font-medium text-white/92 sm:text-[15px]"
-                                        >
-                                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15 shadow-sm shadow-brand-900/20 ring-1 ring-white/25">
-                                                <Icon
-                                                    className="h-4 w-4 text-white"
-                                                    aria-hidden
-                                                />
-                                            </span>
-                                            {text}
-                                        </li>
-                                    ))}
-                                </ul>
+                <TrustStatsStrip />
+                <WhoItsForSection />
+                <HowItWorksSection />
+                <PopularSpecialtiesSection />
+
+                {/* Features Section */}
+                <section
+                    id="features"
+                    className="relative py-16 sm:py-24 overflow-hidden bg-gradient-to-b from-slate-100/90 via-medical-soft/25 to-slate-50"
+                >
+                    <div
+                        className="pointer-events-none absolute inset-0 opacity-[0.4] bg-[linear-gradient(to_right,rgb(148_163_184_/_0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgb(148_163_184_/_0.06)_1px,transparent_1px)] bg-[size:48px_48px]"
+                        aria-hidden
+                    />
+                    <div className="max-w-7xl mx-auto px-6 relative">
+                        <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-20">
+                            <div className="flex justify-center mb-4">
+                                <span className="h-1 w-12 rounded-full bg-gradient-to-r from-medical-teal to-brand-500" />
                             </div>
-
-                            <div className="flex flex-col justify-center gap-5 rounded-2xl bg-white/12 p-6 ring-1 ring-white/25 backdrop-blur-md sm:p-8">
-                                <div>
-                                    <p className="text-xs font-bold uppercase tracking-widest text-brand-100/90">
-                                        Choose a path
-                                    </p>
-                                    <p className="mt-2 text-lg font-semibold text-white sm:text-xl">
-                                        Patients and clinicians both get dedicated tools.
-                                    </p>
-                                </div>
-                                <div className="flex flex-col gap-3 sm:gap-3.5">
-                                    <Link
-                                        href="/signup"
-                                        className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-brand-600 shadow-lg shadow-brand-900/25 transition-all hover:bg-brand-50 hover:text-brand-700 hover:shadow-xl active:scale-[0.99] sm:text-[15px]"
-                                    >
-                                        Create patient account
-                                        <ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden />
-                                    </Link>
-                                    <Link
-                                        href="/doctor/dashboard"
-                                        className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-white/45 bg-transparent px-6 py-3.5 text-sm font-bold text-white transition-all hover:border-white/70 hover:bg-white/10 active:scale-[0.99] sm:text-[15px]"
-                                    >
-                                        <Stethoscope className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
-                                        Doctor workspace
-                                        <ArrowRight className="h-4 w-4 shrink-0 opacity-80 transition-transform group-hover:translate-x-0.5" aria-hidden />
-                                    </Link>
-                                </div>
-                                <p className="text-center text-xs leading-relaxed text-white/70 sm:text-left">
-                                    Browse doctors without signing in. Create an account when you&apos;re
-                                    ready to book.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Footer — full width, aligned with header content width */}
-            <footer className="w-full border-t border-slate-200/80 bg-white">
-                <div
-                    className="h-0.5 w-full bg-gradient-to-r from-brand-500 via-brand-500 to-brand-600"
-                    aria-hidden
-                />
-                <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12">
-                    <div className="grid grid-cols-1 items-center gap-8 sm:grid-cols-3 sm:gap-6">
-                        <div className="flex flex-col items-center gap-1.5 sm:items-start">
-                            <Link
-                                href="/"
-                                className="text-lg font-bold tracking-tight text-brand-500 transition-colors hover:text-brand-600 sm:text-xl"
-                            >
-                                BacancyTeleCare
-                            </Link>
-                            <p className="max-w-xs text-center text-xs leading-snug text-slate-500 sm:text-left">
-                                Virtual care platform for patients and verified clinicians.
+                            <p className="text-sm font-semibold uppercase tracking-widest text-brand-600 mb-2">
+                                Clinical-grade convenience
+                            </p>
+                            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-4">
+                                Why Choose BacancyTeleCare?
+                            </h2>
+                            <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+                                We combine cutting-edge technology with compassionate care to
+                                provide the best healthcare experience.
                             </p>
                         </div>
-                        <p className="order-2 text-center text-xs leading-relaxed text-slate-500 sm:order-none">
-                            © {new Date().getFullYear()} BacancyTeleCare Inc. All rights reserved.
-                        </p>
-                        <nav
-                            aria-label="Legal policies"
-                            className="order-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:order-none sm:justify-end"
-                        >
-                            <Link
-                                href="/privacy"
-                                className="text-sm font-medium text-slate-600 transition-colors hover:text-brand-600"
-                            >
-                                Privacy Policy
-                            </Link>
-                            <Link
-                                href="/terms"
-                                className="text-sm font-medium text-slate-600 transition-colors hover:text-brand-600"
-                            >
-                                Terms &amp; Conditions
-                            </Link>
-                        </nav>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                            <FeatureCard
+                                icon={Video}
+                                title="Video Consultations"
+                                description="High-quality video calls with specialized doctors from anywhere in the world."
+                            />
+                            <FeatureCard
+                                icon={Shield}
+                                title="Secure & Private"
+                                description="Your medical data is encrypted and stored securely, ensuring complete privacy."
+                            />
+                            <FeatureCard
+                                icon={Clock}
+                                title="24/7 Availability"
+                                description="Access healthcare services around the clock, even on weekends and holidays."
+                            />
+                            <FeatureCard
+                                icon={FileText}
+                                title="Digital Prescriptions"
+                                description="Receive and manage your prescriptions digitally, ready for any pharmacy."
+                            />
+                            <FeatureCard
+                                icon={Users}
+                                title="Expert Doctors"
+                                description="Our platform hosts verified specialists across multiple medical fields."
+                            />
+                            <FeatureCard
+                                icon={Calendar}
+                                title="Easy Scheduling"
+                                description="Book appointments in seconds with our intuitive calendar interface."
+                            />
+                        </div>
                     </div>
-                </div>
-            </footer>
+                </section>
+
+                {/* CTA */}
+                <section className="relative py-12 sm:py-16 lg:py-20" aria-labelledby="cta-heading">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6">
+                        <div className="relative overflow-hidden rounded-[1.75rem] bg-brand-500 shadow-lg shadow-brand-900/25 sm:rounded-[2rem]">
+                            <div className="relative z-10 grid gap-10 p-8 sm:p-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:p-12">
+                                <div className="max-w-xl text-left">
+                                    <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white/95 ring-1 ring-white/25 backdrop-blur-sm sm:text-xs">
+                                        <Sparkles
+                                            className="h-3.5 w-3.5 text-brand-100"
+                                            aria-hidden
+                                        />
+                                        Get started
+                                    </p>
+                                    <h2
+                                        id="cta-heading"
+                                        className="mt-5 text-3xl font-bold leading-[1.12] tracking-tight text-white sm:text-4xl lg:text-[2.35rem]"
+                                    >
+                                        Your next visit starts{' '}
+                                        <span className="text-white/85">here.</span>
+                                    </h2>
+                                    <p className="mt-4 max-w-lg text-base leading-relaxed text-white/88 sm:text-[17px]">
+                                        Open a free account to book HD video care with verified
+                                        clinicians. Manage appointments and prescriptions in one
+                                        secure workspace.
+                                    </p>
+                                    <ul className="mt-8 flex flex-col gap-3.5 sm:gap-4" role="list">
+                                        {[
+                                            {
+                                                icon: Video,
+                                                text: 'Crystal clear video visits from anywhere',
+                                            },
+                                            {
+                                                icon: BadgeCheck,
+                                                text: 'Specialists vetted for this platform',
+                                            },
+                                            {
+                                                icon: Shield,
+                                                text: 'Sessions and records protected by design',
+                                            },
+                                        ].map(({ icon: Icon, text }) => (
+                                            <li
+                                                key={text}
+                                                className="flex items-center gap-3.5 text-sm font-medium text-white/92 sm:text-[15px]"
+                                            >
+                                                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15 shadow-sm shadow-brand-900/20 ring-1 ring-white/25">
+                                                    <Icon
+                                                        className="h-4 w-4 text-white"
+                                                        aria-hidden
+                                                    />
+                                                </span>
+                                                {text}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <div className="flex flex-col justify-center gap-5 rounded-2xl bg-white/12 p-6 ring-1 ring-white/25 backdrop-blur-md sm:p-8">
+                                    <div>
+                                        <p className="text-xs font-bold uppercase tracking-widest text-brand-100/90">
+                                            Choose a path
+                                        </p>
+                                        <p className="mt-2 text-lg font-semibold text-white sm:text-xl">
+                                            Patients and clinicians both get dedicated tools.
+                                        </p>
+                                    </div>
+                                    <div className="flex flex-col gap-3 sm:gap-3.5">
+                                        <Link
+                                            href="/signup"
+                                            className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-brand-600 shadow-lg shadow-brand-900/25 transition-all hover:bg-brand-50 hover:text-brand-700 hover:shadow-xl active:scale-[0.99] sm:text-[15px]"
+                                        >
+                                            Create patient account
+                                            <ArrowRight
+                                                className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5"
+                                                aria-hidden
+                                            />
+                                        </Link>
+                                        <Link
+                                            href="/doctor/dashboard"
+                                            className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-white/45 bg-transparent px-6 py-3.5 text-sm font-bold text-white transition-all hover:border-white/70 hover:bg-white/10 active:scale-[0.99] sm:text-[15px]"
+                                        >
+                                            <Stethoscope
+                                                className="h-4 w-4 shrink-0 opacity-90"
+                                                aria-hidden
+                                            />
+                                            Doctor workspace
+                                            <ArrowRight
+                                                className="h-4 w-4 shrink-0 opacity-80 transition-transform group-hover:translate-x-0.5"
+                                                aria-hidden
+                                            />
+                                        </Link>
+                                    </div>
+                                    <p className="text-center text-xs leading-relaxed text-white/70 sm:text-left">
+                                        Browse doctors without signing in. Create an account when
+                                        you&apos;re ready to book.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Footer — full width, aligned with header content width */}
+                <footer className="w-full border-t border-slate-200/80 bg-white">
+                    <div
+                        className="h-0.5 w-full bg-gradient-to-r from-brand-500 via-brand-500 to-brand-600"
+                        aria-hidden
+                    />
+                    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12">
+                        <div className="grid grid-cols-1 items-center gap-8 sm:grid-cols-3 sm:gap-6">
+                            <div className="flex flex-col items-center gap-1.5 sm:items-start">
+                                <Link
+                                    href="/"
+                                    className="text-lg font-bold tracking-tight text-brand-500 transition-colors hover:text-brand-600 sm:text-xl"
+                                >
+                                    BacancyTeleCare
+                                </Link>
+                                <p className="max-w-xs text-center text-xs leading-snug text-slate-500 sm:text-left">
+                                    Virtual care platform for patients and verified clinicians.
+                                </p>
+                            </div>
+                            <p className="order-2 text-center text-xs leading-relaxed text-slate-500 sm:order-none">
+                                © {new Date().getFullYear()} BacancyTeleCare Inc. All rights
+                                reserved.
+                            </p>
+                            <nav
+                                aria-label="Legal policies"
+                                className="order-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:order-none sm:justify-end"
+                            >
+                                <Link
+                                    href="/privacy"
+                                    className="text-sm font-medium text-slate-600 transition-colors hover:text-brand-600"
+                                >
+                                    Privacy Policy
+                                </Link>
+                                <Link
+                                    href="/terms"
+                                    className="text-sm font-medium text-slate-600 transition-colors hover:text-brand-600"
+                                >
+                                    Terms &amp; Conditions
+                                </Link>
+                            </nav>
+                        </div>
+                    </div>
+                </footer>
             </div>
         </div>
     );

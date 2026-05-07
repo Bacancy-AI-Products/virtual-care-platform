@@ -260,9 +260,11 @@ export const Layout = ({ children, role }: LayoutProps) => {
     }
 
     /** Paren + `<div` share one line so SWC never parses `=` newline `<` as an expression. */
-    const sidebarLogoRow = (<div className="-mx-4 mb-3 flex h-[66px] shrink-0 items-center px-4">
+    const sidebarLogoRow = (
+        <div className="-mx-4 mb-3 flex h-[66px] shrink-0 items-center px-4">
             <BrandLogo href={brandLogoHref} />
-        </div>);
+        </div>
+    );
 
     const Sidebar = ({
         header,

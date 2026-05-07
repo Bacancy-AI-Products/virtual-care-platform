@@ -23,14 +23,7 @@ function decodeToken(token: string): JwtPayload | null {
 }
 
 // Paths that don't require authentication
-const PUBLIC_PATHS = [
-    '/',
-    '/login',
-    '/signup',
-    '/forgot-password',
-    '/privacy',
-    '/terms',
-];
+const PUBLIC_PATHS = ['/', '/login', '/signup', '/forgot-password', '/privacy', '/terms'];
 
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;

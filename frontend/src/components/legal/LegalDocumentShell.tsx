@@ -25,7 +25,9 @@ export function LegalDocumentShell({
                     <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-3">
                         {title}
                     </h1>
-                    <p className="text-sm text-slate-500 font-medium mb-10">Last updated: {lastUpdated}</p>
+                    <p className="text-sm text-slate-500 font-medium mb-10">
+                        Last updated: {lastUpdated}
+                    </p>
                     <div className="space-y-8 text-slate-600 leading-relaxed text-[15px] sm:text-base">
                         {children}
                     </div>

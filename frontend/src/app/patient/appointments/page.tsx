@@ -88,9 +88,7 @@ function AppointmentCard({
     const isUpcoming = getTab(appt.status) === 'Upcoming';
 
     return (
-        <div
-            className="group flex min-w-0 flex-col gap-4 rounded-[28px] border border-slate-100 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6 lg:grid lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_auto] lg:items-center lg:gap-6 lg:px-8 lg:py-6 xl:gap-8"
-        >
+        <div className="group flex min-w-0 flex-col gap-4 rounded-[28px] border border-slate-100 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6 lg:grid lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)_auto] lg:items-center lg:gap-6 lg:px-8 lg:py-6 xl:gap-8">
             {/* Doctor */}
             <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                 <img

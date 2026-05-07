@@ -281,7 +281,11 @@ export function ChatPanel({ appointmentInfo, chat, onClose }: Props) {
 
                 {/* Chat input */}
                 <div className="p-6 border-t border-slate-100">
-                    <form onSubmit={handleSendMessage} className="relative group" autoComplete="off">
+                    <form
+                        onSubmit={handleSendMessage}
+                        className="relative group"
+                        autoComplete="off"
+                    >
                         <input
                             type="text"
                             placeholder="Type a message..."

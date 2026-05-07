@@ -721,7 +721,7 @@ export default function PatientProfile() {
                                                 setForm((f) => ({ ...f, address: e.target.value }))
                                             }
                                             className={FORM_CONTROL_CLASS}
-                                        {...NO_BROWSER_INPUT_HELPERS}
+                                            {...NO_BROWSER_INPUT_HELPERS}
                                         />
                                     </FormField>
                                 </div>

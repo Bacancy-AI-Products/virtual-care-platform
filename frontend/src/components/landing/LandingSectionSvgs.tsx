@@ -98,7 +98,9 @@ export function specializationIdToGlyphKind(id: string): SpecialtyGlyphKind {
     if (/ayurved|homeop|unani|siddha/.test(s)) return 'leaf';
     if (/radio|patho/.test(s)) return 'scan';
     if (/emergency|critical/.test(s)) return 'emergency';
-    if (/onco|hemato|endo|diabet|surgeon|surgery|plast|vascul|general_surgeon|ent|otolaryng/.test(s))
+    if (
+        /onco|hemato|endo|diabet|surgeon|surgery|plast|vascul|general_surgeon|ent|otolaryng/.test(s)
+    )
         return 'pulse';
     return 'stethoscope';
 }
@@ -219,16 +221,17 @@ export function SpecialtyChipGlyph({
                         {...glyphStroke}
                         d="M4 8c3 0 3-2 6-2s3 2 6 2 3-2 6-2M4 8c0 4 2.5 6 4 8M20 8c0 4-2.5 6-4 8"
                     />
-                    <path {...glyphStroke} d="M4 12c2.5 1.5 5 1.5 8 0 3 1.5 5.5 1.5 8 0" opacity="0.65" />
+                    <path
+                        {...glyphStroke}
+                        d="M4 12c2.5 1.5 5 1.5 8 0 3 1.5 5.5 1.5 8 0"
+                        opacity="0.65"
+                    />
                 </svg>
             );
         case 'leaf':
             return (
                 <svg {...decorProps} viewBox="0 0 24 24" className={className}>
-                    <path
-                        {...glyphStroke}
-                        d="M12 21c4-3 7-7 7-12A7 7 0 0 0 6 9c0 5 3 9 6 12z"
-                    />
+                    <path {...glyphStroke} d="M12 21c4-3 7-7 7-12A7 7 0 0 0 6 9c0 5 3 9 6 12z" />
                     <path {...glyphStroke} d="M12 21V10" />
                 </svg>
             );

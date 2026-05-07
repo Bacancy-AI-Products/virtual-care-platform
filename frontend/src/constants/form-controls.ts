@@ -5,32 +5,26 @@ const FORM_FOCUS =
     'outline-none transition-all focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10';
 
 /** Standard text input / textarea (no leading icon) */
-export const FORM_CONTROL_CLASS =
-    `w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3.5 py-[11px] text-sm font-medium text-slate-900 ${FORM_FOCUS} disabled:cursor-not-allowed disabled:opacity-60`;
+export const FORM_CONTROL_CLASS = `w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3.5 py-[11px] text-sm font-medium text-slate-900 ${FORM_FOCUS} disabled:cursor-not-allowed disabled:opacity-60`;
 
 /** Native select — room for chevron overlay */
-export const FORM_SELECT_CLASS =
-    `w-full appearance-none rounded-xl border-2 border-slate-200 bg-slate-50 py-[11px] pl-3.5 pr-10 text-sm font-medium text-slate-900 ${FORM_FOCUS} disabled:cursor-not-allowed disabled:opacity-60`;
+export const FORM_SELECT_CLASS = `w-full appearance-none rounded-xl border-2 border-slate-200 bg-slate-50 py-[11px] pl-3.5 pr-10 text-sm font-medium text-slate-900 ${FORM_FOCUS} disabled:cursor-not-allowed disabled:opacity-60`;
 
 /** Leading icon — pair with icon at left-3.5, size w-4 h-4 */
-export const FORM_CONTROL_LEADING_ICON =
-    `w-full rounded-xl border-2 border-slate-200 bg-slate-50 py-[11px] pl-10 pr-3.5 text-sm font-medium text-slate-900 ${FORM_FOCUS} disabled:cursor-not-allowed disabled:opacity-60`;
+export const FORM_CONTROL_LEADING_ICON = `w-full rounded-xl border-2 border-slate-200 bg-slate-50 py-[11px] pl-10 pr-3.5 text-sm font-medium text-slate-900 ${FORM_FOCUS} disabled:cursor-not-allowed disabled:opacity-60`;
 
 /** Search bars on tinted strips (transparent border until focus) */
-export const FORM_CONTROL_SEARCH =
-    `w-full rounded-xl border-2 border-transparent bg-slate-50 py-[11px] pl-10 pr-3.5 text-sm font-medium text-slate-900 ${FORM_FOCUS} disabled:cursor-not-allowed disabled:opacity-60`;
+export const FORM_CONTROL_SEARCH = `w-full rounded-xl border-2 border-transparent bg-slate-50 py-[11px] pl-10 pr-3.5 text-sm font-medium text-slate-900 ${FORM_FOCUS} disabled:cursor-not-allowed disabled:opacity-60`;
 
 /** Full-width fields with ghost border (textareas, optional description) */
-export const FORM_CONTROL_GHOST =
-    `w-full rounded-xl border-2 border-transparent bg-slate-50 px-3.5 py-[11px] text-sm font-medium text-slate-900 ${FORM_FOCUS} disabled:cursor-not-allowed disabled:opacity-60`;
+export const FORM_CONTROL_GHOST = `w-full rounded-xl border-2 border-transparent bg-slate-50 px-3.5 py-[11px] text-sm font-medium text-slate-900 ${FORM_FOCUS} disabled:cursor-not-allowed disabled:opacity-60`;
 
 /** Search on white surfaces (records, patient list) */
 export const FORM_CONTROL_SEARCH_ON_WHITE =
     'w-full rounded-xl border border-slate-200 bg-white py-[11px] pl-10 pr-3.5 text-sm font-medium text-slate-900 shadow-sm outline-none transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10';
 
 /** Password fields with trailing control (e.g. visibility toggle at right-3) */
-export const FORM_CONTROL_TRAILING_SLOT =
-    `w-full rounded-xl border-2 border-slate-200 bg-slate-50 py-[11px] pl-3.5 pr-11 text-sm font-medium text-slate-900 ${FORM_FOCUS} disabled:cursor-not-allowed disabled:opacity-70`;
+export const FORM_CONTROL_TRAILING_SLOT = `w-full rounded-xl border-2 border-slate-200 bg-slate-50 py-[11px] pl-3.5 pr-11 text-sm font-medium text-slate-900 ${FORM_FOCUS} disabled:cursor-not-allowed disabled:opacity-70`;
 
 /** Chat message composer — muted bg until focus; pair send button with pr-14 */
 export const FORM_CONTROL_CHAT_COMPOSER =

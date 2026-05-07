@@ -9,7 +9,11 @@ import { authApi } from '@/services/api';
 import { BrandLogo } from '@/components/BrandLogo';
 import { AuthVisualPanel } from '@/components/AuthVisualPanel';
 import { BackNavLink } from '@/components/BackToHomeLink';
-import { FORM_CONTROL_TRAILING_SLOT, FORM_AUTH_PRIMARY_BUTTON, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
+import {
+    FORM_CONTROL_TRAILING_SLOT,
+    FORM_AUTH_PRIMARY_BUTTON,
+    NO_BROWSER_INPUT_HELPERS,
+} from '@/constants/form-controls';
 
 const PASSWORD_MAX_LENGTH = 128;
 
@@ -177,7 +181,12 @@ function ResetPasswordContent() {
                             </Link>
                         </div>
                     ) : (
-                        <form onSubmit={handleSubmit} className="space-y-4" noValidate autoComplete="off">
+                        <form
+                            onSubmit={handleSubmit}
+                            className="space-y-4"
+                            noValidate
+                            autoComplete="off"
+                        >
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-slate-700 ml-1">
                                     New Password
@@ -385,8 +394,7 @@ function ResetPasswordContent() {
                 landingAligned
                 title={
                     <>
-                        Set a{' '}
-                        <span className="text-brand-500">New Password.</span>
+                        Set a <span className="text-brand-500">New Password.</span>
                     </>
                 }
                 description="Create a strong password to secure your BacancyTeleCare account and continue safely. Your data stays encrypted at every step."
