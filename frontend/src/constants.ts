@@ -1,4 +1,4 @@
-import { Doctor, Appointment, MedicalRecord, Prescription } from './types';
+import { Doctor } from './types';
 
 export const MOCK_DOCTORS: Doctor[] = [
     {
@@ -44,61 +44,3 @@ export const MOCK_DOCTORS: Doctor[] = [
         avatar: 'https://picsum.photos/seed/doctor3/200/200',
     },
 ];
-
-export const MOCK_APPOINTMENTS: Appointment[] = [
-    {
-        id: 'a1',
-        patientId: 'p1',
-        doctorId: 'd1',
-        doctorName: 'Dr. Sarah Johnson',
-        doctorSpecialization: 'Cardiologist',
-        date: '2026-03-15',
-        time: '10:30 AM',
-        status: 'upcoming',
-        type: 'video',
-    },
-    {
-        id: 'a2',
-        patientId: 'p1',
-        doctorId: 'd2',
-        doctorName: 'Dr. Michael Chen',
-        doctorSpecialization: 'Dermatologist',
-        date: '2026-03-10',
-        time: '03:00 PM',
-        status: 'completed',
-        type: 'chat',
-    },
-];
-
-export const MOCK_RECORDS: MedicalRecord[] = [
-    {
-        id: 'r1',
-        patientId: 'p1',
-        date: '2026-03-10',
-        doctorName: 'Dr. Michael Chen',
-        diagnosis: 'Mild Eczema',
-        prescriptionUrl: '#',
-    },
-];
-
-export const MOCK_PRESCRIPTION: Prescription = {
-    id: 'pr1',
-    appointmentId: 'a2',
-    date: '2026-03-10',
-    doctorName: 'Dr. Michael Chen',
-    medicines: [
-        {
-            name: 'Hydrocortisone Cream',
-            dosage: 'Apply twice daily',
-            duration: '7 days',
-            instructions: 'Apply to affected areas only',
-        },
-        {
-            name: 'Cetirizine 10mg',
-            dosage: '1 tablet daily',
-            duration: '10 days',
-            instructions: 'Take at bedtime',
-        },
-    ],
-    notes: 'Avoid harsh soaps and keep skin moisturized. Follow up if symptoms persist after 7 days.',
-};
