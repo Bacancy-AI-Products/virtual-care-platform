@@ -1,13 +1,7 @@
 import { prisma } from '../../db';
+import { AppError } from '../../utils/errors';
 import type { Prisma } from '../../../generated/prisma';
 import type { Gender } from '../../../generated/prisma';
-
-function serviceError(message: string, status: number, code: string): never {
-    const err = new Error(message) as Error & { status?: number; code?: string };
-    err.status = status;
-    err.code = code;
-    throw err;
-}
 
 const patientFullSelect = {
     id: true,
@@ -68,7 +62,7 @@ export async function updateMyProfile(userId: string, data: UpdatePatientProfile
         where: { userId },
     });
     if (!patient) {
-        serviceError('Patient profile not found', 404, 'NOT_FOUND');
+        throw new AppError('Patient profile not found', 404, 'NOT_FOUND');
     }
 
     const updateData: Prisma.PatientUpdateInput = {};
@@ -98,7 +92,7 @@ export async function updateMyProfile(userId: string, data: UpdatePatientProfile
 export async function getPatientForDoctor(patientId: string, doctorUserId: string) {
     const doctorId = await getDoctorId(doctorUserId);
     if (!doctorId) {
-        serviceError('Doctor profile not found', 404, 'NOT_FOUND');
+        throw new AppError('Doctor profile not found', 404, 'NOT_FOUND');
     }
 
     const hasAppointment = await prisma.appointment.findFirst({
@@ -109,7 +103,7 @@ export async function getPatientForDoctor(patientId: string, doctorUserId: strin
         select: { id: true },
     });
     if (!hasAppointment) {
-        serviceError('You do not have access to this patient', 403, 'FORBIDDEN');
+        throw new AppError('You do not have access to this patient', 403, 'FORBIDDEN');
     }
 
     const patient = await prisma.patient.findUnique({
@@ -117,7 +111,7 @@ export async function getPatientForDoctor(patientId: string, doctorUserId: strin
         select: patientEvaluationSelect,
     });
     if (!patient) {
-        serviceError('Patient not found', 404, 'NOT_FOUND');
+        throw new AppError('Patient not found', 404, 'NOT_FOUND');
     }
 
     return patient;

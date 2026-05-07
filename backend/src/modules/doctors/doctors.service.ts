@@ -1,12 +1,6 @@
 import { prisma } from '../../db';
+import { AppError } from '../../utils/errors';
 import type { Prisma } from '../../../generated/prisma';
-
-function serviceError(message: string, status: number, code: string): never {
-    const err = new Error(message) as Error & { status?: number; code?: string };
-    err.status = status;
-    err.code = code;
-    throw err;
-}
 
 const doctorListSelect = {
     id: true,
@@ -108,7 +102,7 @@ export async function getDoctorById(id: string) {
         select: doctorListSelect,
     });
     if (!doctor) {
-        serviceError('Doctor not found', 404, 'NOT_FOUND');
+        throw new AppError('Doctor not found', 404, 'NOT_FOUND');
     }
     return doctor;
 }
@@ -119,7 +113,7 @@ export async function getAvailability(doctorId: string, options: GetAvailability
         select: { id: true },
     });
     if (!doctor) {
-        serviceError('Doctor not found', 404, 'NOT_FOUND');
+        throw new AppError('Doctor not found', 404, 'NOT_FOUND');
     }
 
     const availability = await prisma.doctorAvailability.findMany({
@@ -164,7 +158,7 @@ export async function getMyAvailability(userId: string) {
         select: { id: true },
     });
     if (!profile) {
-        serviceError('Doctor profile not found', 404, 'NOT_FOUND');
+        throw new AppError('Doctor profile not found', 404, 'NOT_FOUND');
     }
     return getAvailability(profile.id);
 }
@@ -175,7 +169,7 @@ export async function getMyProfile(userId: string) {
         select: doctorListSelect,
     });
     if (!profile) {
-        serviceError('Doctor profile not found', 404, 'NOT_FOUND');
+        throw new AppError('Doctor profile not found', 404, 'NOT_FOUND');
     }
     return profile;
 }
@@ -196,7 +190,7 @@ export async function updateMyAvailability(
         select: { id: true },
     });
     if (!profile) {
-        serviceError('Doctor profile not found', 404, 'NOT_FOUND');
+        throw new AppError('Doctor profile not found', 404, 'NOT_FOUND');
     }
 
     await prisma.$transaction(async (tx) => {
@@ -234,7 +228,7 @@ export async function updateMyProfile(userId: string, data: UpdateDoctorProfileD
         where: { userId },
     });
     if (!profile) {
-        serviceError('Doctor profile not found', 404, 'NOT_FOUND');
+        throw new AppError('Doctor profile not found', 404, 'NOT_FOUND');
     }
 
     const updateData: Prisma.DoctorProfileUpdateInput = {};

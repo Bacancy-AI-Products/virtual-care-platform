@@ -1,11 +1,16 @@
 import express from 'express';
 import cors from 'cors';
+import pinoHttp from 'pino-http';
 import { errorHandler } from './middleware';
+import { requestId } from './middleware/requestId';
 import { apiRouter } from './routes';
 import { config } from './config';
+import { logger } from './utils/logger';
 
 const app = express();
 
+app.use(requestId);
+app.use(pinoHttp({ logger }));
 app.use(
     cors({
         origin: config.frontendUrl,
