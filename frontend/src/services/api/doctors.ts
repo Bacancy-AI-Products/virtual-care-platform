@@ -61,6 +61,7 @@ export const doctorsApi = {
         specialization?: string;
         city?: string;
         state?: string;
+        q?: string;
         page?: number;
         limit?: number;
     }) =>
@@ -69,6 +70,7 @@ export const doctorsApi = {
                 ...(params?.specialization ? { specialization: params.specialization } : {}),
                 ...(params?.city ? { city: params.city } : {}),
                 ...(params?.state ? { state: params.state } : {}),
+                ...(params?.q ? { q: params.q } : {}),
                 ...(params?.page ? { page: String(params.page) } : {}),
                 ...(params?.limit ? { limit: String(params.limit) } : {}),
             },

@@ -14,12 +14,40 @@ import {
     PhoneCall,
     AlertTriangle,
     RotateCw,
+    ChevronLeft,
+    ChevronRight,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { appointmentsApi, type Appointment } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
+
+const PAGE_SIZE = 6;
+
+/** Compact pagination: all pages if ≤9, otherwise 1 … window … last. */
+function getPaginationItems(totalPages: number, currentPage: number): Array<number | 'ellipsis'> {
+    if (totalPages <= 1) return [];
+    if (totalPages <= 9) {
+        return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const delta = 1;
+    const pages = new Set<number>();
+    pages.add(1);
+    pages.add(totalPages);
+    for (let i = currentPage - delta; i <= currentPage + delta; i++) {
+        if (i >= 1 && i <= totalPages) pages.add(i);
+    }
+    const sorted = [...pages].sort((a, b) => a - b);
+    const out: Array<number | 'ellipsis'> = [];
+    for (let i = 0; i < sorted.length; i++) {
+        if (i > 0 && sorted[i] - sorted[i - 1] > 1) {
+            out.push('ellipsis');
+        }
+        out.push(sorted[i]);
+    }
+    return out;
+}
 
 // ─── Tab types ────────────────────────────────────────────────────────────────
 
@@ -483,7 +511,7 @@ export default function DoctorAppointments() {
         id: string;
         patientName: string;
     } | null>(null);
-    const [visibleCount, setVisibleCount] = React.useState(10);
+    const [page, setPage] = React.useState(1);
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ['appointments', 'doctor', 'all'],
@@ -532,11 +560,21 @@ export default function DoctorAppointments() {
     );
 
     const filtered = all.filter((a) => getTab(a.status) === activeTab);
-    const visible = filtered.slice(0, visibleCount);
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    const visible = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+    const paginationItems = React.useMemo(
+        () => getPaginationItems(totalPages, page),
+        [totalPages, page],
+    );
 
     React.useEffect(() => {
-        setVisibleCount(10);
-    }, [activeTab, all.length]);
+        setPage(1);
+    }, [activeTab]);
+
+    React.useEffect(() => {
+        if (page > totalPages) setPage(totalPages);
+    }, [page, totalPages]);
 
     return (
         <motion.div
@@ -694,18 +732,68 @@ export default function DoctorAppointments() {
                             )}
                         </AnimatePresence>
                     </div>
-                    {filtered.length > visibleCount && (
-                        <div className="flex justify-center pt-2">
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    setVisibleCount((prev) => Math.min(prev + 10, filtered.length))
-                                }
-                                className="px-6 py-2.5 rounded-full border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all"
+                    {filtered.length > 0 && totalPages > 1 && (
+                        <nav
+                            className="flex flex-col items-stretch gap-4 border-t border-slate-100 pt-6"
+                            aria-label="Pagination"
+                        >
+                            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
+                                <p className="order-2 text-sm text-slate-500 sm:order-1">
+                                    Page {page} of {totalPages}
+                                </p>
+                                <div className="order-1 flex items-center gap-2 sm:order-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                        disabled={page <= 1}
+                                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
+                                    >
+                                        <ChevronLeft className="h-4 w-4" aria-hidden />
+                                        Previous
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                        disabled={page >= totalPages}
+                                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
+                                    >
+                                        Next
+                                        <ChevronRight className="h-4 w-4" aria-hidden />
+                                    </button>
+                                </div>
+                            </div>
+                            <div
+                                className="flex flex-wrap items-center justify-center gap-1.5"
+                                role="group"
+                                aria-label="Go to page"
                             >
-                                Load more ({visibleCount}/{filtered.length})
-                            </button>
-                        </div>
+                                {paginationItems.map((item, idx) =>
+                                    item === 'ellipsis' ? (
+                                        <span
+                                            key={`e-${idx}`}
+                                            className="px-1.5 py-2 text-sm font-semibold text-slate-400"
+                                            aria-hidden
+                                        >
+                                            …
+                                        </span>
+                                    ) : (
+                                        <button
+                                            key={item}
+                                            type="button"
+                                            onClick={() => setPage(item)}
+                                            aria-current={page === item ? 'page' : undefined}
+                                            className={`inline-flex min-w-[2.5rem] items-center justify-center rounded-xl px-3 py-2 text-sm font-bold shadow-sm transition-all ${
+                                                page === item
+                                                    ? 'bg-brand-500 text-white shadow-brand-100 ring-2 ring-brand-500/20'
+                                                    : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                            }`}
+                                        >
+                                            {item}
+                                        </button>
+                                    ),
+                                )}
+                            </div>
+                        </nav>
                     )}
                 </div>
             )}

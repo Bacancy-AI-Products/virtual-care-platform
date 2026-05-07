@@ -24,6 +24,8 @@ export interface ListDoctorsParams {
     specialization?: string;
     city?: string;
     state?: string;
+    /** Name, matching specialization record(s), or bio */
+    q?: string;
     verified?: boolean;
     page: number;
     limit: number;
@@ -56,23 +58,42 @@ export interface GetAvailabilityOptions {
 }
 
 export async function listDoctors(params: ListDoctorsParams): Promise<ListDoctorsResult> {
-    const { specialization, city, state, verified, page, limit } = params;
+    const { specialization, city, state, verified, page, limit, q } = params;
 
-    const where: Prisma.DoctorProfileWhereInput = {
-        isActive: true,
-    };
+    const andConditions: Prisma.DoctorProfileWhereInput[] = [{ isActive: true }];
+
     if (specialization?.trim()) {
-        where.specialization = { contains: specialization.trim(), mode: 'insensitive' };
+        andConditions.push({
+            specialization: { contains: specialization.trim(), mode: 'insensitive' },
+        });
     }
     if (city?.trim()) {
-        where.city = { contains: city.trim(), mode: 'insensitive' };
+        andConditions.push({ city: { contains: city.trim(), mode: 'insensitive' } });
     }
     if (state?.trim()) {
-        where.state = { contains: state.trim(), mode: 'insensitive' };
+        andConditions.push({ state: { contains: state.trim(), mode: 'insensitive' } });
     }
     if (verified !== undefined) {
-        where.verified = verified;
+        andConditions.push({ verified });
     }
+
+    if (q?.trim()) {
+        const qTrim = q.trim();
+        const matchingSpecs = await prisma.specialization.findMany({
+            where: { name: { contains: qTrim, mode: 'insensitive' } },
+            select: { id: true },
+        });
+        const specIds = matchingSpecs.map((s) => s.id);
+        andConditions.push({
+            OR: [
+                { user: { is: { name: { contains: qTrim, mode: 'insensitive' } } } },
+                { bio: { contains: qTrim, mode: 'insensitive' } },
+                ...(specIds.length > 0 ? [{ specialization: { in: specIds } }] : []),
+            ],
+        });
+    }
+
+    const where: Prisma.DoctorProfileWhereInput = { AND: andConditions };
 
     const [data, total] = await Promise.all([
         prisma.doctorProfile.findMany({

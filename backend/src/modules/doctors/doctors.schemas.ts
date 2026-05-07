@@ -7,6 +7,8 @@ export const listDoctorsQuerySchema = z.object({
     specialization: z.string().max(200).optional(),
     city: z.string().max(100).optional(),
     state: z.string().max(100).optional(),
+    /** Free-text search: doctor name, specialization label match, or bio */
+    q: z.string().max(200).optional(),
     verified: z
         .string()
         .optional()
