@@ -63,19 +63,3 @@ export async function createMeetingToken(
 
     return response.data.token;
 }
-
-export async function getDailyRoom(roomName: string): Promise<DailyRoomResponse | null> {
-    try {
-        const response = await dailyApi.get<DailyRoomResponse>(`/rooms/${roomName}`);
-        return response.data;
-    } catch (error: unknown) {
-        if (axios.isAxiosError(error) && error.response?.status === 404) {
-            return null;
-        }
-        throw error;
-    }
-}
-
-export async function deleteDailyRoom(roomName: string): Promise<void> {
-    await dailyApi.delete(`/rooms/${roomName}`);
-}

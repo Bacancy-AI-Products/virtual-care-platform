@@ -57,7 +57,6 @@ export function initializeSocket(httpServer: HttpServer): Server {
 
     io.on('connection', (socket: AuthenticatedSocket) => {
         const userId = socket.data.userId;
-        console.log(`[Socket] User ${userId} connected`);
 
         // Join user's personal room for direct notifications
         socket.join(`user:${userId}`);
@@ -106,8 +105,6 @@ export function initializeSocket(httpServer: HttpServer): Server {
                     userId,
                     role: isDoctor ? 'doctor' : 'patient',
                 });
-
-                console.log(`[Socket] User ${userId} joined consultation ${appointmentId}`);
             } catch (error) {
                 console.error('[Socket] Error joining consultation:', error);
                 socket.emit('error', { message: 'Failed to join consultation' });
@@ -119,7 +116,6 @@ export function initializeSocket(httpServer: HttpServer): Server {
             const roomName = `consultation:${appointmentId}`;
             socket.leave(roomName);
             socket.to(roomName).emit('participant-left', { userId });
-            console.log(`[Socket] User ${userId} left consultation ${appointmentId}`);
         });
 
         // Handle chat messages
@@ -227,11 +223,6 @@ export function initializeSocket(httpServer: HttpServer): Server {
         socket.on('call-ended', (appointmentId: string) => {
             const roomName = `consultation:${appointmentId}`;
             socket.to(roomName).emit('call-ended', { userId });
-        });
-
-        // Handle disconnect
-        socket.on('disconnect', () => {
-            console.log(`[Socket] User ${userId} disconnected`);
         });
     });
 
