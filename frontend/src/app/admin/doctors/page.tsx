@@ -12,8 +12,6 @@ import {
     XCircle,
     Edit,
     Trash2,
-    Mail,
-    Phone,
 } from 'lucide-react';
 import { MOCK_DOCTORS } from '@/constants';
 import { motion } from 'motion/react';

@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import {
     Calendar,
     Video,
@@ -17,9 +16,6 @@ import {
     Thermometer,
     Search,
     Loader2,
-    MapPin,
-    Stethoscope,
-    ChevronDown,
 } from 'lucide-react';
 import { format, isToday, isFuture } from 'date-fns';
 import { motion } from 'motion/react';
@@ -31,7 +27,6 @@ import {
     type SpecializationOption,
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
-import { getStates, getCities } from '@/constants/us-locations';
 
 const SELECT_CLASS =
     'w-full appearance-none pl-4 pr-10 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all font-medium text-slate-900 text-sm disabled:opacity-60 disabled:cursor-not-allowed';

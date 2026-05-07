@@ -6,8 +6,6 @@ import {
     Filter,
     Calendar,
     Clock,
-    CheckCircle2,
-    XCircle,
     Video,
     MoreVertical,
     User,

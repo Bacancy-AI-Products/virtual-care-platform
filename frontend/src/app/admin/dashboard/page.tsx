@@ -6,7 +6,6 @@ import {
     Stethoscope,
     Calendar,
     TrendingUp,
-    Activity,
     CheckCircle2,
     Clock,
     AlertCircle,
