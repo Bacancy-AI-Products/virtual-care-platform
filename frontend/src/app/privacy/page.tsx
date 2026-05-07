@@ -19,14 +19,15 @@ export default function PrivacyPolicyPage() {
         <LegalDocumentShell title="Privacy Policy" lastUpdated={LAST_UPDATED}>
             <LegalSection id="introduction" title="1. Introduction">
                 <LegalP>
-                    BacancyTeleCare Inc. (&quot;BacancyTeleCare,&quot; &quot;we,&quot; &quot;us,&quot;
-                    or &quot;our&quot;) operates a telehealth and virtual care platform that connects
-                    patients with licensed healthcare providers. We are committed to protecting your
-                    privacy and handling health and personal information responsibly.
+                    BacancyTeleCare Inc. (&quot;BacancyTeleCare,&quot; &quot;we,&quot;
+                    &quot;us,&quot; or &quot;our&quot;) operates a telehealth and virtual care
+                    platform that connects patients with licensed healthcare providers. We are
+                    committed to protecting your privacy and handling health and personal
+                    information responsibly.
                 </LegalP>
                 <LegalP>
-                    This Privacy Policy explains what information we collect, how we use and share it,
-                    and the choices available to you. If you use our services, you agree to the
+                    This Privacy Policy explains what information we collect, how we use and share
+                    it, and the choices available to you. If you use our services, you agree to the
                     practices described here. This policy is designed to align with common
                     expectations for healthcare-related services in the United States, including
                     protections appropriate for individually identifiable health information.
@@ -66,8 +67,8 @@ export default function PrivacyPolicyPage() {
                 </LegalUl>
                 <LegalP>
                     We may receive information about you from healthcare providers who use our
-                    platform, payors, pharmacies (for e-prescribing where applicable), and integrated
-                    services you or your provider authorize.
+                    platform, payors, pharmacies (for e-prescribing where applicable), and
+                    integrated services you or your provider authorize.
                 </LegalP>
             </LegalSection>
 
@@ -80,8 +81,8 @@ export default function PrivacyPolicyPage() {
                         between you and providers.
                     </li>
                     <li>
-                        Operate, maintain, secure, and improve our platform, including troubleshooting
-                        and fraud prevention.
+                        Operate, maintain, secure, and improve our platform, including
+                        troubleshooting and fraud prevention.
                     </li>
                     <li>
                         Send service-related notices (such as appointment reminders, security
@@ -92,8 +93,8 @@ export default function PrivacyPolicyPage() {
                     </li>
                     <li>
                         Where permitted by law and your preferences, send educational or promotional
-                        communications about our services (you may opt out of marketing as
-                        described below).
+                        communications about our services (you may opt out of marketing as described
+                        below).
                     </li>
                 </LegalUl>
             </LegalSection>
@@ -103,11 +104,11 @@ export default function PrivacyPolicyPage() {
                     Depending on how our platform is used in your care, certain information we
                     maintain may be protected health information (&quot;PHI&quot;) under the Health
                     Insurance Portability and Accountability Act of 1996 and its implementing
-                    regulations (&quot;HIPAA&quot;). Your treating clinicians and their organizations
-                    are typically responsible for HIPAA compliance for treatment, payment, and
-                    healthcare operations. Where we handle PHI on behalf of a covered entity or
-                    business associate, we do so under a business associate agreement or comparable
-                    arrangement that requires appropriate safeguards.
+                    regulations (&quot;HIPAA&quot;). Your treating clinicians and their
+                    organizations are typically responsible for HIPAA compliance for treatment,
+                    payment, and healthcare operations. Where we handle PHI on behalf of a covered
+                    entity or business associate, we do so under a business associate agreement or
+                    comparable arrangement that requires appropriate safeguards.
                 </LegalP>
                 <LegalP>
                     If you have questions about how a specific provider uses or discloses your
@@ -123,10 +124,10 @@ export default function PrivacyPolicyPage() {
                         telehealth services you request.
                     </li>
                     <li>
-                        <strong className="text-slate-800">With service providers:</strong> vendors who
-                        assist with hosting, analytics, customer support, communications, security,
-                        and payment processing, subject to confidentiality and data-processing
-                        terms.
+                        <strong className="text-slate-800">With service providers:</strong> vendors
+                        who assist with hosting, analytics, customer support, communications,
+                        security, and payment processing, subject to confidentiality and
+                        data-processing terms.
                     </li>
                     <li>
                         <strong className="text-slate-800">For legal and safety reasons:</strong>{' '}
@@ -134,9 +135,9 @@ export default function PrivacyPolicyPage() {
                         rights, safety, and security of users, the public, or BacancyTeleCare.
                     </li>
                     <li>
-                        <strong className="text-slate-800">Business transfers:</strong> in connection
-                        with a merger, acquisition, financing, or sale of assets, subject to
-                        applicable confidentiality obligations.
+                        <strong className="text-slate-800">Business transfers:</strong> in
+                        connection with a merger, acquisition, financing, or sale of assets, subject
+                        to applicable confidentiality obligations.
                     </li>
                     <li>
                         <strong className="text-slate-800">With your direction or consent:</strong>{' '}
@@ -156,8 +157,8 @@ export default function PrivacyPolicyPage() {
                     We implement administrative, technical, and physical safeguards designed to
                     protect information against unauthorized access, loss, or alteration. These
                     measures include encryption in transit, access controls, secure development
-                    practices, employee training, and vendor oversight. No method of transmission
-                    or storage is completely secure; we encourage you to use strong passwords and
+                    practices, employee training, and vendor oversight. No method of transmission or
+                    storage is completely secure; we encourage you to use strong passwords and
                     protect your devices.
                 </LegalP>
             </LegalSection>
@@ -206,8 +207,8 @@ export default function PrivacyPolicyPage() {
                 <LegalP>
                     Our services are not intended for children under 13, and we do not knowingly
                     collect personal information from children under 13 without verifiable parental
-                    consent where required. If you believe we have collected information from a child
-                    under 13 in error, please contact us so we can delete it promptly.
+                    consent where required. If you believe we have collected information from a
+                    child under 13 in error, please contact us so we can delete it promptly.
                 </LegalP>
             </LegalSection>
 
@@ -215,8 +216,8 @@ export default function PrivacyPolicyPage() {
                 <LegalP>
                     BacancyTeleCare is based in the United States. If you access the platform from
                     outside the United States, you consent to the transfer and processing of your
-                    information in the United States and other countries that may have different data
-                    protection laws than your country of residence.
+                    information in the United States and other countries that may have different
+                    data protection laws than your country of residence.
                 </LegalP>
             </LegalSection>
 
@@ -224,14 +225,15 @@ export default function PrivacyPolicyPage() {
                 <LegalP>
                     We may update this Privacy Policy from time to time. We will post the revised
                     policy on this page and update the &quot;Last updated&quot; date. For material
-                    changes, we will provide additional notice where required by law (such as email or
-                    an in-product alert).
+                    changes, we will provide additional notice where required by law (such as email
+                    or an in-product alert).
                 </LegalP>
             </LegalSection>
 
             <LegalSection id="contact" title="13. Contact us">
                 <LegalP>
-                    If you have questions about this Privacy Policy or our privacy practices, contact:
+                    If you have questions about this Privacy Policy or our privacy practices,
+                    contact:
                 </LegalP>
                 <LegalP>
                     <strong className="text-slate-800">BacancyTeleCare Inc.</strong>

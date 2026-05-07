@@ -190,7 +190,7 @@ function ForgotPasswordContent() {
                         Secure Account <span className="text-brand-500">Recovery.</span>
                     </>
                 }
-                description="We&apos;ll help you get back into BacancyTeleCare safely. Reset your password and continue your care journey without missing a beat."
+                description="We'll help you get back into BacancyTeleCare safely. Reset your password and continue your care journey without missing a beat."
                 imageSrc="/auth-forgot.svg"
                 imageAlt="Padlock with floating key, recovering your account"
             />

@@ -234,7 +234,10 @@ function DoctorDiscoveryContent() {
                     aria-expanded={mobileFiltersOpen}
                 >
                     <span className="flex min-w-0 items-center gap-2 text-sm font-bold text-slate-800">
-                        <SlidersHorizontal className="h-4 w-4 shrink-0 text-brand-600" aria-hidden />
+                        <SlidersHorizontal
+                            className="h-4 w-4 shrink-0 text-brand-600"
+                            aria-hidden
+                        />
                         <span className="truncate">
                             Location &amp; specialty
                             {activeFilterCount > 0 ? (

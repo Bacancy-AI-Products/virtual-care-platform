@@ -24,8 +24,8 @@ export default function NotFound() {
                         We couldn&apos;t find that page
                     </h1>
                     <p className="text-slate-500 font-medium mb-10 max-w-md mx-auto leading-relaxed">
-                        The page you&apos;re looking for may have moved, or never existed. Let&apos;s
-                        get you back on track.
+                        The page you&apos;re looking for may have moved, or never existed.
+                        Let&apos;s get you back on track.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">

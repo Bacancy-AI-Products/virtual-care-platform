@@ -20,13 +20,16 @@ export default function TermsAndConditionsPage() {
         <LegalDocumentShell title="Terms & Conditions" lastUpdated={LAST_UPDATED}>
             <LegalSection id="agreement" title="1. Agreement to these terms">
                 <LegalP>
-                    These Terms &amp; Conditions (&quot;Terms&quot;) govern your access to and use of
-                    the websites, applications, and related services offered by BacancyTeleCare Inc.
-                    (&quot;BacancyTeleCare,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;)
-                    (collectively, the &quot;Services&quot;). By creating an account, using the
-                    Services, or clicking to accept these Terms where presented, you agree to be
-                    bound by these Terms and our{' '}
-                    <Link href="/privacy" className="font-semibold text-medical-teal hover:underline">
+                    These Terms &amp; Conditions (&quot;Terms&quot;) govern your access to and use
+                    of the websites, applications, and related services offered by BacancyTeleCare
+                    Inc. (&quot;BacancyTeleCare,&quot; &quot;we,&quot; &quot;us,&quot; or
+                    &quot;our&quot;) (collectively, the &quot;Services&quot;). By creating an
+                    account, using the Services, or clicking to accept these Terms where presented,
+                    you agree to be bound by these Terms and our{' '}
+                    <Link
+                        href="/privacy"
+                        className="font-semibold text-medical-teal hover:underline"
+                    >
                         Privacy Policy
                     </Link>
                     .
@@ -40,9 +43,9 @@ export default function TermsAndConditionsPage() {
             <LegalSection id="eligibility" title="2. Eligibility and accounts">
                 <LegalP>
                     You must be at least 18 years old (or the age of majority in your jurisdiction)
-                    to create a patient account, unless a parent or legal guardian registers on behalf
-                    of a minor in compliance with our policies and applicable law. You agree to
-                    provide accurate, current information and to keep your account credentials
+                    to create a patient account, unless a parent or legal guardian registers on
+                    behalf of a minor in compliance with our policies and applicable law. You agree
+                    to provide accurate, current information and to keep your account credentials
                     confidential. You are responsible for all activity under your account.
                 </LegalP>
             </LegalSection>
@@ -81,7 +84,7 @@ export default function TermsAndConditionsPage() {
 
             <LegalSection id="payments" title="5. Fees and payment">
                 <LegalP>
-                    Certain features may be free; others may require                     payment, insurance billing, or
+                    Certain features may be free; others may require payment, insurance billing, or
                     both. You agree to pay all fees associated with services you purchase or book,
                     plus applicable taxes, according to the pricing and billing terms presented at
                     checkout or in a separate agreement. Late or failed payments may result in
@@ -121,8 +124,8 @@ export default function TermsAndConditionsPage() {
 
             <LegalSection id="intellectual-property" title="7. Intellectual property">
                 <LegalP>
-                    The Services, including software, branding, text, graphics, and compilations, are
-                    owned by BacancyTeleCare or its licensors and are protected by intellectual
+                    The Services, including software, branding, text, graphics, and compilations,
+                    are owned by BacancyTeleCare or its licensors and are protected by intellectual
                     property laws. Subject to these Terms, we grant you a limited, non-exclusive,
                     non-transferable, revocable license to access and use the Services for personal,
                     non-commercial purposes (or internal business use if you are a provider
@@ -157,8 +160,8 @@ export default function TermsAndConditionsPage() {
                     THE SERVICES ARE PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE,&quot;
                     WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, OR STATUTORY,
                     INCLUDING IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-                    PURPOSE, TITLE, AND NON-INFRINGEMENT. WE DO NOT WARRANT THAT THE SERVICES WILL BE
-                    UNINTERRUPTED, ERROR-FREE, OR FREE OF HARMFUL COMPONENTS.
+                    PURPOSE, TITLE, AND NON-INFRINGEMENT. WE DO NOT WARRANT THAT THE SERVICES WILL
+                    BE UNINTERRUPTED, ERROR-FREE, OR FREE OF HARMFUL COMPONENTS.
                 </LegalP>
             </LegalSection>
 
@@ -166,10 +169,10 @@ export default function TermsAndConditionsPage() {
                 <LegalP>
                     TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, BACANCYTECARE AND ITS
                     OFFICERS, DIRECTORS, EMPLOYEES, AND AGENTS WILL NOT BE LIABLE FOR ANY INDIRECT,
-                    INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF
-                    PROFITS, DATA, GOODWILL, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR RELATED
-                    TO YOUR USE OF THE SERVICES, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF
-                    SUCH DAMAGES.
+                    INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS,
+                    DATA, GOODWILL, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR RELATED TO YOUR
+                    USE OF THE SERVICES, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH
+                    DAMAGES.
                 </LegalP>
                 <LegalP>
                     OUR TOTAL AGGREGATE LIABILITY FOR ANY CLAIMS ARISING OUT OF OR RELATING TO THE
@@ -193,11 +196,11 @@ export default function TermsAndConditionsPage() {
             <LegalSection id="termination" title="13. Term and termination">
                 <LegalP>
                     These Terms remain in effect while you use the Services. You may stop using the
-                    Services at any time. We may suspend or terminate your access for conduct that we
-                    believe violates these Terms, creates risk, or for operational or legal reasons,
-                    with or without notice where permitted by law. Provisions that by their nature
-                    should survive (including intellectual property, disclaimers, limitations of
-                    liability, indemnity, and governing law) will survive termination.
+                    Services at any time. We may suspend or terminate your access for conduct that
+                    we believe violates these Terms, creates risk, or for operational or legal
+                    reasons, with or without notice where permitted by law. Provisions that by their
+                    nature should survive (including intellectual property, disclaimers, limitations
+                    of liability, indemnity, and governing law) will survive termination.
                 </LegalP>
             </LegalSection>
 

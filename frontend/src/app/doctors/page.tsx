@@ -21,7 +21,11 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { doctorsApi, type DoctorSummary, type SpecializationOption } from '@/services/api';
 import { getStates, getCities } from '@/constants/us-locations';
 import { PublicHeader } from '@/components/PublicHeader';
-import { FORM_CONTROL_SEARCH, FORM_SELECT_CLASS, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
+import {
+    FORM_CONTROL_SEARCH,
+    FORM_SELECT_CLASS,
+    NO_BROWSER_INPUT_HELPERS,
+} from '@/constants/form-controls';
 
 function DoctorCard({
     doctor,

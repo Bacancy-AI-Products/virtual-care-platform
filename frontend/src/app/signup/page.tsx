@@ -61,9 +61,7 @@ export default function SignupPage() {
     }, [role]);
 
     const pillInnerKey =
-        prefersReducedMotion || toggleBurstId === 0
-            ? 'pill-static'
-            : `burst-${toggleBurstId}`;
+        prefersReducedMotion || toggleBurstId === 0 ? 'pill-static' : `burst-${toggleBurstId}`;
 
     /** Replay icon nudge when burst or segment identity changes */
     const patientIconKey = `patient-icon-${toggleBurstId}-${role}`;
@@ -213,10 +211,7 @@ export default function SignupPage() {
                                     initial={false}
                                     className="pointer-events-none absolute inset-y-1 left-1 z-[2] w-[calc(50%-5px)]"
                                     animate={{
-                                        x:
-                                            role === 'patient'
-                                                ? 0
-                                                : 'calc(100% + 0.125rem)',
+                                        x: role === 'patient' ? 0 : 'calc(100% + 0.125rem)',
                                     }}
                                     transition={toggleTransition}
                                 >
@@ -246,11 +241,7 @@ export default function SignupPage() {
                                     type="button"
                                     aria-pressed={role === 'patient'}
                                     onClick={() => setRole('patient')}
-                                    whileTap={
-                                        prefersReducedMotion
-                                            ? undefined
-                                            : { scale: 0.94 }
-                                    }
+                                    whileTap={prefersReducedMotion ? undefined : { scale: 0.94 }}
                                     transition={{
                                         type: 'spring',
                                         stiffness: 600,
@@ -292,11 +283,7 @@ export default function SignupPage() {
                                     type="button"
                                     aria-pressed={role === 'doctor'}
                                     onClick={() => setRole('doctor')}
-                                    whileTap={
-                                        prefersReducedMotion
-                                            ? undefined
-                                            : { scale: 0.94 }
-                                    }
+                                    whileTap={prefersReducedMotion ? undefined : { scale: 0.94 }}
                                     transition={{
                                         type: 'spring',
                                         stiffness: 600,
@@ -344,17 +331,9 @@ export default function SignupPage() {
                                 <motion.p
                                     key={role}
                                     role="status"
-                                    initial={
-                                        prefersReducedMotion
-                                            ? false
-                                            : { opacity: 0, y: 4 }
-                                    }
+                                    initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    exit={
-                                        prefersReducedMotion
-                                            ? undefined
-                                            : { opacity: 0, y: -4 }
-                                    }
+                                    exit={prefersReducedMotion ? undefined : { opacity: 0, y: -4 }}
                                     transition={
                                         prefersReducedMotion
                                             ? { duration: 0 }

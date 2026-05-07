@@ -74,9 +74,7 @@ export default function PublicDoctorProfilePage() {
                         <div className="w-16 h-16 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
                             <Search className="w-8 h-8 text-slate-400" />
                         </div>
-                        <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                            Doctor not found
-                        </h2>
+                        <h2 className="text-2xl font-bold text-slate-900 mb-2">Doctor not found</h2>
                         <p className="text-slate-500 font-medium mb-8">
                             We couldn&apos;t load this profile. The doctor may no longer be
                             available.

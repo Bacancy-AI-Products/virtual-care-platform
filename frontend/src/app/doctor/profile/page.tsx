@@ -26,7 +26,11 @@ import {
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { getStates, getCities } from '@/constants/us-locations';
-import { FORM_CONTROL_CLASS, FORM_SELECT_CLASS, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
+import {
+    FORM_CONTROL_CLASS,
+    FORM_SELECT_CLASS,
+    NO_BROWSER_INPUT_HELPERS,
+} from '@/constants/form-controls';
 
 export default function DoctorProfile() {
     const { user, token } = useAuth();

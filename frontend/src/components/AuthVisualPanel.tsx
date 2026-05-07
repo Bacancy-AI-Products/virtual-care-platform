@@ -40,10 +40,9 @@ export function AuthVisualPanel({
     imageAlt,
     landingAligned = false,
 }: AuthVisualPanelProps) {
-    const iconShell =
-        landingAligned
-            ? 'w-9 h-9 rounded-xl bg-gradient-to-br from-brand-50 to-medical-soft flex items-center justify-center flex-shrink-0 ring-1 ring-brand-100/80'
-            : 'w-9 h-9 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0';
+    const iconShell = landingAligned
+        ? 'w-9 h-9 rounded-xl bg-gradient-to-br from-brand-50 to-medical-soft flex items-center justify-center flex-shrink-0 ring-1 ring-brand-100/80'
+        : 'w-9 h-9 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0';
 
     const highlights = landingAligned
         ? [

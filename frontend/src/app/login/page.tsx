@@ -10,7 +10,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { BrandLogo } from '@/components/BrandLogo';
 import { AuthVisualPanel } from '@/components/AuthVisualPanel';
 import { BackToHomeLink } from '@/components/BackToHomeLink';
-import { FORM_CONTROL_LEADING_ICON, FORM_AUTH_PRIMARY_BUTTON, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
+import {
+    FORM_CONTROL_LEADING_ICON,
+    FORM_AUTH_PRIMARY_BUTTON,
+    NO_BROWSER_INPUT_HELPERS,
+} from '@/constants/form-controls';
 
 /** Allow redirect after login only to these prefixes (avoid open redirect). */
 const ALLOWED_REDIRECT_PREFIXES = ['/patient/', '/doctor/', '/admin/', '/doctors'];
@@ -113,7 +117,12 @@ export default function LoginPage() {
                                 Enter your account details to access BacancyTeleCare.
                             </p>
 
-                            <form onSubmit={handleSubmit} className="space-y-4" noValidate autoComplete="off">
+                            <form
+                                onSubmit={handleSubmit}
+                                className="space-y-4"
+                                noValidate
+                                autoComplete="off"
+                            >
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-slate-700 ml-1">
                                         Email or Mobile Number
@@ -211,13 +220,19 @@ export default function LoginPage() {
                                     </Link>
                                 </p>
                                 <p className="text-xs text-slate-400">
-                                    <Link href="/privacy" className="hover:text-slate-600 underline-offset-2 hover:underline">
+                                    <Link
+                                        href="/privacy"
+                                        className="hover:text-slate-600 underline-offset-2 hover:underline"
+                                    >
                                         Privacy Policy
                                     </Link>
                                     <span className="mx-2 text-slate-300" aria-hidden>
                                         ·
                                     </span>
-                                    <Link href="/terms" className="hover:text-slate-600 underline-offset-2 hover:underline">
+                                    <Link
+                                        href="/terms"
+                                        className="hover:text-slate-600 underline-offset-2 hover:underline"
+                                    >
                                         Terms &amp; Conditions
                                     </Link>
                                 </p>
@@ -230,8 +245,7 @@ export default function LoginPage() {
                     landingAligned
                     title={
                         <>
-                            Your Health,{' '}
-                            <span className="text-brand-500">Our Priority.</span>
+                            Your Health, <span className="text-brand-500">Our Priority.</span>
                         </>
                     }
                     description="Experience the future of healthcare with BacancyTeleCare. Connect with verified specialists, manage prescriptions, and access your records, all in one place."
