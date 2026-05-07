@@ -6,13 +6,11 @@ import {
     Search,
     Calendar,
     Loader2,
-    AlertCircle,
     Pill,
     ClipboardList,
     ChevronDown,
     ChevronUp,
     CheckCircle2,
-    RotateCw,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -25,6 +23,8 @@ import {
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { FORM_CONTROL_SEARCH_ON_WHITE, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 // ─── Canvas prescription generator ───────────────────────────────────────────
 
@@ -400,36 +400,15 @@ export default function MedicalRecords() {
             )}
 
             {/* Error */}
-            {isError && (
-                <div className="p-12 bg-red-50 rounded-[32px] text-center">
-                    <AlertCircle className="w-10 h-10 text-red-400 mx-auto mb-3" />
-                    <p className="text-red-600 font-bold mb-1">Failed to load records.</p>
-                    <p className="text-sm text-red-500/80 font-medium mb-6">
-                        Please check your connection and try again.
-                    </p>
-                    <button
-                        type="button"
-                        onClick={() =>
-                            qClient.invalidateQueries({
-                                queryKey: ['prescriptions', 'mine', 50],
-                            })
-                        }
-                        className="inline-flex items-center gap-2 px-5 py-3 bg-white text-red-600 font-bold rounded-2xl border border-red-200 hover:bg-red-50 transition-all active:scale-95"
-                    >
-                        <RotateCw className="w-4 h-4" /> Retry
-                    </button>
-                </div>
-            )}
+            {isError && <ErrorState message="Failed to load records." />}
 
             {/* Empty */}
             {!isLoading && !isError && filtered.length === 0 && (
-                <div className="p-20 bg-white rounded-[40px] border border-dashed border-slate-200 text-center">
-                    <ClipboardList className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                    <h4 className="text-xl font-bold text-slate-900 mb-2">No prescriptions yet</h4>
-                    <p className="text-slate-500">
-                        Prescriptions from your consultations will appear here.
-                    </p>
-                </div>
+                <EmptyState
+                    icon={<ClipboardList className="w-12 h-12 text-slate-300" />}
+                    title="No prescriptions yet"
+                    message="Prescriptions from your consultations will appear here."
+                />
             )}
 
             {/* Prescriptions grid */}

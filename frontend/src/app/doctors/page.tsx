@@ -31,6 +31,8 @@ import {
     FORM_CONTROL_LEADING_ICON,
 } from '@/constants/form-controls';
 import { twMerge } from 'tailwind-merge';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 /** Server page size for the public doctors grid (3 columns × 3 rows at xl). */
 const PAGE_SIZE = 9;
@@ -471,34 +473,15 @@ function PublicDoctorsContent() {
                         )}
 
                         {isError && (
-                            <div className="p-12 bg-red-50 rounded-[40px] text-center">
-                                <p className="text-red-500 font-bold mb-6">
-                                    Failed to load doctors. Please try again.
-                                </p>
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        qClient.invalidateQueries({
-                                            queryKey: ['doctors', 'public'],
-                                        })
-                                    }
-                                    className="inline-flex items-center gap-2 px-5 py-3 bg-white text-red-600 font-bold rounded-2xl border border-red-200 hover:bg-red-50 transition-all active:scale-95"
-                                >
-                                    <RotateCw className="w-4 h-4" /> Retry
-                                </button>
-                            </div>
+                            <ErrorState message="Failed to load doctors. Please try again." />
                         )}
 
                         {!isLoading && !isError && doctors.length === 0 && (
-                            <div className="p-20 bg-white rounded-[40px] border border-dashed border-slate-200 text-center">
-                                <Search className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                                <h4 className="text-xl font-bold text-slate-900 mb-2">
-                                    No doctors found
-                                </h4>
-                                <p className="text-slate-500 max-w-xs mx-auto">
-                                    Try adjusting your search or filters.
-                                </p>
-                            </div>
+                            <EmptyState
+                                icon={<Search className="w-12 h-12 text-slate-300" />}
+                                title="No doctors found"
+                                message="Try adjusting your search or filters."
+                            />
                         )}
 
                         {!isLoading && !isError && doctors.length > 0 && (

@@ -6,6 +6,7 @@ import { motion } from 'motion/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { doctorsApi, type AvailabilitySlot, type AvailabilitySlotInput } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { Clock, Calendar, Plus, Trash2 } from 'lucide-react';
 import { NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
@@ -142,11 +143,7 @@ export default function DoctorAvailabilityPage() {
                 </div>
             )}
 
-            {isError && (
-                <div className="p-12 bg-red-50 rounded-[40px] text-center">
-                    <p className="text-red-500 font-bold">Failed to load availability.</p>
-                </div>
-            )}
+            {isError && <ErrorState message="Failed to load availability." />}
 
             {!isLoading && !isError && (
                 <div className="grid lg:grid-cols-2 gap-6">
