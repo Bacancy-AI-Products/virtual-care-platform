@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Calendar, Clock, Plus, ChevronLeft, ChevronRight, Video, Loader2 } from 'lucide-react';
+import { Calendar, Clock, ChevronLeft, ChevronRight, Video, Loader2 } from 'lucide-react';
 import {
     format,
     startOfMonth,

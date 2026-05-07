@@ -1,6 +1,7 @@
 import nextCwv from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 /**
  * ESLint v9 flat config.
@@ -21,9 +22,15 @@ export default [
     ...nextTs,
     prettierRecommended,
     {
+        plugins: {
+            'unused-imports': unusedImports,
+        },
         rules: {
             // Disable the base rule — @typescript-eslint/no-unused-vars supersedes it
             'no-unused-vars': 'off',
+
+            // Auto-removable unused imports (paired with `lint:fix`)
+            'unused-imports/no-unused-imports': 'error',
 
             // Logic rules (not formatting — Prettier owns formatting)
             'no-unreachable': 'error',

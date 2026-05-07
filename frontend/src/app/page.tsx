@@ -10,7 +10,6 @@ import {
     Clock,
     Video,
     ArrowRight,
-    Star,
     Users,
     Calendar,
     FileText,

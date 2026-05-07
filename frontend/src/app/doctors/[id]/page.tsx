@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import {
     Star,
-    Clock,
     Award,
     Users,
     Heart,

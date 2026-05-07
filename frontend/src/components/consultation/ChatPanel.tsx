@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { MessageSquare, X, FileText, Download, Send, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { VideoInfoResponse, FileRecord } from '@/services/api';
+import { VideoInfoResponse } from '@/services/api';
 import { useConsultationChat } from '@/hooks/useConsultationChat';
 import { FilePreviewModal } from '@/components/FilePreviewModal';
 

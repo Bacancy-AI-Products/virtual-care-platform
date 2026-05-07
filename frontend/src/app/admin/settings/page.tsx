@@ -2,14 +2,12 @@
 
 import React from 'react';
 import {
-    Settings,
     Shield,
     Bell,
     Database,
     Globe,
     Lock,
     Mail,
-    Smartphone,
     CheckCircle2,
     ChevronRight,
 } from 'lucide-react';

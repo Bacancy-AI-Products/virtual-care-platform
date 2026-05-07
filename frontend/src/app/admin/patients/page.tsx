@@ -2,18 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import {
-    Search,
-    Filter,
-    MoreVertical,
-    Mail,
-    Phone,
-    Calendar,
-    History,
-    FileText,
-    Trash2,
-    Edit,
-} from 'lucide-react';
+import { Search, Filter, MoreVertical, Mail, Phone, History, FileText } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const MOCK_PATIENTS = [

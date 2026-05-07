@@ -9,6 +9,7 @@
         "start": "next start --port=3000 --hostname=0.0.0.0",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
+        "lint:dead": "ts-prune --project tsconfig.json --ignore '(used in module)'",
         "format": "prettier --write .",
         "prepare": "cd .. && git config core.hooksPath .husky 2>/dev/null || true",
         "test:e2e": "playwright test",
@@ -48,9 +49,11 @@
         "eslint-config-next": "^16.1.7",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.5",
+        "eslint-plugin-unused-imports": "^4.1.4",
         "lint-staged": "^15.2.10",
         "prettier": "^3.8.1",
         "tailwindcss": "^4.1.14",
+        "ts-prune": "^0.10.3",
         "typescript": "5.8.3"
     },
     "lint-staged": {

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Bell, Check, CheckCheck, X, Calendar, FileText, Info } from 'lucide-react';
+import { Bell, CheckCheck, X, Calendar, FileText, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { formatDistanceToNow } from 'date-fns';
