@@ -228,7 +228,9 @@ export default function DoctorPatients() {
             {!isLoading && !isError && filtered.length === 0 && (
                 <EmptyState
                     icon={<Users className="w-12 h-12 text-slate-300" />}
-                    title={patientRows.length > 0 && search.trim() ? 'No matches' : 'No patients yet'}
+                    title={
+                        patientRows.length > 0 && search.trim() ? 'No matches' : 'No patients yet'
+                    }
                     message={
                         patientRows.length > 0 && search.trim()
                             ? 'Try a different name or email to find a patient.'

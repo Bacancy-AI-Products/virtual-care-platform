@@ -15,7 +15,6 @@ import {
     Loader2,
     ChevronDown,
     X,
-    RotateCw,
     SlidersHorizontal,
     ChevronLeft,
     ChevronRight,
