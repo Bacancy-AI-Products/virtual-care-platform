@@ -153,241 +153,249 @@ function ResetPasswordContent() {
     return (
         <div className="min-h-screen lg:min-h-0 lg:h-dvh lg:max-h-dvh lg:overflow-hidden bg-slate-50 flex flex-col lg:flex-row">
             <div className="flex-1 flex flex-col min-h-0 px-6 py-6 lg:py-12 lg:px-24 bg-white relative lg:overflow-y-auto">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="max-w-md w-full mx-auto"
-                >
-                    <div className="mb-10">
-                        <BrandLogo />
-                    </div>
-
-                    <h2 className="text-3xl font-bold text-slate-900 mb-2">Reset Password</h2>
-                    <p className="text-slate-500 mb-10">Enter your new password below.</p>
-
-                    {isSuccess ? (
-                        <div className="space-y-6">
-                            <p className="text-sm text-emerald-700 font-medium bg-emerald-50 px-4 py-3 rounded-2xl">
-                                Your password has been reset successfully! You can now log in with
-                                your new password.
-                            </p>
-                            <Link
-                                href="/login"
-                                className={`${FORM_AUTH_PRIMARY_BUTTON} inline-flex group`}
-                            >
-                                Go to Login
-                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </Link>
+                <div className="flex-1 flex flex-col justify-center">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="max-w-md w-full mx-auto"
+                    >
+                        <div className="mb-10">
+                            <BrandLogo />
                         </div>
-                    ) : (
-                        <form
-                            onSubmit={handleSubmit}
-                            className="space-y-4"
-                            noValidate
-                            autoComplete="off"
-                        >
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 ml-1">
-                                    New Password
-                                </label>
-                                <div className="relative group">
-                                    <input
-                                        type={showNewPassword ? 'text' : 'password'}
-                                        placeholder="Minimum 8 characters"
-                                        disabled={isSubmitting}
-                                        className={`${FORM_CONTROL_TRAILING_SLOT} ${
-                                            errors.newPassword
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/15'
-                                                : ''
-                                        }`}
-                                        {...NO_BROWSER_INPUT_HELPERS}
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowNewPassword((prev) => !prev)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-brand-500 transition-colors"
-                                        aria-label={
-                                            showNewPassword ? 'Hide password' : 'Show password'
-                                        }
-                                    >
-                                        {showNewPassword ? (
-                                            <EyeOff className="w-4 h-4" />
-                                        ) : (
-                                            <Eye className="w-4 h-4" />
-                                        )}
-                                    </button>
-                                </div>
 
-                                <div className="mt-3">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                                            Password Strength
-                                        </span>
-                                        <span
-                                            className={`text-xs font-bold ${strength.textClassName}`}
-                                        >
-                                            {strength.label}
-                                        </span>
-                                    </div>
-                                    <div className="grid grid-cols-4 gap-1.5">
-                                        {[0, 1, 2, 3].map((index) => (
-                                            <div
-                                                key={index}
-                                                className={`h-2 rounded-full ${
-                                                    index < strength.activeBars
-                                                        ? strength.barClassName
-                                                        : 'bg-slate-200'
-                                                }`}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
+                        <h2 className="text-3xl font-bold text-slate-900 mb-2">Reset Password</h2>
+                        <p className="text-slate-500 mb-10">Enter your new password below.</p>
 
-                                <div className="space-y-1.5 pt-2">
-                                    <p
-                                        className={`text-xs font-medium ${
-                                            passwordChecks.minLength
-                                                ? 'text-emerald-600'
-                                                : 'text-slate-500'
-                                        }`}
-                                    >
-                                        {passwordChecks.minLength ? '✓' : '✕'} At least 8 characters
-                                    </p>
-                                    <p
-                                        className={`text-xs font-medium ${
-                                            passwordChecks.uppercase
-                                                ? 'text-emerald-600'
-                                                : 'text-slate-500'
-                                        }`}
-                                    >
-                                        {passwordChecks.uppercase ? '✓' : '✕'} One uppercase letter
-                                    </p>
-                                    <p
-                                        className={`text-xs font-medium ${
-                                            passwordChecks.lowercase
-                                                ? 'text-emerald-600'
-                                                : 'text-slate-500'
-                                        }`}
-                                    >
-                                        {passwordChecks.lowercase ? '✓' : '✕'} One lowercase letter
-                                    </p>
-                                    <p
-                                        className={`text-xs font-medium ${
-                                            passwordChecks.number
-                                                ? 'text-emerald-600'
-                                                : 'text-slate-500'
-                                        }`}
-                                    >
-                                        {passwordChecks.number ? '✓' : '✕'} One number
-                                    </p>
-                                    <p
-                                        className={`text-xs font-medium ${
-                                            passwordChecks.special
-                                                ? 'text-emerald-600'
-                                                : 'text-slate-500'
-                                        }`}
-                                    >
-                                        {passwordChecks.special ? '✓' : '✕'} One special character
-                                    </p>
-                                </div>
-
-                                {errors.newPassword && (
-                                    <p className="text-xs text-red-500 font-medium ml-1">
-                                        {errors.newPassword}
-                                    </p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 ml-1">
-                                    Confirm Password
-                                </label>
-                                <div className="relative group">
-                                    <input
-                                        type={showConfirmPassword ? 'text' : 'password'}
-                                        placeholder="Re-enter your password"
-                                        disabled={isSubmitting}
-                                        className={`${FORM_CONTROL_TRAILING_SLOT} ${
-                                            errors.confirmPassword
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/15'
-                                                : ''
-                                        }`}
-                                        {...NO_BROWSER_INPUT_HELPERS}
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowConfirmPassword((prev) => !prev)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-brand-500 transition-colors"
-                                        aria-label={
-                                            showConfirmPassword ? 'Hide password' : 'Show password'
-                                        }
-                                    >
-                                        {showConfirmPassword ? (
-                                            <EyeOff className="w-4 h-4" />
-                                        ) : (
-                                            <Eye className="w-4 h-4" />
-                                        )}
-                                    </button>
-                                </div>
-                                {errors.confirmPassword && (
-                                    <p className="text-xs text-red-500 font-medium ml-1">
-                                        {errors.confirmPassword}
-                                    </p>
-                                )}
-                            </div>
-
-                            {errors.form && (
-                                <p className="text-sm text-red-500 font-medium text-center bg-red-50 px-4 py-3 rounded-2xl">
-                                    {errors.form}
+                        {isSuccess ? (
+                            <div className="space-y-6">
+                                <p className="text-sm text-emerald-700 font-medium bg-emerald-50 px-4 py-3 rounded-2xl">
+                                    Your password has been reset successfully! You can now log in
+                                    with your new password.
                                 </p>
-                            )}
-
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className={`${FORM_AUTH_PRIMARY_BUTTON} flex group`}
+                                <Link
+                                    href="/login"
+                                    className={`${FORM_AUTH_PRIMARY_BUTTON} inline-flex group`}
+                                >
+                                    Go to Login
+                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                            </div>
+                        ) : (
+                            <form
+                                onSubmit={handleSubmit}
+                                className="space-y-4"
+                                noValidate
+                                autoComplete="off"
                             >
-                                {isSubmitting ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        Resetting password...
-                                    </>
-                                ) : (
-                                    <>
-                                        Reset Password
-                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                    </>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-slate-700 ml-1">
+                                        New Password
+                                    </label>
+                                    <div className="relative group">
+                                        <input
+                                            type={showNewPassword ? 'text' : 'password'}
+                                            placeholder="Minimum 8 characters"
+                                            disabled={isSubmitting}
+                                            className={`${FORM_CONTROL_TRAILING_SLOT} ${
+                                                errors.newPassword
+                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/15'
+                                                    : ''
+                                            }`}
+                                            {...NO_BROWSER_INPUT_HELPERS}
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowNewPassword((prev) => !prev)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-brand-500 transition-colors"
+                                            aria-label={
+                                                showNewPassword ? 'Hide password' : 'Show password'
+                                            }
+                                        >
+                                            {showNewPassword ? (
+                                                <EyeOff className="w-4 h-4" />
+                                            ) : (
+                                                <Eye className="w-4 h-4" />
+                                            )}
+                                        </button>
+                                    </div>
+
+                                    <div className="mt-3">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                                                Password Strength
+                                            </span>
+                                            <span
+                                                className={`text-xs font-bold ${strength.textClassName}`}
+                                            >
+                                                {strength.label}
+                                            </span>
+                                        </div>
+                                        <div className="grid grid-cols-4 gap-1.5">
+                                            {[0, 1, 2, 3].map((index) => (
+                                                <div
+                                                    key={index}
+                                                    className={`h-2 rounded-full ${
+                                                        index < strength.activeBars
+                                                            ? strength.barClassName
+                                                            : 'bg-slate-200'
+                                                    }`}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-1.5 pt-2">
+                                        <p
+                                            className={`text-xs font-medium ${
+                                                passwordChecks.minLength
+                                                    ? 'text-emerald-600'
+                                                    : 'text-slate-500'
+                                            }`}
+                                        >
+                                            {passwordChecks.minLength ? '✓' : '✕'} At least 8
+                                            characters
+                                        </p>
+                                        <p
+                                            className={`text-xs font-medium ${
+                                                passwordChecks.uppercase
+                                                    ? 'text-emerald-600'
+                                                    : 'text-slate-500'
+                                            }`}
+                                        >
+                                            {passwordChecks.uppercase ? '✓' : '✕'} One uppercase
+                                            letter
+                                        </p>
+                                        <p
+                                            className={`text-xs font-medium ${
+                                                passwordChecks.lowercase
+                                                    ? 'text-emerald-600'
+                                                    : 'text-slate-500'
+                                            }`}
+                                        >
+                                            {passwordChecks.lowercase ? '✓' : '✕'} One lowercase
+                                            letter
+                                        </p>
+                                        <p
+                                            className={`text-xs font-medium ${
+                                                passwordChecks.number
+                                                    ? 'text-emerald-600'
+                                                    : 'text-slate-500'
+                                            }`}
+                                        >
+                                            {passwordChecks.number ? '✓' : '✕'} One number
+                                        </p>
+                                        <p
+                                            className={`text-xs font-medium ${
+                                                passwordChecks.special
+                                                    ? 'text-emerald-600'
+                                                    : 'text-slate-500'
+                                            }`}
+                                        >
+                                            {passwordChecks.special ? '✓' : '✕'} One special
+                                            character
+                                        </p>
+                                    </div>
+
+                                    {errors.newPassword && (
+                                        <p className="text-xs text-red-500 font-medium ml-1">
+                                            {errors.newPassword}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-slate-700 ml-1">
+                                        Confirm Password
+                                    </label>
+                                    <div className="relative group">
+                                        <input
+                                            type={showConfirmPassword ? 'text' : 'password'}
+                                            placeholder="Re-enter your password"
+                                            disabled={isSubmitting}
+                                            className={`${FORM_CONTROL_TRAILING_SLOT} ${
+                                                errors.confirmPassword
+                                                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/15'
+                                                    : ''
+                                            }`}
+                                            {...NO_BROWSER_INPUT_HELPERS}
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-brand-500 transition-colors"
+                                            aria-label={
+                                                showConfirmPassword
+                                                    ? 'Hide password'
+                                                    : 'Show password'
+                                            }
+                                        >
+                                            {showConfirmPassword ? (
+                                                <EyeOff className="w-4 h-4" />
+                                            ) : (
+                                                <Eye className="w-4 h-4" />
+                                            )}
+                                        </button>
+                                    </div>
+                                    {errors.confirmPassword && (
+                                        <p className="text-xs text-red-500 font-medium ml-1">
+                                            {errors.confirmPassword}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {errors.form && (
+                                    <p className="text-sm text-red-500 font-medium text-center bg-red-50 px-4 py-3 rounded-2xl">
+                                        {errors.form}
+                                    </p>
                                 )}
-                            </button>
-                        </form>
-                    )}
 
-                    <div className="mt-10 text-center space-y-4">
-                        <BackNavLink href="/login">Back to login</BackNavLink>
-                        <p className="text-xs text-slate-400">
-                            <Link
-                                href="/privacy"
-                                className="hover:text-slate-600 underline-offset-2 hover:underline"
-                            >
-                                Privacy Policy
-                            </Link>
-                            <span className="mx-2 text-slate-300" aria-hidden>
-                                ·
-                            </span>
-                            <Link
-                                href="/terms"
-                                className="hover:text-slate-600 underline-offset-2 hover:underline"
-                            >
-                                Terms &amp; Conditions
-                            </Link>
-                        </p>
-                    </div>
-                </motion.div>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className={`${FORM_AUTH_PRIMARY_BUTTON} flex group`}
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            Resetting password...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Reset Password
+                                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                        </>
+                                    )}
+                                </button>
+                            </form>
+                        )}
+
+                        <div className="mt-10 text-center space-y-4">
+                            <BackNavLink href="/login">Back to login</BackNavLink>
+                            <p className="text-xs text-slate-400">
+                                <Link
+                                    href="/privacy"
+                                    className="hover:text-slate-600 underline-offset-2 hover:underline"
+                                >
+                                    Privacy Policy
+                                </Link>
+                                <span className="mx-2 text-slate-300" aria-hidden>
+                                    ·
+                                </span>
+                                <Link
+                                    href="/terms"
+                                    className="hover:text-slate-600 underline-offset-2 hover:underline"
+                                >
+                                    Terms &amp; Conditions
+                                </Link>
+                            </p>
+                        </div>
+                    </motion.div>
+                </div>
             </div>
 
             <AuthVisualPanel
