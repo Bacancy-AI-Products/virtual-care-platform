@@ -23,6 +23,7 @@ import {
     type Appointment,
     type SpecializationOption,
 } from '@/services/api';
+import { ErrorState } from '@/components/ui/ErrorState';
 
 const PAGE_SIZE = 6;
 
@@ -345,22 +346,7 @@ export default function PatientAppointments() {
                 </div>
             )}
 
-            {isError && (
-                <div className="p-12 bg-red-50 rounded-[40px] text-center">
-                    <p className="text-red-500 font-bold mb-6">Failed to load appointments.</p>
-                    <button
-                        type="button"
-                        onClick={() =>
-                            qClient.invalidateQueries({
-                                queryKey: ['appointments', 'patient', 'all'],
-                            })
-                        }
-                        className="inline-flex items-center gap-2 px-5 py-3 bg-white text-red-600 font-bold rounded-2xl border border-red-200 hover:bg-red-50 transition-all active:scale-95"
-                    >
-                        <RotateCw className="w-4 h-4" /> Retry
-                    </button>
-                </div>
-            )}
+            {isError && <ErrorState message="Failed to load appointments." />}
 
             {!isLoading && !isError && (
                 <div className="space-y-4">

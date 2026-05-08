@@ -25,6 +25,8 @@ import {
 } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { FORM_CONTROL_SEARCH_ON_WHITE, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 const PAGE_SIZE = 9;
 
@@ -221,33 +223,20 @@ export default function DoctorPatients() {
                 </div>
             )}
 
-            {isError && (
-                <div className="p-12 bg-red-50 rounded-[40px] text-center">
-                    <p className="text-red-500 font-bold">Failed to load patient records.</p>
-                </div>
-            )}
+            {isError && <ErrorState message="Failed to load patient records." />}
 
             {!isLoading && !isError && filtered.length === 0 && (
-                <div className="p-20 bg-white rounded-[40px] border border-dashed border-slate-200 text-center">
-                    <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                    {patientRows.length > 0 && search.trim() ? (
-                        <>
-                            <h4 className="text-xl font-bold text-slate-900 mb-2">No matches</h4>
-                            <p className="text-slate-500">
-                                Try a different name or email to find a patient.
-                            </p>
-                        </>
-                    ) : (
-                        <>
-                            <h4 className="text-xl font-bold text-slate-900 mb-2">
-                                No patients yet
-                            </h4>
-                            <p className="text-slate-500">
-                                Patients who book appointments with you will appear here.
-                            </p>
-                        </>
-                    )}
-                </div>
+                <EmptyState
+                    icon={<Users className="w-12 h-12 text-slate-300" />}
+                    title={
+                        patientRows.length > 0 && search.trim() ? 'No matches' : 'No patients yet'
+                    }
+                    message={
+                        patientRows.length > 0 && search.trim()
+                            ? 'Try a different name or email to find a patient.'
+                            : 'Patients who book appointments with you will appear here.'
+                    }
+                />
             )}
 
             {/* Desktop table */}

@@ -22,6 +22,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { appointmentsApi, type Appointment } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 const PAGE_SIZE = 6;
 
@@ -472,32 +474,6 @@ function ReadOnlyCard({ appt }: { appt: Appointment }) {
     );
 }
 
-// ─── Empty state ──────────────────────────────────────────────────────────────
-
-function EmptyState({ tab }: { tab: Tab }) {
-    const configs: Record<Tab, { icon: React.ReactNode; message: string }> = {
-        Upcoming: {
-            icon: <PhoneCall className="w-8 h-8 text-slate-300" />,
-            message: 'No upcoming requests or scheduled calls.',
-        },
-        Past: {
-            icon: <CheckCircle2 className="w-8 h-8 text-slate-300" />,
-            message: 'No past appointments yet.',
-        },
-        Cancelled: {
-            icon: <XCircle className="w-8 h-8 text-slate-300" />,
-            message: 'No cancelled appointments.',
-        },
-    };
-    const cfg = configs[tab] ?? configs.Upcoming;
-    return (
-        <div className="p-16 bg-white rounded-[40px] border border-dashed border-slate-200 text-center flex flex-col items-center gap-3">
-            {cfg.icon}
-            <p className="text-slate-400 font-medium">{cfg.message}</p>
-        </div>
-    );
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const TABS: Tab[] = ['Upcoming', 'Past', 'Cancelled'];
@@ -659,22 +635,7 @@ export default function DoctorAppointments() {
             )}
 
             {/* Error */}
-            {isError && (
-                <div className="p-12 bg-red-50 rounded-[40px] text-center">
-                    <p className="text-red-500 font-bold mb-6">Failed to load appointments.</p>
-                    <button
-                        type="button"
-                        onClick={() =>
-                            qClient.invalidateQueries({
-                                queryKey: ['appointments', 'doctor', 'all'],
-                            })
-                        }
-                        className="inline-flex items-center gap-2 px-5 py-3 bg-white text-red-600 font-bold rounded-2xl border border-red-200 hover:bg-red-50 transition-all active:scale-95"
-                    >
-                        <RotateCw className="w-4 h-4" /> Retry
-                    </button>
-                </div>
-            )}
+            {isError && <ErrorState message="Failed to load appointments." />}
 
             {/* Content */}
             {!isLoading && !isError && (
@@ -682,7 +643,24 @@ export default function DoctorAppointments() {
                     <div className="grid gap-4">
                         <AnimatePresence mode="popLayout">
                             {filtered.length === 0 ? (
-                                <EmptyState tab={activeTab} />
+                                <EmptyState
+                                    icon={
+                                        activeTab === 'Upcoming' ? (
+                                            <PhoneCall className="w-8 h-8 text-slate-300" />
+                                        ) : activeTab === 'Past' ? (
+                                            <CheckCircle2 className="w-8 h-8 text-slate-300" />
+                                        ) : (
+                                            <XCircle className="w-8 h-8 text-slate-300" />
+                                        )
+                                    }
+                                    message={
+                                        activeTab === 'Upcoming'
+                                            ? 'No upcoming requests or scheduled calls.'
+                                            : activeTab === 'Past'
+                                              ? 'No past appointments yet.'
+                                              : 'No cancelled appointments.'
+                                    }
+                                />
                             ) : activeTab === 'Upcoming' ? (
                                 <div className="contents">
                                     {visible
