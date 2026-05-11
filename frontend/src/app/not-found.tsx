@@ -173,7 +173,10 @@ export default function NotFound() {
                         </div>
 
                         {/* Hinge groove — separates screen from base */}
-                        <div className="relative mx-auto h-1 w-[96%] bg-gradient-to-b from-slate-800/60 to-slate-900/40" aria-hidden />
+                        <div
+                            className="relative mx-auto h-1 w-[96%] bg-gradient-to-b from-slate-800/60 to-slate-900/40"
+                            aria-hidden
+                        />
 
                         {/* Base — aluminum unibody bottom */}
                         <div className="relative mx-auto h-8 w-[92%] rounded-b-[28px] bg-[linear-gradient(180deg,_#e2e8f0_0%,_#cbd5e1_45%,_#94a3b8_100%)] shadow-[0_22px_55px_-40px_rgba(15,23,42,0.55)]">
