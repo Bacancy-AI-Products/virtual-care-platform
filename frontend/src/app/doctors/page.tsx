@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import {
     Search,
-    Star,
     Clock,
     MapPin,
     Building2,
@@ -32,6 +31,8 @@ import {
 import { twMerge } from 'tailwind-merge';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { RatingStars } from '@/components/ui/RatingStars';
+import { VerificationBadge } from '@/components/ui/VerificationBadge';
 
 /** Server page size for the public doctors grid (3 columns × 3 rows at xl). */
 const PAGE_SIZE = 9;
@@ -67,6 +68,7 @@ function DoctorCard({
     doctor: DoctorSummary;
     specializationLabel: string;
 }) {
+    const hasRating = doctor.stats.averageRating != null;
     return (
         <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
             <div className="flex items-start gap-6 mb-6">
@@ -78,16 +80,31 @@ function DoctorCard({
                         className="rounded-3xl object-cover border-4 border-white shadow-md"
                         referrerPolicy="no-referrer"
                     />
-                    <div className="absolute -bottom-2 -right-2 bg-green-500 w-5 h-5 rounded-full border-4 border-white shadow-sm z-10" />
+                    {doctor.verified && (
+                        <div className="absolute -bottom-1.5 -right-1.5 z-10">
+                            <VerificationBadge variant="icon" size="sm" />
+                        </div>
+                    )}
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1 gap-2">
                         <h4 className="text-lg font-bold text-slate-900 group-hover:text-brand-600 transition-colors truncate">
                             {doctor.user.name}
                         </h4>
-                        <div className="flex items-center gap-1 text-amber-500 bg-amber-50 px-2 py-1 rounded-full text-xs font-bold flex-shrink-0">
-                            <Star className="w-3 h-3 fill-amber-500" /> 4.8
-                        </div>
+                        {hasRating ? (
+                            <div className="flex-shrink-0">
+                                <RatingStars
+                                    value={doctor.stats.averageRating ?? 0}
+                                    size="sm"
+                                    showValue
+                                    count={doctor.stats.reviewCount}
+                                />
+                            </div>
+                        ) : (
+                            <span className="flex-shrink-0 rounded-full bg-slate-50 border border-slate-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                                New
+                            </span>
+                        )}
                     </div>
                     <p className="text-sm font-semibold text-brand-600 mb-2">
                         {specializationLabel}
@@ -99,6 +116,12 @@ function DoctorCard({
                                 ? `${doctor.experienceYears} Yrs Exp.`
                                 : 'Experienced'}
                         </span>
+                        {doctor.stats.consultationCount > 0 && (
+                            <span className="flex items-center gap-1">
+                                <Stethoscope className="w-3 h-3" />
+                                {doctor.stats.consultationCount.toLocaleString()} consults
+                            </span>
+                        )}
                         {(doctor.city || doctor.state) && (
                             <span className="flex items-center gap-1">
                                 <MapPin className="w-3 h-3" />

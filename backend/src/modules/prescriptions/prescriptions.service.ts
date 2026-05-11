@@ -238,6 +238,12 @@ export async function listForUser(
                     user: { select: { id: true, name: true } },
                 },
             },
+            patient: {
+                select: {
+                    id: true,
+                    user: { select: { id: true, name: true } },
+                },
+            },
             appointment: {
                 select: {
                     id: true,

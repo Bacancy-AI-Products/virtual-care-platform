@@ -16,6 +16,9 @@ import {
     Users,
     Settings,
     ClipboardList,
+    Star,
+    TrendingUp,
+    MessageSquare,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { SidebarDecoration } from '@/components/SidebarDecoration';
@@ -24,7 +27,14 @@ import { twMerge } from 'tailwind-merge';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { NotificationBell } from '@/components/NotificationBell';
-import { authApi, usersApi, filesApi, appointmentsApi, prescriptionsApi } from '@/services/api';
+import {
+    authApi,
+    usersApi,
+    filesApi,
+    appointmentsApi,
+    prescriptionsApi,
+    reviewsApi,
+} from '@/services/api';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -47,6 +57,7 @@ const patientNav: NavItem[] = [
     { to: '/patient/doctors', icon: Search, label: 'Find Doctors' },
     { to: '/patient/appointments', icon: Calendar, label: 'Appointments' },
     { to: '/patient/records', icon: FileText, label: 'Medical Records' },
+    { to: '/patient/feedback', icon: MessageSquare, label: 'Feedback' },
     { to: '/patient/profile', icon: User, label: 'Profile' },
 ];
 
@@ -55,6 +66,9 @@ const doctorNav: NavItem[] = [
     { to: '/doctor/appointments', icon: ClipboardList, label: 'Appointments' },
     { to: '/doctor/availability', icon: Calendar, label: 'Availability' },
     { to: '/doctor/patients', icon: Users, label: 'Patient Records' },
+    { to: '/doctor/prescriptions', icon: FileText, label: 'Prescriptions' },
+    { to: '/doctor/reviews', icon: Star, label: 'Reviews' },
+    { to: '/doctor/insights', icon: TrendingUp, label: 'Insights' },
     { to: '/doctor/profile', icon: User, label: 'Profile' },
 ];
 
@@ -78,6 +92,11 @@ const PREFETCH_MAP: Record<string, (qc: ReturnType<typeof useQueryClient>) => vo
             queryKey: ['prescriptions', 'mine'],
             queryFn: () => prescriptionsApi.getMine(),
         }),
+    '/patient/feedback': (qc) =>
+        qc.prefetchQuery({
+            queryKey: ['reviews', 'mine'],
+            queryFn: () => reviewsApi.getMine({ limit: 100 }),
+        }),
     '/patient/dashboard': (qc) =>
         qc.prefetchQuery({
             queryKey: ['appointments', 'patient', 'upcoming'],
@@ -89,6 +108,16 @@ const PREFETCH_MAP: Record<string, (qc: ReturnType<typeof useQueryClient>) => vo
             queryFn: () => appointmentsApi.list({ limit: 100 }),
         }),
     '/doctor/dashboard': (qc) =>
+        qc.prefetchQuery({
+            queryKey: ['appointments', 'doctor', 'all'],
+            queryFn: () => appointmentsApi.list({ limit: 100 }),
+        }),
+    '/doctor/prescriptions': (qc) =>
+        qc.prefetchQuery({
+            queryKey: ['prescriptions', 'mine'],
+            queryFn: () => prescriptionsApi.getMine(),
+        }),
+    '/doctor/insights': (qc) =>
         qc.prefetchQuery({
             queryKey: ['appointments', 'doctor', 'all'],
             queryFn: () => appointmentsApi.list({ limit: 100 }),
@@ -121,30 +150,24 @@ function SidebarItem({
                 onClick?.();
             }}
             className={cn(
-                'group relative flex items-center gap-3 overflow-hidden rounded-xl px-3 text-sm transition-all duration-200 ease-out',
+                'group relative flex items-center gap-2.5 overflow-hidden rounded-lg pl-3 pr-2.5 py-2 text-[13.5px] transition-all duration-200 ease-out',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/35 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
                 isHighlighted
-                    ? 'py-3 font-semibold text-brand-900 bg-brand-100 shadow-[inset_0_0_0_1px_rgba(245,130,32,0.25)]'
-                    : 'py-2.5 font-semibold text-slate-900 motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0',
-                !isHighlighted &&
-                    'bg-white/55 shadow-sm shadow-slate-900/5 ring-1 ring-white/80 backdrop-blur-[2px] hover:bg-white/88 hover:shadow-md hover:shadow-slate-900/8',
+                    ? 'font-semibold text-white bg-gradient-to-r from-brand-500 to-brand-400 shadow-[0_4px_14px_-2px_rgba(245,130,32,0.45),inset_0_-1px_0_rgba(0,0,0,0.06)]'
+                    : 'font-medium text-slate-800 bg-white/90 ring-1 ring-slate-200/70 shadow-[0_1px_2px_rgba(15,23,42,0.04)] hover:bg-white hover:text-slate-900 hover:ring-brand-200/60 hover:shadow-[0_2px_6px_rgba(15,23,42,0.08)] motion-safe:hover:translate-x-[2px]',
             )}
         >
             <span
                 className={cn(
-                    'absolute left-0 top-1/2 h-[72%] w-1 -translate-y-1/2 rounded-full bg-gradient-to-b from-medical-teal via-brand-400 to-brand-500 transition-[opacity,transform] duration-200',
-                    isHighlighted ? 'opacity-90 scale-y-100' : 'opacity-0 scale-y-50',
+                    'relative z-[1] flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors duration-200',
+                    isHighlighted
+                        ? 'bg-white/25 text-white ring-1 ring-white/30'
+                        : 'bg-slate-100 text-slate-600 group-hover:bg-brand-50 group-hover:text-brand-600',
                 )}
-                aria-hidden
-            />
-            <Icon
-                className={cn(
-                    'relative z-[1] h-5 w-5 shrink-0 transition-transform duration-200 motion-safe:group-hover:scale-[1.05]',
-                    isHighlighted ? 'text-brand-700' : 'text-slate-600 group-hover:text-brand-600',
-                )}
-                aria-hidden
-            />
-            <span className="relative z-[1] min-w-0 flex-1 leading-snug [text-shadow:0_1px_0_rgb(255_255_255_/_.75)]">
+            >
+                <Icon className="h-4 w-4" aria-hidden />
+            </span>
+            <span className="relative z-[1] min-w-0 flex-1 leading-tight tracking-[-0.005em]">
                 {label}
             </span>
         </Link>
@@ -283,7 +306,7 @@ export const Layout = ({ children, role }: LayoutProps) => {
                 {header ?? sidebarLogoRow}
 
                 <nav
-                    className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto no-scrollbar pb-1"
+                    className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto no-scrollbar pb-1"
                     aria-label="Primary"
                 >
                     {navItems.map((item) => (
@@ -296,20 +319,18 @@ export const Layout = ({ children, role }: LayoutProps) => {
                     ))}
                 </nav>
 
-                <div className="shrink-0 border-t border-slate-200/80 pt-3">
+                <div className="shrink-0 border-t border-slate-200/60 pt-2.5">
                     <button
                         type="button"
                         onClick={handleLogout}
-                        className="group flex w-full items-center gap-3 rounded-xl border border-slate-200/60 bg-white/55 px-3 py-2.5 text-left text-sm font-semibold text-slate-900 shadow-sm shadow-slate-900/5 ring-1 ring-white/80 backdrop-blur-[2px] transition-all duration-200 hover:border-red-200/90 hover:bg-red-50/95 hover:text-red-700 motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0"
+                        className="group flex w-full items-center gap-2.5 rounded-lg bg-white/90 px-3 py-2 text-left text-[13.5px] font-semibold text-slate-800 ring-1 ring-slate-200/70 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200 hover:bg-red-50 hover:text-red-700 hover:ring-red-200/80 hover:shadow-[0_2px_6px_rgba(239,68,68,0.10)]"
                     >
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100/95 text-slate-600 transition-colors group-hover:bg-red-100 group-hover:text-red-600">
-                            <LogOut className="h-[18px] w-[18px]" aria-hidden />
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-slate-100 text-slate-600 transition-colors group-hover:bg-red-100 group-hover:text-red-600">
+                            <LogOut className="h-4 w-4" aria-hidden />
                         </span>
-                        <span className="flex min-w-0 flex-col">
-                            <span className="leading-tight [text-shadow:0_1px_0_rgb(255_255_255_/_.75)]">
-                                Sign out
-                            </span>
-                            <span className="text-[11px] font-medium text-slate-600 group-hover:text-red-600/90">
+                        <span className="flex min-w-0 flex-col leading-tight">
+                            <span>Sign out</span>
+                            <span className="text-[10.5px] font-medium text-slate-500 group-hover:text-red-600/85">
                                 End your session securely
                             </span>
                         </span>
@@ -322,16 +343,17 @@ export const Layout = ({ children, role }: LayoutProps) => {
     return (
         <div className="min-h-screen bg-slate-50 flex w-full max-w-full overflow-x-hidden">
             {/* Sidebar — Desktop */}
-            <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 shrink-0 flex-col overflow-hidden border-r border-slate-200/80 bg-white/92 shadow-[6px_0_32px_-18px_rgba(15,23,42,0.12)] backdrop-blur-md lg:flex lg:flex-col">
+            <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 shrink-0 flex-col overflow-hidden border-r border-slate-200/70 bg-white/95 shadow-[6px_0_32px_-18px_rgba(15,23,42,0.12)] backdrop-blur-md lg:flex lg:flex-col">
                 <div
-                    className="pointer-events-none absolute bottom-0 left-0 top-0 w-1 bg-gradient-to-b from-medical-teal via-brand-400 to-brand-500"
+                    className="pointer-events-none absolute bottom-0 left-0 top-0 w-[3px] bg-gradient-to-b from-medical-teal via-brand-400 to-brand-500"
                     aria-hidden
                 />
                 <SidebarDecoration />
-                {/* Between photo (z-0) and nav (z-10): vertical fades only — no left scrim */}
+                {/* Between photo (z-0) and nav (z-10): light veil so image shows but menu stays legible */}
                 <div className="pointer-events-none absolute inset-0 z-[8]" aria-hidden>
-                    <div className="absolute inset-x-0 top-0 h-[min(58vh,24rem)] bg-gradient-to-b from-white/[0.82] via-white/[0.48] via-[52%] to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 h-[6.5rem] bg-gradient-to-t from-white/[0.72] via-white/[0.28] to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/[0.55] via-white/[0.35] to-white/[0.62]" />
+                    <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-white/85 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white/90 to-transparent" />
                 </div>
                 <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pb-4 pt-0">
                     <Sidebar />
@@ -431,17 +453,18 @@ export const Layout = ({ children, role }: LayoutProps) => {
                         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
                         onClick={() => setIsMobileMenuOpen(false)}
                     />
-                    <aside className="absolute inset-y-0 left-0 flex max-h-full w-[min(20.5rem,calc(100vw-1.25rem))] flex-col overflow-hidden border-l-[3px] border-l-medical-teal bg-white/92 shadow-[6px_0_40px_-22px_rgba(15,23,42,0.2)] backdrop-blur-md">
+                    <aside className="absolute inset-y-0 left-0 flex max-h-full w-[min(20.5rem,calc(100vw-1.25rem))] flex-col overflow-hidden border-l-[3px] border-l-medical-teal bg-white/95 shadow-[6px_0_40px_-22px_rgba(15,23,42,0.2)] backdrop-blur-md">
                         <div
-                            className="pointer-events-none absolute bottom-0 left-0 top-0 w-1 bg-gradient-to-b from-medical-teal via-brand-400 to-brand-500 opacity-90"
+                            className="pointer-events-none absolute bottom-0 left-0 top-0 w-[3px] bg-gradient-to-b from-medical-teal via-brand-400 to-brand-500 opacity-90"
                             aria-hidden
                         />
                         <SidebarDecoration />
                         <div className="pointer-events-none absolute inset-0 z-[8]" aria-hidden>
-                            <div className="absolute inset-x-0 top-0 h-[min(58vh,24rem)] bg-gradient-to-b from-white/[0.82] via-white/[0.48] via-[52%] to-transparent" />
-                            <div className="absolute inset-x-0 bottom-0 h-[6.5rem] bg-gradient-to-t from-white/[0.72] via-white/[0.28] to-transparent" />
+                            <div className="absolute inset-0 bg-white/[0.32]" />
+                            <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-white/90 to-transparent" />
+                            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white/80 to-transparent" />
                         </div>
-                        <div className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pb-4 pt-0">
+                        <div className="relative z-10 flex min-h-0 flex-1 flex-col px-3 pb-4 pt-0">
                             <Sidebar
                                 header={
                                     <div className="-mx-4 mb-3 flex h-[66px] shrink-0 items-center justify-between gap-2 px-4">

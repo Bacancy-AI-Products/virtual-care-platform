@@ -65,6 +65,7 @@ async function verifyToken(token: string): Promise<JwtPayload | null> {
 }
 
 const PUBLIC_PATHS = ['/', '/login', '/signup', '/forgot-password', '/privacy', '/terms'];
+const PROTECTED_PREFIXES = ['/patient', '/doctor', '/admin'];
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -75,6 +76,7 @@ export async function middleware(request: NextRequest) {
         pathname.startsWith('/reset-password') ||
         pathname === '/doctors' ||
         pathname.startsWith('/doctors/');
+    const isProtected = PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
     if (isPublic) {
         if (token && (pathname === '/login' || pathname === '/signup')) {
@@ -87,6 +89,13 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
+    // Non-public, non-protected routes should still be reachable so Next.js can
+    // render `not-found` for unknown pages instead of forcing a login redirect.
+    if (!isProtected) {
+        return NextResponse.next();
+    }
+
+    // ── Protected paths ─────────────────────────────────────────────────────────
     if (!token) {
         const loginUrl = new URL('/login', request.url);
         loginUrl.searchParams.set('from', pathname);

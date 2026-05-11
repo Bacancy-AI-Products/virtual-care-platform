@@ -103,6 +103,9 @@ model DoctorProfile {
   consultationFee    Decimal? @map("consultation_fee") @db.Decimal(10, 2)
   registrationNumber String?  @map("registration_number")
   degree             String?
+  // Trust signals — credentials list, languages spoken
+  credentials        Json?    // Array of { title, institution, year } — degrees, board certs, fellowships
+  languages          String[] @default([]) // ISO language names — "English", "Spanish", etc.
   city               String?  // Location filter for discovery
   state              String?  // Location filter for discovery
   verified           Boolean  @default(false) @map("verified")
@@ -114,6 +117,7 @@ model DoctorProfile {
   availability  DoctorAvailability[]
   appointments  Appointment[]
   prescriptions Prescription[]
+  reviews       Review[]
 
   @@index([specialization])
   @@index([verified])
@@ -161,6 +165,7 @@ model Patient {
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   appointments  Appointment[]
   prescriptions Prescription[]
+  reviews       Review[]
 
   @@map("patients")
 }
@@ -189,10 +194,31 @@ model Appointment {
   messages      Message[]
   prescriptions Prescription[]
   files         File[]
+  review        Review?
 
   @@index([doctorId, scheduledAt])
   @@index([patientId, scheduledAt])
   @@map("appointments")
+}
+
+// --- Reviews (one per completed appointment) ---
+// Patients rate the doctor after a COMPLETED appointment. One review per appointment.
+model Review {
+  id            String   @id @default(uuid())
+  doctorId      String   @map("doctor_id")
+  patientId     String   @map("patient_id")
+  appointmentId String   @unique @map("appointment_id") // one review per appointment
+  rating        Int // 1–5 stars (validated at API layer)
+  comment       String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  doctor      DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient     Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointment Appointment   @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId, createdAt(sort: Desc)])
+  @@map("reviews")
 }
 
 // --- Messages ---

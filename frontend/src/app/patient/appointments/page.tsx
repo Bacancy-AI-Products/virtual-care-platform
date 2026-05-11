@@ -14,6 +14,7 @@ import {
     RotateCw,
     ChevronLeft,
     ChevronRight,
+    Star,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -191,6 +192,14 @@ function AppointmentCard({
                         className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-brand-100 transition-all hover:bg-brand-600 active:scale-95 sm:flex-initial sm:px-5"
                     >
                         <Video className="h-4 w-4 shrink-0" /> Join Call
+                    </Link>
+                )}
+                {appt.status === 'COMPLETED' && (
+                    <Link
+                        href={`/patient/appointments/${appt.id}/review`}
+                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm font-bold text-amber-700 transition-all hover:bg-amber-100 active:scale-95 sm:flex-initial sm:px-5"
+                    >
+                        <Star className="h-4 w-4 shrink-0" /> Rate visit
                     </Link>
                 )}
                 {appt.status === 'PENDING' && (

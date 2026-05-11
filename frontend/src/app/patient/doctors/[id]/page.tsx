@@ -5,17 +5,15 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
-    Star,
     Clock,
-    Award,
-    Users,
     Calendar,
     ChevronLeft,
     Video,
     CheckCircle2,
-    Heart,
     Loader2,
     AlertCircle,
+    Languages,
+    GraduationCap,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -27,6 +25,11 @@ import {
     type SpecializationOption,
 } from '@/services/api';
 import { FORM_CONTROL_GHOST, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
+import { VerificationBadge } from '@/components/ui/VerificationBadge';
+import { RatingStars } from '@/components/ui/RatingStars';
+import { DoctorTrustStrip } from '@/components/doctor/DoctorTrustStrip';
+import { CredentialList } from '@/components/doctor/CredentialList';
+import { ReviewsSection } from '@/components/doctor/ReviewsSection';
 
 // ─── Slot helpers ─────────────────────────────────────────────────────────────
 
@@ -215,9 +218,11 @@ export default function DoctorProfilePage() {
                                     className="rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] object-cover border-4 lg:border-8 border-slate-50 shadow-xl"
                                     referrerPolicy="no-referrer"
                                 />
-                                <div className="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-4 bg-brand-500 p-2 sm:p-2.5 lg:p-3 rounded-xl sm:rounded-2xl shadow-lg shadow-brand-100 z-10">
-                                    <CheckCircle2 className="text-white w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
-                                </div>
+                                {doctor.verified && (
+                                    <div className="absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-4 z-10">
+                                        <VerificationBadge variant="icon" />
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex-1 min-w-0 w-full text-center md:text-left">
@@ -225,43 +230,42 @@ export default function DoctorProfilePage() {
                                     <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900">
                                         {doctor.user.name}
                                     </h2>
-                                    <div className="flex items-center gap-1 text-amber-500 bg-amber-50 px-2.5 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold">
-                                        <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-500" />{' '}
-                                        4.8
-                                    </div>
+                                    {doctor.verified && <VerificationBadge />}
+                                    {doctor.stats.averageRating != null && (
+                                        <div className="flex items-center gap-1 text-amber-500 bg-amber-50 px-2.5 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold">
+                                            <RatingStars
+                                                value={doctor.stats.averageRating}
+                                                size="sm"
+                                                showValue
+                                                count={doctor.stats.reviewCount}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                                 <p className="text-base sm:text-lg lg:text-xl font-bold text-brand-600 mb-4 sm:mb-6">
                                     {specializationLabel}
                                 </p>
 
-                                <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-6">
-                                    {[
-                                        {
-                                            icon: Award,
-                                            label: 'Experience',
-                                            value: doctor.experienceYears
-                                                ? `${doctor.experienceYears} Years`
-                                                : '—',
-                                        },
-                                        { icon: Users, label: 'Patients', value: '1.2k+' },
-                                        { icon: Heart, label: 'Rating', value: '4.8/5' },
-                                    ].map(({ icon: Icon, label, value }) => (
-                                        <div
-                                            key={label}
-                                            className="min-w-0 p-2.5 sm:p-4 bg-slate-50 rounded-2xl sm:rounded-3xl text-center overflow-hidden"
-                                        >
-                                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-1.5 sm:mb-2 shadow-sm text-brand-500">
-                                                <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
-                                            </div>
-                                            <p className="text-[9px] sm:text-xs text-slate-400 font-bold uppercase tracking-wide truncate">
-                                                {label}
-                                            </p>
-                                            <p className="text-xs sm:text-base lg:text-lg font-bold text-slate-900 truncate">
-                                                {value}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
+                                <DoctorTrustStrip
+                                    experienceYears={doctor.experienceYears}
+                                    stats={doctor.stats}
+                                />
+
+                                {doctor.languages && doctor.languages.length > 0 && (
+                                    <div className="mt-5 flex flex-wrap items-center justify-center md:justify-start gap-2">
+                                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                            <Languages className="w-3.5 h-3.5" /> Speaks
+                                        </span>
+                                        {doctor.languages.map((lang) => (
+                                            <span
+                                                key={lang}
+                                                className="rounded-full bg-slate-50 border border-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600"
+                                            >
+                                                {lang}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="absolute top-0 right-0 w-40 sm:w-52 lg:w-64 h-40 sm:h-52 lg:h-64 bg-brand-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 -z-0" />
@@ -277,6 +281,21 @@ export default function DoctorProfilePage() {
                             </p>
                         </div>
                     )}
+
+                    {doctor.credentials && doctor.credentials.length > 0 && (
+                        <div className="bg-white p-5 sm:p-8 lg:p-10 rounded-[28px] sm:rounded-[36px] lg:rounded-[48px] border border-slate-100 shadow-sm">
+                            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2 flex items-center gap-3">
+                                <GraduationCap className="w-5 h-5 text-brand-500" /> Credentials &
+                                Education
+                            </h3>
+                            <p className="text-sm text-slate-500 font-medium mb-5">
+                                Verified by BacancyTeleCare.
+                            </p>
+                            <CredentialList credentials={doctor.credentials} />
+                        </div>
+                    )}
+
+                    <ReviewsSection doctorId={doctor.id} />
                 </div>
 
                 {/* Booking panel */}
