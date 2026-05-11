@@ -1,9 +1,11 @@
 import { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
+import { createAdapter } from '@socket.io/redis-adapter';
 import { config } from './config';
 import { assertTokenNotRevoked } from './modules/auth/auth.service';
 import { verifyToken, JwtPayload } from './utils';
 import { prisma } from './db';
+import { connectRedis } from './redis';
 
 interface AuthenticatedSocket extends Socket {
     data: {
@@ -27,7 +29,7 @@ interface TypingPayload {
     isTyping: boolean;
 }
 
-export function initializeSocket(httpServer: HttpServer): Server {
+export async function initializeSocket(httpServer: HttpServer): Promise<Server> {
     const io = new Server(httpServer, {
         cors: {
             origin: config.frontendUrl,
@@ -37,6 +39,11 @@ export function initializeSocket(httpServer: HttpServer): Server {
         pingTimeout: 60000,
         pingInterval: 25000,
     });
+
+    const redis = await connectRedis();
+    if (redis) {
+        io.adapter(createAdapter(redis.pubClient, redis.subClient));
+    }
 
     // Authentication middleware
     io.use((socket, next) => {

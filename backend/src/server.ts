@@ -3,20 +3,37 @@ import { app } from './app';
 import { config } from './config';
 import { setNotificationEmitter } from './notifications-emitter';
 import { initializeSocket } from './socket';
+import { disconnectRedis } from './redis';
 
 const { port } = config;
 
 const server = http.createServer(app);
-const io = initializeSocket(server);
 
-setNotificationEmitter((userId, payload) => {
-    io.to(`user:${userId}`).emit('notification', payload);
-});
+async function start() {
+    const io = await initializeSocket(server);
 
-server.listen(port, () => {
-    console.log(`[BacancyTeleCare] Server running on port ${port} (${config.nodeEnv})`);
-    console.log(`[BacancyTeleCare] Socket.io initialized`);
-});
+    setNotificationEmitter((userId, payload) => {
+        io.to(`user:${userId}`).emit('notification', payload);
+    });
+
+    server.listen(port, () => {
+        console.log(`[BacancyTeleCare] Server running on port ${port} (${config.nodeEnv})`);
+        console.log(`[BacancyTeleCare] Socket.io initialized`);
+    });
+
+    const shutdown = () => {
+        io.close();
+        server.close(async () => {
+            await disconnectRedis();
+            process.exit(0);
+        });
+    };
+
+    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', shutdown);
+
+    return io;
+}
 
 server.on('error', (err: NodeJS.ErrnoException) => {
     const msg =
@@ -27,12 +44,9 @@ server.on('error', (err: NodeJS.ErrnoException) => {
     process.exit(1);
 });
 
-const shutdown = () => {
-    io.close();
-    server.close(() => process.exit(0));
-};
+const ioPromise = start().catch((err) => {
+    console.error('[BacancyTeleCare] Failed to start:', err);
+    process.exit(1);
+});
 
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
-
-export { server, io };
+export { server, ioPromise };

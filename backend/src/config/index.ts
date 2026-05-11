@@ -57,6 +57,8 @@ export const config = {
     dailyApiKey: process.env.DAILY_API_KEY ?? '',
     dailyDomain: process.env.DAILY_DOMAIN ?? '',
     frontendUrl: process.env.FRONTEND_URL ?? appBaseUrl,
+    /** Redis connection string for Socket.io adapter. Optional in dev. Required for multi-instance prod. */
+    redisUrl: getOptionalEnv('REDIS_URL'),
     pagination: {
         defaultLimit: 20,
         maxLimit: 100,
