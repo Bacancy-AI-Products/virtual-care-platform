@@ -14,11 +14,13 @@ services:
       DB_PORT: 5432
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
+      REDIS_URL: redis://redis:6379
     env_file:
       - .env
     depends_on:
       - db
       - mailpit
+      - redis
 
   frontend:
     image: node:20-alpine
@@ -57,5 +59,15 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  redis:
+    image: redis:7-alpine
+    container_name: telecare_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
   postgres_data:
+  redis_data:
