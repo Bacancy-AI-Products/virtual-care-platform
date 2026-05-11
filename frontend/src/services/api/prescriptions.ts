@@ -23,6 +23,10 @@ export interface Prescription {
         specialization: string;
         user: { id: string; name: string };
     };
+    patient?: {
+        id: string;
+        user: { id: string; name: string };
+    };
     appointment?: {
         id: string;
         scheduledAt: string;

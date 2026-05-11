@@ -23,6 +23,312 @@ function availability(startTime: string, endTime: string, weekdays: number[]) {
     }));
 }
 
+// ─── Credentials & languages (specialty-aware) ────────────────────────────────
+// Realistic, varied credentials per specialization. Each doctor gets MBBS-style
+// base degree + post-graduate + an optional fellowship/board cert.
+function credentialsFor(spec: string): Array<{ title: string; institution: string; year: number }> {
+    const byBase: Record<string, Array<{ title: string; institution: string; year: number }>> = {
+        cardiologist: [
+            { title: 'MBBS', institution: 'Johns Hopkins School of Medicine', year: 2008 },
+            { title: 'MD, Internal Medicine', institution: 'Mayo Clinic', year: 2012 },
+            {
+                title: 'Fellowship, Cardiovascular Disease',
+                institution: 'Cleveland Clinic',
+                year: 2015,
+            },
+            {
+                title: 'Board Certified — American Board of Internal Medicine',
+                institution: 'ABIM',
+                year: 2016,
+            },
+        ],
+        dermatologist: [
+            { title: 'MBBS', institution: 'Stanford University', year: 2012 },
+            { title: 'MD, Dermatology', institution: 'University of Pennsylvania', year: 2017 },
+            {
+                title: 'Board Certified — American Board of Dermatology',
+                institution: 'ABD',
+                year: 2018,
+            },
+        ],
+        pediatrician: [
+            { title: 'MBBS', institution: 'Harvard Medical School', year: 2010 },
+            { title: 'MD, Pediatrics', institution: "Boston Children's Hospital", year: 2014 },
+            {
+                title: 'Board Certified — American Board of Pediatrics',
+                institution: 'ABP',
+                year: 2015,
+            },
+        ],
+        neurologist: [
+            { title: 'MBBS', institution: 'Yale School of Medicine', year: 2008 },
+            { title: 'MD, Neurology', institution: 'Massachusetts General Hospital', year: 2013 },
+            {
+                title: 'Fellowship, Headache & Pain Medicine',
+                institution: 'NYU Langone',
+                year: 2015,
+            },
+        ],
+        psychiatrist: [
+            { title: 'MBBS', institution: 'University of California San Francisco', year: 2010 },
+            { title: 'MD, Psychiatry', institution: 'Columbia University', year: 2015 },
+            {
+                title: 'Board Certified — American Board of Psychiatry & Neurology',
+                institution: 'ABPN',
+                year: 2016,
+            },
+        ],
+        psychologist: [
+            { title: 'PhD, Clinical Psychology', institution: 'Stanford University', year: 2014 },
+            {
+                title: 'Licensed Clinical Psychologist',
+                institution: 'State Board of Psychology',
+                year: 2015,
+            },
+        ],
+        gynecologist_obstetrician: [
+            { title: 'MBBS', institution: 'Northwestern University', year: 2008 },
+            {
+                title: 'MD, Obstetrics & Gynecology',
+                institution: 'Cedars-Sinai Medical Center',
+                year: 2013,
+            },
+            {
+                title: 'Board Certified — American Board of Obstetrics & Gynecology',
+                institution: 'ABOG',
+                year: 2014,
+            },
+        ],
+        orthopedic_doctor: [
+            { title: 'MBBS', institution: 'Duke University School of Medicine', year: 2010 },
+            {
+                title: 'MD, Orthopaedic Surgery',
+                institution: 'Hospital for Special Surgery',
+                year: 2015,
+            },
+            {
+                title: 'Fellowship, Sports Medicine',
+                institution: 'Andrews Sports Medicine',
+                year: 2016,
+            },
+        ],
+        endocrinologist: [
+            { title: 'MBBS', institution: 'Vanderbilt University School of Medicine', year: 2008 },
+            {
+                title: 'MD, Internal Medicine',
+                institution: "Brigham & Women's Hospital",
+                year: 2012,
+            },
+            {
+                title: 'Fellowship, Endocrinology, Diabetes & Metabolism',
+                institution: 'Joslin Diabetes Center',
+                year: 2014,
+            },
+        ],
+        pulmonologist: [
+            { title: 'MBBS', institution: 'University of Michigan Medical School', year: 2011 },
+            {
+                title: 'MD, Pulmonary & Critical Care',
+                institution: 'National Jewish Health',
+                year: 2016,
+            },
+        ],
+        gastroenterologist: [
+            { title: 'MBBS', institution: 'Washington University School of Medicine', year: 2009 },
+            { title: 'MD, Gastroenterology', institution: 'University of Chicago', year: 2014 },
+        ],
+        fertility_specialist: [
+            { title: 'MBBS', institution: 'University of Pennsylvania', year: 2010 },
+            {
+                title: 'MD, Reproductive Endocrinology',
+                institution: 'Cornell Medical Center',
+                year: 2015,
+            },
+        ],
+        sports_medicine_specialist: [
+            { title: 'MBBS', institution: 'Emory University School of Medicine', year: 2013 },
+            {
+                title: 'Fellowship, Primary Care Sports Medicine',
+                institution: 'American Sports Medicine Institute',
+                year: 2017,
+            },
+        ],
+        diabetologist: [
+            { title: 'MBBS', institution: 'University of Texas Southwestern', year: 2011 },
+            { title: 'Fellowship, Diabetology', institution: 'Joslin Diabetes Center', year: 2015 },
+        ],
+        general_physician: [
+            { title: 'MBBS', institution: 'Tufts University School of Medicine', year: 2012 },
+            { title: 'MD, Family Medicine', institution: 'University of Washington', year: 2016 },
+            {
+                title: 'Board Certified — American Board of Family Medicine',
+                institution: 'ABFM',
+                year: 2017,
+            },
+        ],
+        dentist: [
+            {
+                title: 'BDS, Bachelor of Dental Surgery',
+                institution: 'University of California San Francisco',
+                year: 2016,
+            },
+            { title: 'Member, American Dental Association', institution: 'ADA', year: 2017 },
+        ],
+        ophthalmologist: [
+            { title: 'MBBS', institution: 'Johns Hopkins University', year: 2010 },
+            { title: 'MD, Ophthalmology', institution: 'Wills Eye Hospital', year: 2015 },
+        ],
+        urologist: [
+            { title: 'MBBS', institution: 'University of California Los Angeles', year: 2010 },
+            { title: 'MD, Urology', institution: 'Cleveland Clinic', year: 2015 },
+        ],
+        nephrologist: [
+            { title: 'MBBS', institution: 'University of Pittsburgh', year: 2010 },
+            { title: 'Fellowship, Nephrology', institution: 'Mayo Clinic', year: 2015 },
+        ],
+        oncologist: [
+            { title: 'MBBS', institution: 'Memorial Sloan Kettering', year: 2008 },
+            { title: 'MD, Medical Oncology', institution: 'MD Anderson Cancer Center', year: 2014 },
+        ],
+        radiologist: [
+            { title: 'MBBS', institution: 'University of Michigan Medical School', year: 2010 },
+            {
+                title: 'MD, Diagnostic Radiology',
+                institution: 'Massachusetts General Hospital',
+                year: 2015,
+            },
+        ],
+        critical_care_specialist: [
+            { title: 'MBBS', institution: 'Harvard Medical School', year: 2009 },
+            { title: 'Fellowship, Critical Care Medicine', institution: 'Mount Sinai', year: 2014 },
+        ],
+        internal_medicine: [
+            { title: 'MBBS', institution: 'University of California San Diego', year: 2012 },
+            {
+                title: 'MD, Internal Medicine',
+                institution: 'University of Pennsylvania',
+                year: 2016,
+            },
+        ],
+        ayurveda: [
+            {
+                title: 'BAMS, Bachelor of Ayurvedic Medicine',
+                institution: 'Banaras Hindu University',
+                year: 2015,
+            },
+            { title: 'MD, Ayurveda', institution: 'Gujarat Ayurved University', year: 2019 },
+        ],
+        homeopathy: [
+            {
+                title: 'BHMS, Bachelor of Homeopathic Medicine',
+                institution: 'Hahnemann College',
+                year: 2008,
+            },
+            {
+                title: 'MD, Homeopathy',
+                institution: 'National Institute of Homeopathy',
+                year: 2013,
+            },
+        ],
+    };
+    return (
+        byBase[spec] ?? [
+            { title: 'MBBS', institution: 'University of California San Francisco', year: 2012 },
+            { title: 'MD', institution: 'Mayo Clinic', year: 2016 },
+        ]
+    );
+}
+
+// Common languages — first one is always English; some doctors get 1–2 extras.
+const EXTRA_LANGUAGES = ['Spanish', 'Mandarin', 'Hindi', 'French', 'Arabic', 'Portuguese'];
+
+function languagesFor(idx: number): string[] {
+    const extras = idx % 3 === 0 ? [EXTRA_LANGUAGES[idx % EXTRA_LANGUAGES.length]] : [];
+    if (idx % 5 === 0) {
+        extras.push(EXTRA_LANGUAGES[(idx + 2) % EXTRA_LANGUAGES.length]);
+    }
+    return ['English', ...new Set(extras)];
+}
+
+// ─── Review pool — varied, realistic comments ─────────────────────────────────
+const REVIEW_POOL: Array<{ rating: number; comment: string }> = [
+    {
+        rating: 5,
+        comment:
+            'Excellent doctor. Listened carefully, explained everything, and the follow-up plan was clear. Felt heard from the first minute.',
+    },
+    {
+        rating: 5,
+        comment:
+            'Very thorough and patient. Took the time to answer all my questions without rushing. Highly recommend for video consults.',
+    },
+    {
+        rating: 5,
+        comment:
+            'Knowledgeable and kind. The video call was smooth and the prescription arrived right after the consultation.',
+    },
+    {
+        rating: 5,
+        comment:
+            'Genuinely caring and professional. The advice was practical and I felt much more confident about my treatment plan after the call.',
+    },
+    {
+        rating: 4,
+        comment:
+            'Good consultation overall. Would have liked a bit more time but the diagnosis was on point and the medication helped.',
+    },
+    {
+        rating: 4,
+        comment:
+            'Friendly and clear. The session was a touch short but I got what I needed. The follow-up note covered everything.',
+    },
+    {
+        rating: 4,
+        comment:
+            'Felt comfortable discussing my concerns. Doctor was attentive and gave me a solid plan to follow.',
+    },
+    {
+        rating: 5,
+        comment:
+            "Best telehealth experience I've had. Punctual, kind, and very knowledgeable about my condition.",
+    },
+    {
+        rating: 5,
+        comment:
+            'Took the time to explain test results in plain English. No rush, no jargon. Will book again.',
+    },
+    {
+        rating: 4,
+        comment:
+            'Solid first consult. Got a treatment plan and clear next steps. The platform itself worked well too.',
+    },
+    {
+        rating: 3,
+        comment:
+            'Decent visit but the connection dropped twice. Doctor handled it gracefully and we finished the consult.',
+    },
+    {
+        rating: 5,
+        comment:
+            'Thoughtful and reassuring. Made me feel comfortable enough to share details I would normally hold back. Truly grateful.',
+    },
+    {
+        rating: 5,
+        comment:
+            'Clear communicator. Walked me through the why behind each recommendation. That made all the difference.',
+    },
+    {
+        rating: 4,
+        comment:
+            'Helpful consultation. The doctor was kind and the prescription was straightforward.',
+    },
+    {
+        rating: 5,
+        comment:
+            'Came in feeling anxious; left feeling like I had a clear plan. Excellent bedside manner over video.',
+    },
+];
+
 async function main() {
     console.log('🌱 Seeding BacancyTeleCare database...\n');
 
@@ -463,12 +769,27 @@ async function main() {
 
     const doctors: { user: any; profile: any }[] = [];
 
-    for (const d of doctorSeeds) {
+    for (let i = 0; i < doctorSeeds.length; i++) {
+        const d = doctorSeeds[i];
         const pw = await hash('Demo@1234');
+        const credentials = credentialsFor(d.specialization);
+        const languages = languagesFor(i);
+        // Most senior doctors have a degree string set from the first credential.
+        const degree = credentials[0]?.title.split(',')[0] ?? null;
 
         const user = await prisma.user.upsert({
             where: { email: d.email },
-            update: {},
+            update: {
+                // Refresh trust signals on each seed run.
+                doctorProfile: {
+                    update: {
+                        credentials: credentials as object,
+                        languages,
+                        degree,
+                        verified: true,
+                    },
+                },
+            },
             create: {
                 name: d.name,
                 email: d.email,
@@ -481,6 +802,9 @@ async function main() {
                         experienceYears: d.experienceYears,
                         bio: d.bio,
                         consultationFee: d.consultationFee,
+                        degree,
+                        credentials: credentials as object,
+                        languages,
                         city: d.city ?? null,
                         state: d.state ?? null,
                         verified: true,
@@ -1117,6 +1441,57 @@ async function main() {
             ],
         });
     }
+
+    // ─── SESSION TIMES (for response-time stat) + REVIEWS ──────────────────────
+    // Set sessionStartedAt/sessionEndedAt on every completed appointment so the
+    // doctor "response time" metric (avg minutes from scheduledAt → session start)
+    // has data to compute from. Then seed a Review for ~75% of them.
+
+    for (let i = 0; i < completedAppts.length; i++) {
+        const appt = completedAppts[i];
+        // Deterministic but varied: 0–7 min from scheduled time.
+        const responseMinutes = (i * 3) % 8;
+        const sessionStartedAt = new Date(appt.scheduledAt.getTime() + responseMinutes * 60_000);
+        const sessionEndedAt = new Date(sessionStartedAt.getTime() + 25 * 60_000);
+        await prisma.appointment.update({
+            where: { id: appt.id },
+            data: { sessionStartedAt, sessionEndedAt },
+        });
+    }
+
+    // Wipe existing reviews for seed patients (cascade from appointment delete already
+    // handled that, but this keeps the seed safe in case appointments survived).
+    await prisma.review.deleteMany({
+        where: { patientId: { in: seedPatientIds } },
+    });
+
+    let reviewCount = 0;
+    for (let i = 0; i < completedAppts.length; i++) {
+        // Skip ~25% to leave some completed appointments without a review.
+        if (i % 4 === 3) continue;
+        const appt = completedAppts[i];
+        const pick = REVIEW_POOL[i % REVIEW_POOL.length];
+        // A small fraction of reviews include only a rating (no comment).
+        const includeComment = i % 7 !== 0;
+        // Slight rating jitter so individual doctors have varied averages.
+        const ratingShift = (i % 9) % 3 === 0 ? -1 : 0;
+        const rating = Math.max(1, Math.min(5, pick.rating + ratingShift));
+        await prisma.review.create({
+            data: {
+                doctorId: appt.doctorId,
+                patientId: appt.patientId,
+                appointmentId: appt.id,
+                rating,
+                comment: includeComment ? pick.comment : null,
+                // Backdate so reviews look like they were written shortly after the visit.
+                createdAt: new Date(appt.scheduledAt.getTime() + 60 * 60_000),
+            },
+        });
+        reviewCount += 1;
+    }
+    console.log(
+        `✅ Created ${reviewCount} reviews across ${completedAppts.length} completed appointments`,
+    );
 
     // ─── SUMMARY ───────────────────────────────────────────────────────────────
 

@@ -16,6 +16,9 @@ import {
     Users,
     Settings,
     ClipboardList,
+    Star,
+    TrendingUp,
+    MessageSquare,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { SidebarDecoration } from '@/components/SidebarDecoration';
@@ -24,7 +27,7 @@ import { twMerge } from 'tailwind-merge';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { NotificationBell } from '@/components/NotificationBell';
-import { authApi, usersApi, filesApi, appointmentsApi, prescriptionsApi } from '@/services/api';
+import { usersApi, filesApi, appointmentsApi, prescriptionsApi, reviewsApi } from '@/services/api';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -47,6 +50,7 @@ const patientNav: NavItem[] = [
     { to: '/patient/doctors', icon: Search, label: 'Find Doctors' },
     { to: '/patient/appointments', icon: Calendar, label: 'Appointments' },
     { to: '/patient/records', icon: FileText, label: 'Medical Records' },
+    { to: '/patient/feedback', icon: MessageSquare, label: 'Feedback' },
     { to: '/patient/profile', icon: User, label: 'Profile' },
 ];
 
@@ -55,6 +59,9 @@ const doctorNav: NavItem[] = [
     { to: '/doctor/appointments', icon: ClipboardList, label: 'Appointments' },
     { to: '/doctor/availability', icon: Calendar, label: 'Availability' },
     { to: '/doctor/patients', icon: Users, label: 'Patient Records' },
+    { to: '/doctor/prescriptions', icon: FileText, label: 'Prescriptions' },
+    { to: '/doctor/reviews', icon: Star, label: 'Reviews' },
+    { to: '/doctor/insights', icon: TrendingUp, label: 'Insights' },
     { to: '/doctor/profile', icon: User, label: 'Profile' },
 ];
 
@@ -78,6 +85,11 @@ const PREFETCH_MAP: Record<string, (qc: ReturnType<typeof useQueryClient>) => vo
             queryKey: ['prescriptions', 'mine'],
             queryFn: () => prescriptionsApi.getMine(),
         }),
+    '/patient/feedback': (qc) =>
+        qc.prefetchQuery({
+            queryKey: ['reviews', 'mine'],
+            queryFn: () => reviewsApi.getMine({ limit: 100 }),
+        }),
     '/patient/dashboard': (qc) =>
         qc.prefetchQuery({
             queryKey: ['appointments', 'patient', 'upcoming'],
@@ -89,6 +101,16 @@ const PREFETCH_MAP: Record<string, (qc: ReturnType<typeof useQueryClient>) => vo
             queryFn: () => appointmentsApi.list({ limit: 100 }),
         }),
     '/doctor/dashboard': (qc) =>
+        qc.prefetchQuery({
+            queryKey: ['appointments', 'doctor', 'all'],
+            queryFn: () => appointmentsApi.list({ limit: 100 }),
+        }),
+    '/doctor/prescriptions': (qc) =>
+        qc.prefetchQuery({
+            queryKey: ['prescriptions', 'mine'],
+            queryFn: () => prescriptionsApi.getMine(),
+        }),
+    '/doctor/insights': (qc) =>
         qc.prefetchQuery({
             queryKey: ['appointments', 'doctor', 'all'],
             queryFn: () => appointmentsApi.list({ limit: 100 }),

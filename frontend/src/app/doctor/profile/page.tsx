@@ -13,6 +13,7 @@ import {
     Clock,
     ChevronDown,
     Loader2,
+    GraduationCap,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -31,6 +32,9 @@ import {
     FORM_SELECT_CLASS,
     NO_BROWSER_INPUT_HELPERS,
 } from '@/constants/form-controls';
+import { DoctorTrustStrip } from '@/components/doctor/DoctorTrustStrip';
+import { CredentialList } from '@/components/doctor/CredentialList';
+import { VerificationBadge } from '@/components/ui/VerificationBadge';
 
 export default function DoctorProfile() {
     const { user, token } = useAuth();
@@ -319,8 +323,9 @@ export default function DoctorProfile() {
                         {avatarError && (
                             <p className="text-xs text-red-500 font-semibold mt-2">{avatarError}</p>
                         )}
-                        <h3 className="text-xl font-bold text-slate-900 mt-6">
+                        <h3 className="text-xl font-bold text-slate-900 mt-6 flex items-center justify-center gap-2">
                             {profile.user.name}
+                            {profile.verified && <VerificationBadge variant="icon" size="sm" />}
                         </h3>
                         <p className="text-brand-600 font-bold text-sm">{profile.specialization}</p>
                         {profile.registrationNumber && (
@@ -357,6 +362,17 @@ export default function DoctorProfile() {
                                 </p>
                             </div>
                         </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm space-y-4">
+                        <h4 className="text-sm font-bold text-slate-900">Trust signals</h4>
+                        <p className="text-xs text-slate-500 font-medium">
+                            How your profile looks to patients searching for a doctor.
+                        </p>
+                        <DoctorTrustStrip
+                            experienceYears={profile.experienceYears}
+                            stats={profile.stats}
+                        />
                     </div>
                 </div>
 
@@ -586,6 +602,34 @@ export default function DoctorProfile() {
                                     {profile.bio || 'No biography added yet.'}
                                 </p>
                             </div>
+
+                            {profile.credentials && profile.credentials.length > 0 && (
+                                <div className="space-y-4 border-t border-slate-50 pt-6">
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                        <GraduationCap className="w-3.5 h-3.5" /> Credentials &
+                                        Education
+                                    </p>
+                                    <CredentialList credentials={profile.credentials} />
+                                </div>
+                            )}
+
+                            {profile.languages && profile.languages.length > 0 && (
+                                <div className="space-y-2 border-t border-slate-50 pt-6">
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                        Languages
+                                    </p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {profile.languages.map((lang) => (
+                                            <span
+                                                key={lang}
+                                                className="rounded-full bg-slate-50 border border-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600"
+                                            >
+                                                {lang}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

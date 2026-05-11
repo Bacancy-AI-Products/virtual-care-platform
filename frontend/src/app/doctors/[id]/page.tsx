@@ -5,22 +5,24 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import {
-    Star,
-    Award,
-    Users,
-    Heart,
     ChevronLeft,
-    CheckCircle2,
     Loader2,
     LogIn,
     Calendar,
     Search,
+    Languages,
+    GraduationCap,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import { doctorsApi, type AvailabilitySlot } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { PublicHeader } from '@/components/PublicHeader';
+import { VerificationBadge } from '@/components/ui/VerificationBadge';
+import { RatingStars } from '@/components/ui/RatingStars';
+import { DoctorTrustStrip } from '@/components/doctor/DoctorTrustStrip';
+import { CredentialList } from '@/components/doctor/CredentialList';
+import { ReviewsSection } from '@/components/doctor/ReviewsSection';
 
 export default function PublicDoctorProfilePage() {
     const { id } = useParams<{ id: string }>();
@@ -124,9 +126,11 @@ export default function PublicDoctorProfilePage() {
                                     className="rounded-[40px] object-cover border-8 border-slate-50 shadow-xl"
                                     referrerPolicy="no-referrer"
                                 />
-                                <div className="absolute -bottom-3 -right-3 bg-brand-500 p-2.5 rounded-2xl shadow-lg shadow-brand-100 z-10">
-                                    <CheckCircle2 className="text-white w-5 h-5" />
-                                </div>
+                                {doctor.verified && (
+                                    <div className="absolute -bottom-3 -right-3 z-10">
+                                        <VerificationBadge variant="icon" />
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex-1 min-w-0">
@@ -134,9 +138,17 @@ export default function PublicDoctorProfilePage() {
                                     <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
                                         {doctor.user.name}
                                     </h1>
-                                    <div className="flex items-center gap-1 text-amber-500 bg-amber-50 px-3 py-1 rounded-full text-sm font-bold">
-                                        <Star className="w-4 h-4 fill-amber-500" /> 4.8
-                                    </div>
+                                    {doctor.verified && <VerificationBadge />}
+                                    {doctor.stats.averageRating != null && (
+                                        <div className="flex items-center gap-1.5 text-amber-500 bg-amber-50 px-3 py-1 rounded-full text-sm font-bold">
+                                            <RatingStars
+                                                value={doctor.stats.averageRating}
+                                                size="sm"
+                                                showValue
+                                                count={doctor.stats.reviewCount}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                                 <p className="text-xl font-bold text-brand-600 mb-4">
                                     {doctor.specialization}
@@ -147,34 +159,26 @@ export default function PublicDoctorProfilePage() {
                                     </p>
                                 )}
 
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                    {[
-                                        {
-                                            icon: Award,
-                                            label: 'Experience',
-                                            value: doctor.experienceYears
-                                                ? `${doctor.experienceYears} Years`
-                                                : '—',
-                                        },
-                                        { icon: Users, label: 'Patients', value: '1.2k+' },
-                                        { icon: Heart, label: 'Rating', value: '4.8/5' },
-                                    ].map(({ icon: Icon, label, value }) => (
-                                        <div
-                                            key={label}
-                                            className="p-4 bg-slate-50 rounded-3xl text-center"
-                                        >
-                                            <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-sm text-brand-500">
-                                                <Icon className="w-5 h-5" />
-                                            </div>
-                                            <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                                                {label}
-                                            </p>
-                                            <p className="text-lg font-bold text-slate-900">
-                                                {value}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
+                                <DoctorTrustStrip
+                                    experienceYears={doctor.experienceYears}
+                                    stats={doctor.stats}
+                                />
+
+                                {doctor.languages && doctor.languages.length > 0 && (
+                                    <div className="mt-5 flex flex-wrap items-center gap-2">
+                                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                            <Languages className="w-3.5 h-3.5" /> Speaks
+                                        </span>
+                                        {doctor.languages.map((lang) => (
+                                            <span
+                                                key={lang}
+                                                className="rounded-full bg-slate-50 border border-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600"
+                                            >
+                                                {lang}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="absolute top-0 right-0 w-64 h-64 bg-brand-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 -z-0" />
@@ -186,6 +190,21 @@ export default function PublicDoctorProfilePage() {
                             <p className="text-lg text-slate-500 leading-relaxed">{doctor.bio}</p>
                         </div>
                     )}
+
+                    {doctor.credentials && doctor.credentials.length > 0 && (
+                        <div className="bg-white p-8 sm:p-10 rounded-[48px] border border-slate-100 shadow-sm">
+                            <h2 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-3">
+                                <GraduationCap className="w-6 h-6 text-brand-500" /> Credentials &
+                                Education
+                            </h2>
+                            <p className="text-sm text-slate-500 font-medium mb-6">
+                                Degrees, fellowships, and board certifications verified by our team.
+                            </p>
+                            <CredentialList credentials={doctor.credentials} />
+                        </div>
+                    )}
+
+                    <ReviewsSection doctorId={doctor.id} />
 
                     {availabilityData?.availability?.length ? (
                         <DoctorAvailability slots={availabilityData.availability} />

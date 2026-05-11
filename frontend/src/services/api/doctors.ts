@@ -1,5 +1,21 @@
 import { request } from './client';
 
+export interface Credential {
+    title: string;
+    institution: string;
+    year: number;
+}
+
+export interface DoctorStats {
+    /** Average rating across all reviews, null when none. */
+    averageRating: number | null;
+    reviewCount: number;
+    /** Count of COMPLETED appointments. */
+    consultationCount: number;
+    /** Average minutes from scheduledAt to sessionStartedAt across completed visits. */
+    avgResponseMinutes: number | null;
+}
+
 export interface DoctorSummary {
     id: string;
     userId: string;
@@ -9,11 +25,14 @@ export interface DoctorSummary {
     consultationFee: string | null;
     registrationNumber: string | null;
     degree: string | null;
+    credentials: Credential[] | null;
+    languages: string[];
     city: string | null;
     state: string | null;
     verified: boolean;
     isActive: boolean;
     user: { name: string; email: string };
+    stats: DoctorStats;
 }
 
 export interface AvailabilitySlot {
@@ -39,6 +58,8 @@ export type UpdateDoctorProfileInput = {
     consultationFee?: number | null;
     registrationNumber?: string | null;
     degree?: string | null;
+    credentials?: Credential[] | null;
+    languages?: string[];
     city?: string | null;
     state?: string | null;
     isActive?: boolean;

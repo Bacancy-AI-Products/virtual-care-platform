@@ -3,6 +3,8 @@ export type { AuthUser, AuthResult } from './auth';
 export { authApi } from './auth';
 export type {
     DoctorSummary,
+    DoctorStats,
+    Credential,
     AvailabilitySlot,
     DoctorAvailabilityResponse,
     UpdateDoctorProfileInput,
@@ -10,6 +12,15 @@ export type {
     SpecializationOption,
 } from './doctors';
 export { doctorsApi } from './doctors';
+export type {
+    DoctorReview,
+    ReviewsSummary,
+    DoctorReviewsResponse,
+    CreateReviewInput,
+    MyReview,
+    MyReviewsResponse,
+} from './reviews';
+export { reviewsApi } from './reviews';
 export type {
     AppointmentDoctor,
     AppointmentPatient,

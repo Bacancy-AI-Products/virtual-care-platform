@@ -31,6 +31,16 @@ export const availabilityQuerySchema = z.object({
     to: z.string().datetime().optional(),
 });
 
+const credentialSchema = z.object({
+    title: z.string().min(1).max(200),
+    institution: z.string().min(1).max(200),
+    year: z
+        .number()
+        .int()
+        .min(1900)
+        .max(new Date().getFullYear() + 1),
+});
+
 export const updateDoctorProfileSchema = z.object({
     specialization: z.string().min(1, 'Specialization is required').max(200).optional(),
     experienceYears: z.number().int().min(0).max(70).optional(),
@@ -38,6 +48,8 @@ export const updateDoctorProfileSchema = z.object({
     consultationFee: z.number().min(0).optional().nullable(),
     registrationNumber: z.string().max(100).optional().nullable(),
     degree: z.string().max(100).optional().nullable(),
+    credentials: z.array(credentialSchema).max(20).optional().nullable(),
+    languages: z.array(z.string().min(1).max(60)).max(10).optional(),
     city: z.string().max(100).optional().nullable(),
     state: z.string().max(100).optional().nullable(),
     isActive: z.boolean().optional(),

@@ -10,6 +10,7 @@ import { filesRouter } from '../modules/files';
 import { videoRouter } from '../modules/video';
 import { adminRouter } from '../modules/admin';
 import { notificationsRouter } from '../modules/notifications';
+import { reviewsRouter } from '../modules/reviews';
 
 const apiRouter = Router();
 
@@ -19,6 +20,9 @@ apiRouter.get('/', (_req, res) => {
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/users', usersRouter);
+// Reviews mount at the api root because routes are split across /doctors and /appointments.
+// Must come BEFORE /doctors and /appointments so the more specific paths match first.
+apiRouter.use('/', reviewsRouter);
 apiRouter.use('/doctors', doctorsRouter);
 apiRouter.use('/patients', patientsRouter);
 apiRouter.use('/appointments', appointmentsRouter);

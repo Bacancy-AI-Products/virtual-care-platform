@@ -11,6 +11,8 @@ const doctorListSelect = {
     consultationFee: true,
     registrationNumber: true,
     degree: true,
+    credentials: true,
+    languages: true,
     city: true,
     state: true,
     verified: true,
@@ -19,6 +21,71 @@ const doctorListSelect = {
         select: { name: true, email: true },
     },
 } as const;
+
+/** Trust-signal stats derived from reviews + completed appointments. */
+export interface DoctorStats {
+    averageRating: number | null; // null when no reviews yet
+    reviewCount: number;
+    consultationCount: number; // count of COMPLETED appointments
+    avgResponseMinutes: number | null; // avg (sessionStartedAt - scheduledAt) over completed
+}
+
+/**
+ * Compute aggregate trust signals for one or more doctors in a single round-trip
+ * per metric. Returns a Map keyed by doctorId.
+ */
+async function getStatsByDoctorIds(doctorIds: string[]): Promise<Map<string, DoctorStats>> {
+    if (doctorIds.length === 0) return new Map();
+
+    const [ratingAgg, completedAgg, completedWithSession] = await Promise.all([
+        prisma.review.groupBy({
+            by: ['doctorId'],
+            where: { doctorId: { in: doctorIds } },
+            _avg: { rating: true },
+            _count: { _all: true },
+        }),
+        prisma.appointment.groupBy({
+            by: ['doctorId'],
+            where: { doctorId: { in: doctorIds }, status: 'COMPLETED' },
+            _count: { _all: true },
+        }),
+        prisma.appointment.findMany({
+            where: {
+                doctorId: { in: doctorIds },
+                status: 'COMPLETED',
+                sessionStartedAt: { not: null },
+            },
+            select: { doctorId: true, scheduledAt: true, sessionStartedAt: true },
+        }),
+    ]);
+
+    const responseTotals = new Map<string, { sum: number; n: number }>();
+    for (const a of completedWithSession) {
+        if (!a.sessionStartedAt) continue;
+        const minutes = Math.max(
+            0,
+            (a.sessionStartedAt.getTime() - a.scheduledAt.getTime()) / 60_000,
+        );
+        const cur = responseTotals.get(a.doctorId) ?? { sum: 0, n: 0 };
+        cur.sum += minutes;
+        cur.n += 1;
+        responseTotals.set(a.doctorId, cur);
+    }
+
+    const out = new Map<string, DoctorStats>();
+    for (const id of doctorIds) {
+        const rating = ratingAgg.find((r) => r.doctorId === id);
+        const completed = completedAgg.find((c) => c.doctorId === id);
+        const resp = responseTotals.get(id);
+        out.set(id, {
+            averageRating: rating?._avg.rating ?? null,
+            reviewCount: rating?._count._all ?? 0,
+            consultationCount: completed?._count._all ?? 0,
+            avgResponseMinutes: resp && resp.n > 0 ? Math.round(resp.sum / resp.n) : null,
+        });
+    }
+    return out;
+}
 
 export interface ListDoctorsParams {
     specialization?: string;
@@ -31,22 +98,27 @@ export interface ListDoctorsParams {
     limit: number;
 }
 
+export interface DoctorWithStats {
+    id: string;
+    userId: string;
+    specialization: string;
+    experienceYears: number | null;
+    bio: string | null;
+    consultationFee: Prisma.Decimal | null;
+    registrationNumber: string | null;
+    degree: string | null;
+    credentials: Prisma.JsonValue | null;
+    languages: string[];
+    city: string | null;
+    state: string | null;
+    verified: boolean;
+    isActive: boolean;
+    user: { name: string; email: string };
+    stats: DoctorStats;
+}
+
 export interface ListDoctorsResult {
-    data: Array<{
-        id: string;
-        userId: string;
-        specialization: string;
-        experienceYears: number | null;
-        bio: string | null;
-        consultationFee: Prisma.Decimal | null;
-        registrationNumber: string | null;
-        degree: string | null;
-        city: string | null;
-        state: string | null;
-        verified: boolean;
-        isActive: boolean;
-        user: { name: string; email: string };
-    }>;
+    data: DoctorWithStats[];
     total: number;
     page: number;
     limit: number;
@@ -106,10 +178,17 @@ export async function listDoctors(params: ListDoctorsParams): Promise<ListDoctor
         prisma.doctorProfile.count({ where }),
     ]);
 
+    const stats = await getStatsByDoctorIds(data.map((d) => d.id));
+
     return {
         data: data.map((d) => ({
             ...d,
-            consultationFee: d.consultationFee,
+            stats: stats.get(d.id) ?? {
+                averageRating: null,
+                reviewCount: 0,
+                consultationCount: 0,
+                avgResponseMinutes: null,
+            },
         })),
         total,
         page,
@@ -117,7 +196,7 @@ export async function listDoctors(params: ListDoctorsParams): Promise<ListDoctor
     };
 }
 
-export async function getDoctorById(id: string) {
+export async function getDoctorById(id: string): Promise<DoctorWithStats> {
     const doctor = await prisma.doctorProfile.findUnique({
         where: { id },
         select: doctorListSelect,
@@ -125,7 +204,16 @@ export async function getDoctorById(id: string) {
     if (!doctor) {
         throw new AppError('Doctor not found', 404, 'NOT_FOUND');
     }
-    return doctor;
+    const stats = await getStatsByDoctorIds([id]);
+    return {
+        ...doctor,
+        stats: stats.get(id) ?? {
+            averageRating: null,
+            reviewCount: 0,
+            consultationCount: 0,
+            avgResponseMinutes: null,
+        },
+    };
 }
 
 export async function getAvailability(doctorId: string, options: GetAvailabilityOptions = {}) {
@@ -184,7 +272,7 @@ export async function getMyAvailability(userId: string) {
     return getAvailability(profile.id);
 }
 
-export async function getMyProfile(userId: string) {
+export async function getMyProfile(userId: string): Promise<DoctorWithStats> {
     const profile = await prisma.doctorProfile.findUnique({
         where: { userId },
         select: doctorListSelect,
@@ -192,7 +280,16 @@ export async function getMyProfile(userId: string) {
     if (!profile) {
         throw new AppError('Doctor profile not found', 404, 'NOT_FOUND');
     }
-    return profile;
+    const stats = await getStatsByDoctorIds([profile.id]);
+    return {
+        ...profile,
+        stats: stats.get(profile.id) ?? {
+            averageRating: null,
+            reviewCount: 0,
+            consultationCount: 0,
+            avgResponseMinutes: null,
+        },
+    };
 }
 
 export async function updateMyAvailability(
@@ -232,6 +329,12 @@ export async function updateMyAvailability(
     return getAvailability(profile.id);
 }
 
+export interface CredentialInput {
+    title: string;
+    institution: string;
+    year: number;
+}
+
 export interface UpdateDoctorProfileData {
     specialization?: string;
     experienceYears?: number;
@@ -239,12 +342,17 @@ export interface UpdateDoctorProfileData {
     consultationFee?: number | null;
     registrationNumber?: string | null;
     degree?: string | null;
+    credentials?: CredentialInput[] | null;
+    languages?: string[];
     city?: string | null;
     state?: string | null;
     isActive?: boolean;
 }
 
-export async function updateMyProfile(userId: string, data: UpdateDoctorProfileData) {
+export async function updateMyProfile(
+    userId: string,
+    data: UpdateDoctorProfileData,
+): Promise<DoctorWithStats> {
     const profile = await prisma.doctorProfile.findUnique({
         where: { userId },
     });
@@ -260,6 +368,9 @@ export async function updateMyProfile(userId: string, data: UpdateDoctorProfileD
     if (data.registrationNumber !== undefined)
         updateData.registrationNumber = data.registrationNumber;
     if (data.degree !== undefined) updateData.degree = data.degree;
+    if (data.credentials !== undefined)
+        updateData.credentials = data.credentials as unknown as Prisma.InputJsonValue;
+    if (data.languages !== undefined) updateData.languages = data.languages;
     if (data.city !== undefined) updateData.city = data.city;
     if (data.state !== undefined) updateData.state = data.state;
     if (data.isActive !== undefined) updateData.isActive = data.isActive;
@@ -270,7 +381,16 @@ export async function updateMyProfile(userId: string, data: UpdateDoctorProfileD
         select: doctorListSelect,
     });
 
-    return updated;
+    const stats = await getStatsByDoctorIds([updated.id]);
+    return {
+        ...updated,
+        stats: stats.get(updated.id) ?? {
+            averageRating: null,
+            reviewCount: 0,
+            consultationCount: 0,
+            avgResponseMinutes: null,
+        },
+    };
 }
 
 export async function listSpecializations() {
