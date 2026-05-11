@@ -24,7 +24,7 @@ import { twMerge } from 'tailwind-merge';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { NotificationBell } from '@/components/NotificationBell';
-import { usersApi, filesApi, appointmentsApi, prescriptionsApi } from '@/services/api';
+import { authApi, usersApi, filesApi, appointmentsApi, prescriptionsApi } from '@/services/api';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -253,8 +253,13 @@ export const Layout = ({ children, role }: LayoutProps) => {
         };
     }, [isMobileMenuOpen]);
 
-    function handleLogout() {
+    async function handleLogout() {
         setIsMobileMenuOpen(false);
+        try {
+            await authApi.logout();
+        } catch {
+            // Fall back to local logout even if revoke request fails.
+        }
         logout();
         router.push('/login');
     }

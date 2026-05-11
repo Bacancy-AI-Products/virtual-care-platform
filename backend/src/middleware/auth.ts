@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { assertTokenNotRevoked } from '../modules/auth/auth.service';
 import { JwtPayload, verifyToken } from '../utils';
 import { AppError } from '../utils/errors';
 
@@ -20,12 +21,20 @@ export function requireAuth(req: AuthenticatedRequest, _res: Response, next: Nex
         return;
     }
 
-    try {
-        req.user = verifyToken(token);
-        next();
-    } catch {
-        next(new AppError('Invalid or expired token', 401, 'UNAUTHORIZED'));
-    }
+    void (async () => {
+        try {
+            const payload = verifyToken(token);
+            await assertTokenNotRevoked(payload.sub, payload.tv);
+            req.user = payload;
+            next();
+        } catch (error) {
+            if (error instanceof AppError) {
+                next(error);
+                return;
+            }
+            next(new AppError('Invalid or expired token', 401, 'UNAUTHORIZED'));
+        }
+    })();
 }
 
 /**

@@ -49,6 +49,10 @@ export async function request<T>(
         throw new ApiError(code, res.status, body?.error?.details, message);
     }
 
+    if (res.status === 204) {
+        return undefined as T;
+    }
+
     return res.json() as Promise<T>;
 }
 
@@ -61,6 +65,9 @@ export async function uploadRequest<T>(path: string, form: FormData): Promise<T>
     });
 
     if (!res.ok) {
+        if (res.status === 401) {
+            useAuthStore.getState().logout();
+        }
         const body = await res.json().catch(() => ({}));
         const message = body?.error?.message ?? body?.message ?? 'Upload failed';
         const code = body?.error?.code ?? 'UPLOAD_FAILED';

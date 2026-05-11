@@ -15,6 +15,11 @@ export const authApi = {
             body: JSON.stringify({ email, password }),
         }),
 
+    logout: () =>
+        request<void>('/auth/logout', {
+            method: 'POST',
+        }),
+
     signup: (data: { name: string; email: string; password: string; role: 'PATIENT' | 'DOCTOR' }) =>
         request<AuthResult>(`/auth/signup/${data.role.toLowerCase()}`, {
             method: 'POST',

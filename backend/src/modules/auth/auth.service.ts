@@ -21,7 +21,7 @@ export interface AuthResult {
 
 function toAuthResult(user: User): AuthResult {
     return {
-        token: signToken({ sub: user.id, role: user.role }),
+        token: signToken({ sub: user.id, role: user.role, tv: user.tokenVersion }),
         user: {
             id: user.id,
             name: user.name,
@@ -29,6 +29,32 @@ function toAuthResult(user: User): AuthResult {
             role: user.role,
         },
     };
+}
+
+/**
+ * Reject token if it does not match the current user session version.
+ * This allows immediate server-side revocation on logout/password reset.
+ */
+export async function assertTokenNotRevoked(userId: string, tokenVersion?: number): Promise<void> {
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { tokenVersion: true },
+    });
+    if (!user) {
+        throw new AppError('Invalid or expired token', 401, 'UNAUTHORIZED');
+    }
+    const tokenVersionValue = tokenVersion ?? 0;
+    if (tokenVersionValue !== user.tokenVersion) {
+        throw new AppError('Session expired or logged out', 401, 'UNAUTHORIZED');
+    }
+}
+
+/** Revoke all active JWT sessions for this user. */
+export async function revokeSessions(userId: string): Promise<void> {
+    await prisma.user.update({
+        where: { id: userId },
+        data: { tokenVersion: { increment: 1 } },
+    });
 }
 
 /**
@@ -151,6 +177,7 @@ export async function resetPassword(
             passwordHash,
             passwordResetToken: null,
             passwordResetExpires: null,
+            tokenVersion: { increment: 1 },
         },
     });
     return { message: 'Password reset successful.' };

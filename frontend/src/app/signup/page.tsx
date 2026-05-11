@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Mail, Lock, User, Stethoscope, ArrowRight, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { authApi } from '@/services/api';
@@ -46,7 +45,6 @@ const ROLE_TOGGLE_SPRING = {
 };
 
 export default function SignupPage() {
-    const router = useRouter();
     const prefersReducedMotion = useReducedMotion();
     const toggleTransition = prefersReducedMotion ? { duration: 0 } : ROLE_TOGGLE_SPRING;
     const [role, setRole] = React.useState<'patient' | 'doctor'>('patient');
@@ -143,7 +141,7 @@ export default function SignupPage() {
                 role: role === 'doctor' ? 'DOCTOR' : 'PATIENT',
             });
             login(result.token, result.user);
-            router.push(`/${result.user.role.toLowerCase()}/dashboard`);
+            window.location.assign(`/${result.user.role.toLowerCase()}/dashboard`);
         } catch (err) {
             setFormError(err instanceof Error ? err.message : 'Sign up failed. Please try again.');
         } finally {
