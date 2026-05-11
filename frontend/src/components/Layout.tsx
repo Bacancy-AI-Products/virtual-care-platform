@@ -27,7 +27,14 @@ import { twMerge } from 'tailwind-merge';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { NotificationBell } from '@/components/NotificationBell';
-import { usersApi, filesApi, appointmentsApi, prescriptionsApi, reviewsApi } from '@/services/api';
+import {
+    authApi,
+    usersApi,
+    filesApi,
+    appointmentsApi,
+    prescriptionsApi,
+    reviewsApi,
+} from '@/services/api';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
