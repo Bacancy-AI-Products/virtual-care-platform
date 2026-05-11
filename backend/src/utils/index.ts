@@ -18,6 +18,8 @@ export async function verifyPassword(plain: string, hash: string): Promise<boole
 export interface JwtPayload {
     sub: string; // userId
     role: string; // PATIENT | DOCTOR | ADMIN
+    /** User token version for server-side revocation checks. */
+    tv?: number;
 }
 
 /** Sign a JWT for an authenticated user. */

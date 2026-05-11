@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Role } from '../../../generated/prisma';
+import { requireAuth, type AuthenticatedRequest } from '../../middleware';
 import { toValidationError } from '../../utils/validation';
 import * as authService from './auth.service';
 import {
@@ -10,6 +11,20 @@ import {
 } from './auth.schemas';
 
 const router = Router();
+
+/**
+ * POST /auth/logout
+ * Revoke all active sessions for the current user.
+ */
+router.post('/logout', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = (req as AuthenticatedRequest).user!.sub;
+        await authService.revokeSessions(userId);
+        res.status(204).send();
+    } catch (e) {
+        next(e);
+    }
+});
 
 /**
  * POST /auth/login

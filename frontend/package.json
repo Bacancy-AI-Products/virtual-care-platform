@@ -27,6 +27,7 @@
         "country-state-city": "^3.2.1",
         "date-fns": "^4.1.0",
         "dotenv": "^17.2.3",
+        "jose": "^6.2.3",
         "lucide-react": "^0.577.0",
         "motion": "^12.23.24",
         "next": "^15.1.6",

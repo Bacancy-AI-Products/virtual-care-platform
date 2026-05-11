@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { authApi } from '@/services/api';
@@ -25,7 +25,6 @@ function isSafeRedirect(path: string | null): path is string {
 }
 
 export default function LoginPage() {
-    const router = useRouter();
     const searchParams = useSearchParams();
     const from = searchParams.get('from');
 
@@ -74,7 +73,9 @@ export default function LoginPage() {
             const redirectTo = isSafeRedirect(from)
                 ? from
                 : `/${result.user.role.toLowerCase()}/dashboard`;
-            router.push(redirectTo);
+            // Full navigation so the auth cookie is always visible to middleware on the next request
+            // (client-side router transitions can race cookie persistence on some setups).
+            window.location.assign(redirectTo);
         } catch (err) {
             setErrors({
                 form: err instanceof Error ? err.message : 'Login failed. Please try again.',

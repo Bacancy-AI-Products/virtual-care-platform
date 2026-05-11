@@ -1,6 +1,7 @@
 import { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import { config } from './config';
+import { assertTokenNotRevoked } from './modules/auth/auth.service';
 import { verifyToken, JwtPayload } from './utils';
 import { prisma } from './db';
 
@@ -45,14 +46,17 @@ export function initializeSocket(httpServer: HttpServer): Server {
             return next(new Error('Authentication required'));
         }
 
-        try {
-            const decoded: JwtPayload = verifyToken(token);
-            socket.data.userId = decoded.sub;
-            socket.data.role = decoded.role;
-            next();
-        } catch {
-            next(new Error('Invalid or expired token'));
-        }
+        void (async () => {
+            try {
+                const decoded: JwtPayload = verifyToken(token);
+                await assertTokenNotRevoked(decoded.sub, decoded.tv);
+                socket.data.userId = decoded.sub;
+                socket.data.role = decoded.role;
+                next();
+            } catch {
+                next(new Error('Invalid or expired token'));
+            }
+        })();
     });
 
     io.on('connection', (socket: AuthenticatedSocket) => {

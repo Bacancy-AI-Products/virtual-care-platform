@@ -76,6 +76,8 @@ model User {
   passwordResetToken   String?   @map("password_reset_token")
   passwordResetExpires DateTime? @map("password_reset_expires")
   avatarFileId         String?   @map("avatar_file_id")
+  /// Incremented when sessions are revoked (logout / password reset).
+  tokenVersion         Int       @default(0) @map("token_version")
   // Audit
   createdAt            DateTime  @default(now()) @map("created_at")
   updatedAt            DateTime  @updatedAt @map("updated_at")

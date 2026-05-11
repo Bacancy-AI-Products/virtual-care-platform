@@ -1,4 +1,13 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { loadEnvConfig } from '@next/env';
 import type { NextConfig } from 'next';
+
+// Next.js only auto-loads `.env*` from the `frontend/` directory. Many setups keep one `.env`
+// at the repo root (alongside `backend/`); load root first, then `frontend/` (local overrides).
+const configDir = path.dirname(fileURLToPath(import.meta.url));
+loadEnvConfig(path.join(configDir, '..'));
+loadEnvConfig(configDir);
 
 const nextConfig: NextConfig = {
     output: 'standalone',

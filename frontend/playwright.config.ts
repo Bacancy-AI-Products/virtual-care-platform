@@ -75,6 +75,11 @@ export default defineConfig({
             timeout: 120_000,
             stdout: 'ignore',
             stderr: 'pipe',
+            env: {
+                ...process.env,
+                // Keep frontend middleware JWT verification aligned with backend dev secret.
+                JWT_SECRET: process.env.JWT_SECRET ?? 'secretKey',
+            },
         },
     ],
 });
