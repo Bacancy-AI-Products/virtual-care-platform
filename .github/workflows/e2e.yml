@@ -72,11 +72,11 @@ jobs:
         working-directory: backend
         run: npm ci || npm install
 
-      - name: Generate Prisma client + push schema
+      - name: Generate Prisma client + run migrations
         working-directory: backend
         run: |
           npx prisma generate
-          npx prisma db push --skip-generate
+          npx prisma migrate deploy
 
       - name: Seed database
         working-directory: backend

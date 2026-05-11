@@ -17,7 +17,7 @@ cd backend
 cp .env.example .env          # then fill in JWT_SECRET, DAILY_API_KEY, SMTP_*
 npm install
 npx prisma generate
-npx prisma db push            # creates tables
+npm run db:migrate            # applies all pending migrations
 npm run seed                  # seeds users, doctors, an appointment
 
 # 3. Frontend setup
@@ -199,10 +199,18 @@ See `frontend/e2e/README.md` for spec-by-spec details.
 
 ```bash
 # Database
-cd backend && npx prisma studio        # GUI for inspecting the DB
-cd backend && npm run seed             # re-seed (idempotent)
-cd backend && npx prisma db push       # push schema changes (dev only)
-cd backend && npx prisma migrate dev   # create + run a named migration
+cd backend && npx prisma studio              # GUI for inspecting the DB
+cd backend && npm run seed                   # re-seed (idempotent)
+cd backend && npm run db:migrate:status      # check pending migrations
+cd backend && npm run db:migrate             # apply pending migrations (dev)
+cd backend && npm run db:migrate:deploy      # apply migrations (prod/CI)
+
+# Adding a schema change
+# 1. Edit backend/prisma/schema.prisma
+# 2. npm run db:migrate -- --name <descriptive_name>   ← generates + applies migration
+# 3. Commit the new folder under backend/prisma/migrations/
+#
+# ⚠ Never run `npx prisma db push` in this repo — it bypasses migration history.
 
 # Lint / format
 cd frontend && npm run lint                # check ESLint errors

@@ -8,6 +8,9 @@
         "start": "node dist/server.js",
         "dev": "nodemon --ext ts,json --ignore generated/ --ignore dist/ --exec \"npm run build && node dist/server.js\"",
         "seed": "npx ts-node prisma/seed.ts",
+        "db:migrate": "prisma migrate dev",
+        "db:migrate:deploy": "prisma migrate deploy",
+        "db:migrate:status": "prisma migrate status",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
         "format": "prettier --write ."
