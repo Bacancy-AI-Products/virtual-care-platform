@@ -35,6 +35,13 @@ jobs:
           --health-timeout=3s
           --health-retries=10
 
+    # Prisma CLI doesn't auto-load `backend/.env.test` (prisma.config.ts only
+    # checks the repo-root `.env`, which is gitignored). So we set DATABASE_URL
+    # at the workflow level — Prisma CLI uses it; Vitest tests get the same
+    # value from `.env.test` which they auto-load.
+    env:
+      DATABASE_URL: postgresql://telecare_user:supersecurepassword@localhost:5432/telecare_test?schema=public
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
