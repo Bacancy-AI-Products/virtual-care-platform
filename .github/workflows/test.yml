@@ -16,25 +16,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
+    # Postgres service container is intentionally provisioned with the SAME
+    # credentials that `backend/.env.test` specifies. This way `.env.test` is
+    # the single source of truth for test config — no workflow `env:` block,
+    # no dotenv override surprises, same path in CI as locally.
     services:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_USER: telecareUser
-          POSTGRES_PASSWORD: anypassword
+          POSTGRES_USER: telecare_user
+          POSTGRES_PASSWORD: supersecurepassword
           POSTGRES_DB: telecare_test
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U telecareUser"
+          --health-cmd="pg_isready -U telecare_user"
           --health-interval=5s
           --health-timeout=3s
           --health-retries=10
-
-    env:
-      DATABASE_URL: postgresql://telecareUser:anypassword@localhost:5432/telecare_test?schema=public
-      JWT_SECRET: ci-test-jwt-secret
-      NODE_ENV: test
 
     steps:
       - name: Checkout repo
@@ -51,13 +50,9 @@ jobs:
         working-directory: backend
         run: npm ci
 
-      - name: Generate Prisma client
-        working-directory: backend
-        run: npx prisma generate
-
       - name: Apply migrations to test DB
         working-directory: backend
-        run: npx prisma migrate deploy
+        run: npm run db:test:setup
 
       - name: Run tests
         working-directory: backend
