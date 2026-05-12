@@ -1,0 +1,94 @@
+name: Unit & Integration Tests
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (vitest + supertest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Postgres service container is intentionally provisioned with the SAME
+    # credentials that `backend/.env.test` specifies. This way `.env.test` is
+    # the single source of truth for test config — no workflow `env:` block,
+    # no dotenv override surprises, same path in CI as locally.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: telecare_user
+          POSTGRES_PASSWORD: supersecurepassword
+          POSTGRES_DB: telecare_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U telecare_user"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=10
+
+    # Prisma CLI doesn't auto-load `backend/.env.test` (prisma.config.ts only
+    # checks the repo-root `.env`, which is gitignored). So we set DATABASE_URL
+    # at the workflow level — Prisma CLI uses it; Vitest tests get the same
+    # value from `.env.test` which they auto-load.
+    env:
+      DATABASE_URL: postgresql://telecare_user:supersecurepassword@localhost:5432/telecare_test?schema=public
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: backend
+        run: npx prisma generate
+
+      - name: Apply migrations to test DB
+        working-directory: backend
+        run: npm run db:test:setup
+
+      - name: Run tests
+        working-directory: backend
+        run: npm test
+
+  frontend:
+    name: Frontend (vitest + RTL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run tests
+        working-directory: frontend
+        run: npm test
