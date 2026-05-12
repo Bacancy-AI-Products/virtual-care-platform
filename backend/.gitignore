@@ -4,3 +4,10 @@ node_modules
 
 /generated/prisma
 /uploads
+
+# Build/test artifacts
+/dist
+/coverage
+# Stray .js next to .ts in test/ — only sources should be tracked
+test/*.js
+
