@@ -118,6 +118,57 @@ export async function createDoctor(
 }
 
 /**
+ * Insert a Notification row for a user.
+ */
+export async function createNotification(
+    userId: string,
+    overrides: Partial<{
+        type:
+            | 'PRESCRIPTION_CREATED'
+            | 'APPOINTMENT_CONFIRMED'
+            | 'APPOINTMENT_DECLINED'
+            | 'APPOINTMENT_REQUESTED'
+            | 'APPOINTMENT_CANCELLED';
+        title: string;
+        body: string | null;
+        read: boolean;
+        metadata: Record<string, unknown> | null;
+    }> = {},
+) {
+    return prisma.notification.create({
+        data: {
+            userId,
+            type: overrides.type ?? 'APPOINTMENT_CONFIRMED',
+            title: overrides.title ?? 'Test notification',
+            body: overrides.body ?? null,
+            read: overrides.read ?? false,
+            metadata: overrides.metadata ?? undefined,
+        },
+    });
+}
+
+/**
+ * Create a completed appointment + review for it. Useful for review and
+ * doctor-stats tests that need the COMPLETED → reviewable pipeline.
+ */
+export async function createReview(
+    patientId: string,
+    doctorId: string,
+    appointmentId: string,
+    overrides: Partial<{ rating: number; comment: string | null }> = {},
+) {
+    return prisma.review.create({
+        data: {
+            patientId,
+            doctorId,
+            appointmentId,
+            rating: overrides.rating ?? 5,
+            comment: overrides.comment ?? null,
+        },
+    });
+}
+
+/**
  * Create an appointment between a patient and doctor. Defaults: 30-minute
  * slot starting one hour from "now", PENDING status.
  */
