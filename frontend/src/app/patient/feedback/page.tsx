@@ -39,7 +39,7 @@ export default function PatientFeedbackPage() {
         isError: errorAppts,
     } = useQuery({
         queryKey: ['appointments', 'patient', 'all'],
-        queryFn: () => appointmentsApi.list({ limit: 200 }),
+        queryFn: () => appointmentsApi.list({ limit: 100 }),
         enabled: !!token && user?.role === 'PATIENT',
     });
 

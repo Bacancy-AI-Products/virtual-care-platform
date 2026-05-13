@@ -31,7 +31,7 @@ export default function DoctorPrescriptionsPage() {
 
     const { data, isLoading, isFetching, isError } = useQuery({
         queryKey: ['prescriptions', 'mine'],
-        queryFn: () => prescriptionsApi.getMine({ limit: 500 }),
+        queryFn: () => prescriptionsApi.getMine({ limit: 100 }),
         enabled: !!token && user?.role === 'DOCTOR',
     });
 
