@@ -774,7 +774,7 @@ export default function DoctorDashboard() {
         isError: apptsError,
     } = useQuery({
         queryKey: ['appointments', 'doctor', 'all'],
-        queryFn: () => appointmentsApi.list({ limit: 500 }),
+        queryFn: () => appointmentsApi.list({ limit: 100 }),
         enabled: !!token,
     });
 
