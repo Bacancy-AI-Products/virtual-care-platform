@@ -31,6 +31,7 @@ import {
 import { twMerge } from 'tailwind-merge';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { RatingStars } from '@/components/ui/RatingStars';
 import { VerificationBadge } from '@/components/ui/VerificationBadge';
 
@@ -262,6 +263,8 @@ function PublicDoctorsContent() {
     const limit = data?.limit ?? PAGE_SIZE;
     const totalPages = Math.max(1, Math.ceil(total / limit));
     const showResultsLoadingOverlay = isFetching && !isLoading;
+    const showLoader = isLoading || (isFetching && !data);
+    const showError = !showLoader && isError && !data;
     const paginationItems = React.useMemo(
         () => getPaginationItems(totalPages, page),
         [totalPages, page],
@@ -289,13 +292,6 @@ function PublicDoctorsContent() {
                     className="space-y-4 sm:space-y-6"
                 >
                     <div>
-                        <Link
-                            href="/"
-                            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors group mb-2 sm:mb-3"
-                        >
-                            <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
-                            Back to home
-                        </Link>
                         <h1 className="text-xl font-bold text-slate-900 mb-1 sm:text-2xl sm:mb-2">
                             Find a doctor
                         </h1>
@@ -488,17 +484,13 @@ function PublicDoctorsContent() {
                             )}
                         </div>
 
-                        {isLoading && (
-                            <div className="flex justify-center py-24">
-                                <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-                            </div>
-                        )}
+                        {showLoader && <LoadingState message="Loading doctors…" />}
 
-                        {isError && (
+                        {showError && (
                             <ErrorState message="Failed to load doctors. Please try again." />
                         )}
 
-                        {!isLoading && !isError && doctors.length === 0 && (
+                        {!showLoader && !showError && doctors.length === 0 && (
                             <EmptyState
                                 icon={<Search className="w-12 h-12 text-slate-300" />}
                                 title="No doctors found"
@@ -506,7 +498,7 @@ function PublicDoctorsContent() {
                             />
                         )}
 
-                        {!isLoading && !isError && doctors.length > 0 && (
+                        {!showLoader && !showError && doctors.length > 0 && (
                             <div
                                 className="relative space-y-6"
                                 aria-busy={showResultsLoadingOverlay}

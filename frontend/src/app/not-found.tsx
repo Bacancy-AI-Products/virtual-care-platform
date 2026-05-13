@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Calendar, ChevronLeft, FileText, Search, Stethoscope } from 'lucide-react';
+import { Calendar, FileText, Search, Stethoscope } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 
 export default function NotFound() {
@@ -35,7 +35,7 @@ export default function NotFound() {
             </div>
 
             <header className="relative z-10 mx-auto w-full max-w-7xl px-4 py-5 sm:px-6">
-                <BrandLogo />
+                <BrandLogo href="/" />
             </header>
 
             <main className="relative z-10 flex min-h-[calc(100vh-84px)] items-center justify-center px-4 pb-8 sm:px-6 sm:pb-10">
@@ -147,15 +147,8 @@ export default function NotFound() {
 
                                             <div className="flex flex-col justify-center gap-2.5 sm:flex-row">
                                                 <Link
-                                                    href="/"
-                                                    className="group inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-bold text-white shadow-sm shadow-brand-200 transition-all hover:bg-brand-600 active:scale-[0.98]"
-                                                >
-                                                    <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-                                                    Back to home
-                                                </Link>
-                                                <Link
                                                     href="/doctors"
-                                                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50 active:scale-[0.98]"
+                                                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-bold text-white shadow-sm shadow-brand-200 transition-all hover:bg-brand-600 active:scale-[0.98]"
                                                 >
                                                     <Search className="h-4 w-4" /> Find a doctor
                                                 </Link>

@@ -7,8 +7,8 @@ import { Mail, ArrowRight, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { authApi } from '@/services/api';
 import { BrandLogo } from '@/components/BrandLogo';
-import { AuthVisualPanel } from '@/components/AuthVisualPanel';
 import { BackNavLink } from '@/components/BackToHomeLink';
+import { AuthVisualPanel } from '@/components/AuthVisualPanel';
 import {
     FORM_CONTROL_LEADING_ICON,
     FORM_AUTH_PRIMARY_BUTTON,
@@ -77,7 +77,7 @@ function ForgotPasswordContent() {
                         className="max-w-md w-full mx-auto"
                     >
                         <div className="mb-10">
-                            <BrandLogo />
+                            <BrandLogo href="/" />
                         </div>
 
                         <h2 className="text-3xl font-bold text-slate-900 mb-2">Forgot Password?</h2>

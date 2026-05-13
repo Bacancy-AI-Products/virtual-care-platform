@@ -7,6 +7,7 @@ import {
     createReviewSchema,
     doctorIdParamSchema,
     listReviewsQuerySchema,
+    updateReviewSchema,
 } from './reviews.schemas';
 
 const router = Router();
@@ -121,6 +122,39 @@ router.post(
                 bodyParsed.data,
             );
             res.status(201).json(review);
+        } catch (e) {
+            next(e);
+        }
+    },
+);
+
+/**
+ * PATCH /appointments/:appointmentId/review
+ * Patient updates the review they previously submitted for this appointment.
+ */
+router.patch(
+    '/appointments/:appointmentId/review',
+    requireAuth,
+    requireRole('PATIENT'),
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const paramParsed = appointmentIdParamSchema.safeParse(req.params);
+            if (!paramParsed.success) {
+                next(toValidationError(paramParsed.error));
+                return;
+            }
+            const bodyParsed = updateReviewSchema.safeParse(req.body);
+            if (!bodyParsed.success) {
+                next(toValidationError(bodyParsed.error));
+                return;
+            }
+            const { user } = req as AuthenticatedRequest;
+            const review = await reviewsService.updateReviewForAppointment(
+                paramParsed.data.appointmentId,
+                user!.sub,
+                bodyParsed.data,
+            );
+            res.json(review);
         } catch (e) {
             next(e);
         }

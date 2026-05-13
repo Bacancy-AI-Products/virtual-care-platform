@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import clsx from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function BackToHomeLink({
     href = '/',
@@ -19,13 +20,15 @@ export function BackToHomeLink({
     return (
         <Link
             href={href}
-            className={clsx(
-                'group inline-flex items-center gap-2 text-sm font-semibold text-slate-600 rounded-lg px-2 py-1.5 -ml-2',
-                'transition-colors hover:text-brand-600 hover:bg-slate-50/90',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/35 focus-visible:ring-offset-2',
-                desktopFixed &&
-                    'hidden lg:inline-flex lg:absolute lg:top-8 lg:left-8 lg:z-10 lg:ml-0',
-                className,
+            className={twMerge(
+                clsx(
+                    'group inline-flex items-center gap-2 text-sm font-semibold text-slate-600 rounded-lg px-2 py-1.5 -ml-2',
+                    'transition-colors hover:text-brand-600 hover:bg-slate-50/90',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/35 focus-visible:ring-offset-2',
+                    desktopFixed &&
+                        'hidden lg:inline-flex lg:absolute lg:top-8 lg:left-8 lg:z-10 lg:ml-0',
+                    className,
+                ),
             )}
         >
             <ChevronLeft

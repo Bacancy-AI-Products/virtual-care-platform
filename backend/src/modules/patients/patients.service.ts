@@ -22,14 +22,24 @@ const patientFullSelect = {
     },
 } as const;
 
-/** Evaluation-only fields for doctors (excludes phone, emergency contact, address). */
-const patientEvaluationSelect = {
+/**
+ * Full record select used for the doctor's patient details view.
+ * Includes contact + address fields — this endpoint is protected and only
+ * returns data for patients the doctor has an appointment with.
+ */
+const patientDoctorViewSelect = {
     id: true,
     dateOfBirth: true,
     gender: true,
+    phone: true,
     bloodGroup: true,
     height: true,
     weight: true,
+    emergencyContactName: true,
+    emergencyContactPhone: true,
+    city: true,
+    state: true,
+    address: true,
     user: {
         select: { name: true, email: true },
     },
@@ -108,7 +118,7 @@ export async function getPatientForDoctor(patientId: string, doctorUserId: strin
 
     const patient = await prisma.patient.findUnique({
         where: { id: patientId },
-        select: patientEvaluationSelect,
+        select: patientDoctorViewSelect,
     });
     if (!patient) {
         throw new AppError('Patient not found', 404, 'NOT_FOUND');

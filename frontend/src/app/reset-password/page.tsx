@@ -8,7 +8,6 @@ import { motion } from 'motion/react';
 import { authApi } from '@/services/api';
 import { BrandLogo } from '@/components/BrandLogo';
 import { AuthVisualPanel } from '@/components/AuthVisualPanel';
-import { BackNavLink } from '@/components/BackToHomeLink';
 import {
     FORM_CONTROL_TRAILING_SLOT,
     FORM_AUTH_PRIMARY_BUTTON,
@@ -161,7 +160,7 @@ function ResetPasswordContent() {
                         className="max-w-md w-full mx-auto"
                     >
                         <div className="mb-10">
-                            <BrandLogo />
+                            <BrandLogo href="/" />
                         </div>
 
                         <h2 className="text-3xl font-bold text-slate-900 mb-2">Reset Password</h2>
@@ -375,7 +374,6 @@ function ResetPasswordContent() {
                         )}
 
                         <div className="mt-10 text-center space-y-4">
-                            <BackNavLink href="/login">Back to login</BackNavLink>
                             <p className="text-xs text-slate-400">
                                 <Link
                                     href="/privacy"

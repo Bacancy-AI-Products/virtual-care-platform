@@ -10,9 +10,12 @@ import {
     Heart,
     Loader2,
     MessageSquare,
+    Pencil,
+    Save,
     Send,
     Sparkles,
     Stethoscope,
+    X,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -21,6 +24,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { RatingStars, RatingStarsInput } from '@/components/ui/RatingStars';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { FORM_CONTROL_GHOST, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
 export default function PatientFeedbackPage() {
@@ -31,6 +35,7 @@ export default function PatientFeedbackPage() {
     const {
         data: apptData,
         isLoading: loadingAppts,
+        isFetching: fetchingAppts,
         isError: errorAppts,
     } = useQuery({
         queryKey: ['appointments', 'patient', 'all'],
@@ -41,6 +46,7 @@ export default function PatientFeedbackPage() {
     const {
         data: myReviewsData,
         isLoading: loadingReviews,
+        isFetching: fetchingReviews,
         isError: errorReviews,
     } = useQuery({
         queryKey: ['reviews', 'mine'],
@@ -72,15 +78,20 @@ export default function PatientFeedbackPage() {
     const otherPending = pending.slice(1);
     const myReviews = myReviewsData?.data ?? [];
 
-    if (!mounted || loadingAppts || loadingReviews) {
-        return (
-            <div className="flex justify-center py-24">
-                <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-            </div>
-        );
+    const showLoader =
+        !mounted ||
+        loadingAppts ||
+        loadingReviews ||
+        (fetchingAppts && !apptData) ||
+        (fetchingReviews && !myReviewsData);
+    const showError =
+        !showLoader && ((errorAppts && !apptData) || (errorReviews && !myReviewsData));
+
+    if (showLoader) {
+        return <LoadingState message="Loading your feedback…" />;
     }
 
-    if (errorAppts || errorReviews) {
+    if (showError) {
         return (
             <div className="py-10">
                 <ErrorState message="Failed to load your feedback. Try again in a moment." />
@@ -460,6 +471,12 @@ function MyReviewsCard({ reviews }: { reviews: MyReview[] }) {
 }
 
 function MyReviewRow({ review }: { review: MyReview }) {
+    const qClient = useQueryClient();
+    const [isEditing, setIsEditing] = React.useState(false);
+    const [rating, setRating] = React.useState(review.rating);
+    const [comment, setComment] = React.useState(review.comment ?? '');
+    const [error, setError] = React.useState<string | null>(null);
+
     const initials = review.doctor.name
         .replace(/^Dr\.?\s*/, '')
         .split(' ')
@@ -467,6 +484,29 @@ function MyReviewRow({ review }: { review: MyReview }) {
         .map((n) => n[0])
         .join('')
         .toUpperCase();
+
+    const mutation = useMutation({
+        mutationFn: () =>
+            reviewsApi.update(review.appointmentId, {
+                rating,
+                comment: comment.trim() || null,
+            }),
+        onSuccess: () => {
+            setIsEditing(false);
+            setError(null);
+            qClient.invalidateQueries({ queryKey: ['reviews', 'mine'] });
+            qClient.invalidateQueries({ queryKey: ['doctor', review.doctor.id] });
+        },
+        onError: (err: Error) => setError(err.message),
+    });
+
+    const cancelEdit = () => {
+        setRating(review.rating);
+        setComment(review.comment ?? '');
+        setError(null);
+        setIsEditing(false);
+    };
+
     return (
         <li className="rounded-3xl border border-slate-100 bg-slate-50/40 p-4 sm:p-5">
             <div className="flex items-start gap-3 sm:gap-4">
@@ -484,17 +524,102 @@ function MyReviewRow({ review }: { review: MyReview }) {
                                 {format(new Date(review.visitDate), 'MMM d, yyyy')}
                             </p>
                         </div>
-                        <p className="text-xs text-slate-400 font-medium flex-shrink-0">
-                            Posted {format(new Date(review.createdAt), 'MMM d, yyyy')}
-                        </p>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                            <p className="text-xs text-slate-400 font-medium">
+                                Posted {format(new Date(review.createdAt), 'MMM d, yyyy')}
+                            </p>
+                            {!isEditing && (
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditing(true)}
+                                    className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-brand-600 transition-all"
+                                >
+                                    <Pencil className="w-3 h-3" /> Edit
+                                </button>
+                            )}
+                        </div>
                     </div>
-                    <div className="mt-1.5">
-                        <RatingStars value={review.rating} size="sm" showValue />
-                    </div>
-                    {review.comment && (
-                        <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-                            {review.comment}
-                        </p>
+
+                    {isEditing ? (
+                        <div className="mt-3 space-y-3">
+                            <div>
+                                <p className="text-xs font-bold text-slate-700 mb-1.5">
+                                    Update your rating
+                                </p>
+                                <RatingStarsInput
+                                    value={rating}
+                                    onChange={setRating}
+                                    disabled={mutation.isPending}
+                                />
+                            </div>
+                            <div>
+                                <p className="text-xs font-bold text-slate-700 mb-1.5">
+                                    Update your comment{' '}
+                                    <span className="font-medium text-slate-400">(optional)</span>
+                                </p>
+                                <textarea
+                                    rows={3}
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)}
+                                    maxLength={2000}
+                                    className={`${FORM_CONTROL_GHOST} resize-none`}
+                                    {...NO_BROWSER_INPUT_HELPERS}
+                                />
+                                <p className="mt-1 text-[11px] text-slate-400 font-medium text-right">
+                                    {comment.length}/2000
+                                </p>
+                            </div>
+                            {error && (
+                                <div className="flex items-center gap-2 p-2.5 bg-red-50 rounded-xl text-red-500 text-xs font-medium">
+                                    <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                                    {error}
+                                </div>
+                            )}
+                            <div className="flex flex-wrap items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setError(null);
+                                        if (rating < 1) {
+                                            setError('Please pick a star rating.');
+                                            return;
+                                        }
+                                        mutation.mutate();
+                                    }}
+                                    disabled={rating < 1 || mutation.isPending}
+                                    className="inline-flex items-center gap-1.5 rounded-2xl bg-brand-500 px-4 py-2 text-xs font-bold text-white shadow-md shadow-brand-100 hover:bg-brand-600 transition-all active:scale-95 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed"
+                                >
+                                    {mutation.isPending ? (
+                                        <>
+                                            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Saving…
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Save className="w-3.5 h-3.5" /> Save changes
+                                        </>
+                                    )}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={cancelEdit}
+                                    disabled={mutation.isPending}
+                                    className="inline-flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all disabled:opacity-60"
+                                >
+                                    <X className="w-3.5 h-3.5" /> Cancel
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="mt-1.5">
+                                <RatingStars value={review.rating} size="sm" showValue />
+                            </div>
+                            {review.comment && (
+                                <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+                                    {review.comment}
+                                </p>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

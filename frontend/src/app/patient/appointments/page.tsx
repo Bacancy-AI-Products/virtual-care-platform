@@ -11,7 +11,6 @@ import {
     AlertCircle,
     Plus,
     Loader2,
-    RotateCw,
     ChevronLeft,
     ChevronRight,
     Star,
@@ -25,6 +24,7 @@ import {
     type SpecializationOption,
 } from '@/services/api';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
 
 const PAGE_SIZE = 6;
 
@@ -254,10 +254,13 @@ export default function PatientAppointments() {
         return map;
     }, [specializationData]);
 
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading, isFetching, isError } = useQuery({
         queryKey: ['appointments', 'patient', 'all'],
         queryFn: () => appointmentsApi.list({ limit: 100 }),
     });
+
+    const showLoader = isLoading || (isFetching && !data);
+    const showError = !showLoader && isError && !data;
 
     const cancelMutation = useMutation({
         mutationFn: (id: string) => appointmentsApi.cancel(id),
@@ -303,18 +306,6 @@ export default function PatientAppointments() {
                     </p>
                 </div>
                 <div className="flex w-full min-w-0 flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-                    <button
-                        type="button"
-                        onClick={() =>
-                            qClient.invalidateQueries({
-                                queryKey: ['appointments', 'patient', 'all'],
-                            })
-                        }
-                        className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 px-6 text-sm font-bold text-slate-600 transition-all hover:bg-slate-50 active:scale-95 sm:w-auto"
-                    >
-                        <RotateCw className="h-5 w-5 shrink-0" />
-                        Refresh
-                    </button>
                     <Link
                         href="/patient/doctors"
                         className="inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-brand-500 px-6 text-sm font-bold text-white shadow-xl shadow-brand-100 transition-all hover:bg-brand-600 active:scale-95 sm:w-auto"
@@ -349,15 +340,11 @@ export default function PatientAppointments() {
             </div>
 
             {/* Content */}
-            {isLoading && (
-                <div className="flex justify-center py-24">
-                    <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-                </div>
-            )}
+            {showLoader && <LoadingState message="Loading appointments…" />}
 
-            {isError && <ErrorState message="Failed to load appointments." />}
+            {showError && <ErrorState message="Failed to load appointments." />}
 
-            {!isLoading && !isError && (
+            {!showLoader && !showError && (
                 <div className="space-y-4">
                     <div className="grid gap-6">
                         {filtered.length === 0 ? (

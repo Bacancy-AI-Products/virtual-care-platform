@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { format } from 'date-fns';
-import { Loader2, MessageSquare, Star } from 'lucide-react';
+import { MessageSquare, Star } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import { doctorsApi, reviewsApi, type DoctorReview, type ReviewsSummary } from '@/services/api';
@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { RatingStars } from '@/components/ui/RatingStars';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { LoadingState } from '@/components/ui/LoadingState';
 
 type RatingFilter = 'all' | 1 | 2 | 3 | 4 | 5;
 const PAGE_SIZE = 20;
@@ -18,7 +19,12 @@ export default function DoctorReviewsPage() {
     const { token, user } = useAuth();
     const [filter, setFilter] = React.useState<RatingFilter>('all');
 
-    const { data: profile } = useQuery({
+    const {
+        data: profile,
+        isLoading: profileLoading,
+        isFetching: profileFetching,
+        isError: profileError,
+    } = useQuery({
         queryKey: ['doctor', 'me'],
         queryFn: () => doctorsApi.getMe(),
         enabled: !!token && user?.role === 'DOCTOR',
@@ -26,11 +32,19 @@ export default function DoctorReviewsPage() {
 
     const doctorId = profile?.id;
 
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading, isFetching, isError } = useQuery({
         queryKey: ['doctor', doctorId, 'reviews', 'all'],
         queryFn: () => reviewsApi.listByDoctor(doctorId!, { page: 1, limit: PAGE_SIZE }),
         enabled: !!doctorId,
     });
+
+    const showLoader =
+        profileLoading ||
+        (profileFetching && !profile) ||
+        isLoading ||
+        (isFetching && !data) ||
+        !profile;
+    const showError = !showLoader && ((profileError && !profile) || (isError && !data));
 
     const summary = data?.summary;
     const allReviews = data?.data ?? [];
@@ -52,17 +66,13 @@ export default function DoctorReviewsPage() {
                 </p>
             </div>
 
-            {isLoading && (
-                <div className="flex justify-center py-24">
-                    <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-                </div>
-            )}
+            {showLoader && <LoadingState message="Loading reviews…" />}
 
-            {!isLoading && isError && (
+            {showError && (
                 <ErrorState message="Failed to load your reviews. Try again in a moment." />
             )}
 
-            {!isLoading && !isError && summary && summary.reviewCount === 0 && (
+            {!showLoader && !showError && summary && summary.reviewCount === 0 && (
                 <EmptyState
                     icon={<MessageSquare className="w-12 h-12 text-slate-300" />}
                     title="No reviews yet"
@@ -70,7 +80,7 @@ export default function DoctorReviewsPage() {
                 />
             )}
 
-            {!isLoading && !isError && summary && summary.reviewCount > 0 && (
+            {!showLoader && !showError && summary && summary.reviewCount > 0 && (
                 <>
                     <SummaryCard summary={summary} />
 

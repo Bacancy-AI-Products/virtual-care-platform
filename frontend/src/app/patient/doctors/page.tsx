@@ -31,6 +31,7 @@ import {
 import { twMerge } from 'tailwind-merge';
 import { RatingStars } from '@/components/ui/RatingStars';
 import { VerificationBadge } from '@/components/ui/VerificationBadge';
+import { LoadingState } from '@/components/ui/LoadingState';
 
 /** Server page size for the doctors grid (3 columns × 3 rows at xl). */
 const PAGE_SIZE = 9;
@@ -260,6 +261,8 @@ function DoctorDiscoveryContent() {
     const limit = data?.limit ?? PAGE_SIZE;
     const totalPages = Math.max(1, Math.ceil(total / limit));
     const showResultsLoadingOverlay = isFetching && !isLoading;
+    const showLoader = isLoading || (isFetching && !data);
+    const showError = !showLoader && isError && !data;
     const paginationItems = React.useMemo(
         () => getPaginationItems(totalPages, page),
         [totalPages, page],
@@ -459,13 +462,9 @@ function DoctorDiscoveryContent() {
                     )}
                 </div>
 
-                {isLoading && (
-                    <div className="flex justify-center py-24">
-                        <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-                    </div>
-                )}
+                {showLoader && <LoadingState message="Loading doctors…" />}
 
-                {isError && (
+                {showError && (
                     <div className="p-6 sm:p-12 bg-red-50 rounded-3xl sm:rounded-[40px] text-center">
                         <p className="text-red-500 font-bold mb-6">
                             Failed to load doctors. Please try again.
@@ -484,7 +483,7 @@ function DoctorDiscoveryContent() {
                     </div>
                 )}
 
-                {!isLoading && !isError && doctors.length === 0 && (
+                {!showLoader && !showError && doctors.length === 0 && (
                     <div className="p-8 sm:p-20 bg-white rounded-3xl sm:rounded-[40px] border border-dashed border-slate-200 text-center">
                         <Search className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                         <h4 className="text-xl font-bold text-slate-900 mb-2">No doctors found</h4>
@@ -494,7 +493,7 @@ function DoctorDiscoveryContent() {
                     </div>
                 )}
 
-                {!isLoading && !isError && doctors.length > 0 && (
+                {!showLoader && !showError && doctors.length > 0 && (
                     <div
                         className="relative space-y-6 w-full max-w-full"
                         aria-busy={showResultsLoadingOverlay}
