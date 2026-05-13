@@ -4,10 +4,16 @@ export interface PatientProfile {
     id: string;
     dateOfBirth: string | null;
     gender: string | null;
+    phone: string | null;
     bloodGroup: string | null;
-    allergies: string | null;
-    chronicConditions: string | null;
-    user: { id: string; name: string; email: string };
+    height: number | null;
+    weight: number | string | null;
+    emergencyContactName: string | null;
+    emergencyContactPhone: string | null;
+    city: string | null;
+    state: string | null;
+    address: string | null;
+    user: { name: string; email: string };
 }
 
 export const patientsApi = {

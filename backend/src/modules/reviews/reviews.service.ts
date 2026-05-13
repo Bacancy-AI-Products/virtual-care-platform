@@ -168,6 +168,64 @@ export async function createReviewForAppointment(
     };
 }
 
+export interface UpdateReviewInput {
+    rating?: number;
+    comment?: string | null;
+}
+
+/**
+ * Patient updates their own review on a completed appointment.
+ * Enforces: appointment exists, belongs to caller, review exists.
+ */
+export async function updateReviewForAppointment(
+    appointmentId: string,
+    userId: string,
+    data: UpdateReviewInput,
+): Promise<PublicReview> {
+    const appointment = await prisma.appointment.findUnique({
+        where: { id: appointmentId },
+        select: {
+            id: true,
+            patient: { select: { userId: true } },
+            review: { select: { id: true } },
+        },
+    });
+
+    if (!appointment) {
+        throw new AppError('Appointment not found', 404, 'NOT_FOUND');
+    }
+    if (appointment.patient.userId !== userId) {
+        throw new AppError('You can only edit your own review', 403, 'FORBIDDEN');
+    }
+    if (!appointment.review) {
+        throw new AppError('No review to update', 404, 'NOT_FOUND');
+    }
+
+    const updates: { rating?: number; comment?: string | null } = {};
+    if (data.rating !== undefined) updates.rating = data.rating;
+    if (data.comment !== undefined) updates.comment = data.comment;
+
+    const review = await prisma.review.update({
+        where: { id: appointment.review.id },
+        data: updates,
+        select: {
+            id: true,
+            rating: true,
+            comment: true,
+            createdAt: true,
+            patient: { select: { user: { select: { name: true } } } },
+        },
+    });
+
+    return {
+        id: review.id,
+        rating: review.rating,
+        comment: review.comment,
+        createdAt: review.createdAt,
+        patient: { name: review.patient.user.name },
+    };
+}
+
 /**
  * Did this user already review this appointment? Used by the UI to show
  * "Write a review" vs "View your review" on completed appointments.

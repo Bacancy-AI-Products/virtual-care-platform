@@ -27,6 +27,11 @@ export interface CreateReviewInput {
     comment?: string | null;
 }
 
+export interface UpdateReviewInput {
+    rating?: number;
+    comment?: string | null;
+}
+
 /** A review the calling patient has submitted, with doctor context. */
 export interface MyReview {
     id: string;
@@ -75,6 +80,13 @@ export const reviewsApi = {
     create: (appointmentId: string, data: CreateReviewInput) =>
         request<DoctorReview>(`/appointments/${appointmentId}/review`, {
             method: 'POST',
+            body: JSON.stringify(data),
+        }),
+
+    /** Update the review previously submitted for this appointment. */
+    update: (appointmentId: string, data: UpdateReviewInput) =>
+        request<DoctorReview>(`/appointments/${appointmentId}/review`, {
+            method: 'PATCH',
             body: JSON.stringify(data),
         }),
 };

@@ -14,7 +14,7 @@ export function PublicHeader({ bordered }: PublicHeaderProps) {
             }`}
         >
             <div className="min-w-0 shrink">
-                <BrandLogo href="/doctors" />
+                <BrandLogo href="/" />
             </div>
             <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
                 <Link

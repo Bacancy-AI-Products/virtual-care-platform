@@ -9,7 +9,6 @@ import { authApi } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { BrandLogo } from '@/components/BrandLogo';
 import { AuthVisualPanel } from '@/components/AuthVisualPanel';
-import { BackToHomeLink } from '@/components/BackToHomeLink';
 import {
     FORM_CONTROL_LEADING_ICON,
     FORM_AUTH_PRIMARY_BUTTON,
@@ -91,13 +90,9 @@ export default function LoginPage() {
                 {/* Left Side - Form */}
                 <div className="flex-1 flex flex-col min-h-0 px-6 py-6 lg:py-12 lg:px-24 bg-white relative lg:overflow-y-auto">
                     {/* Mobile top bar */}
-                    <div className="flex items-center justify-between lg:hidden mb-6 shrink-0">
-                        <BackToHomeLink className="lg:hidden">Back</BackToHomeLink>
-                        <BrandLogo />
+                    <div className="flex items-center lg:hidden mb-6 shrink-0">
+                        <BrandLogo href="/" />
                     </div>
-
-                    {/* Desktop back button */}
-                    <BackToHomeLink desktopFixed>Back to home</BackToHomeLink>
 
                     <div className="flex-1 flex flex-col justify-center">
                         <motion.div
@@ -108,7 +103,7 @@ export default function LoginPage() {
                         >
                             {/* Desktop BrandLogo */}
                             <div className="hidden lg:flex mb-10">
-                                <BrandLogo />
+                                <BrandLogo href="/" />
                             </div>
 
                             <h2 className="text-3xl font-bold text-slate-900 mb-2">

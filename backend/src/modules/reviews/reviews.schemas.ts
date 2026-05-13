@@ -23,3 +23,12 @@ export const createReviewSchema = z.object({
     rating: z.number().int().min(1).max(5),
     comment: z.string().max(2000).optional().nullable(),
 });
+
+export const updateReviewSchema = z
+    .object({
+        rating: z.number().int().min(1).max(5).optional(),
+        comment: z.string().max(2000).optional().nullable(),
+    })
+    .refine((d) => d.rating !== undefined || d.comment !== undefined, {
+        message: 'Provide rating or comment to update',
+    });

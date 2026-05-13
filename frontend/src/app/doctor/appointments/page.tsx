@@ -13,7 +13,6 @@ import {
     ClockIcon,
     PhoneCall,
     AlertTriangle,
-    RotateCw,
     ChevronLeft,
     ChevronRight,
 } from 'lucide-react';
@@ -24,6 +23,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { LoadingState } from '@/components/ui/LoadingState';
 
 const PAGE_SIZE = 6;
 
@@ -489,11 +489,14 @@ export default function DoctorAppointments() {
     } | null>(null);
     const [page, setPage] = React.useState(1);
 
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading, isFetching, isError } = useQuery({
         queryKey: ['appointments', 'doctor', 'all'],
         queryFn: () => appointmentsApi.list({ limit: 100 }),
         enabled: !!token,
     });
+
+    const showLoader = isLoading || (isFetching && !data);
+    const showError = !showLoader && isError && !data;
 
     const all = data?.data ?? [];
 
@@ -569,18 +572,6 @@ export default function DoctorAppointments() {
                     </p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                    <button
-                        type="button"
-                        onClick={() =>
-                            qClient.invalidateQueries({
-                                queryKey: ['appointments', 'doctor', 'all'],
-                            })
-                        }
-                        className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50 active:scale-95 transition-all"
-                    >
-                        <RotateCw className="w-4 h-4" />
-                        Refresh
-                    </button>
                     {counts.pendingRequests > 0 && (
                         <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-2xl">
                             <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
@@ -628,17 +619,13 @@ export default function DoctorAppointments() {
             </div>
 
             {/* Loading */}
-            {isLoading && (
-                <div className="flex justify-center py-24">
-                    <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-                </div>
-            )}
+            {showLoader && <LoadingState message="Loading appointments…" />}
 
             {/* Error */}
-            {isError && <ErrorState message="Failed to load appointments." />}
+            {showError && <ErrorState message="Failed to load appointments." />}
 
             {/* Content */}
-            {!isLoading && !isError && (
+            {!showLoader && !showError && (
                 <div className="space-y-4">
                     <div className="grid gap-4">
                         <AnimatePresence mode="popLayout">

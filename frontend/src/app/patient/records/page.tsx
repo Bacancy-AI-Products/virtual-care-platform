@@ -25,6 +25,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { FORM_CONTROL_SEARCH_ON_WHITE, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { LoadingState } from '@/components/ui/LoadingState';
 
 // ─── Canvas prescription generator ───────────────────────────────────────────
 
@@ -321,11 +322,14 @@ export default function MedicalRecords() {
     const qClient = useQueryClient();
     const [search, setSearch] = useState('');
 
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading, isFetching, isError } = useQuery({
         queryKey: ['prescriptions', 'mine', 50],
         queryFn: () => prescriptionsApi.getMine({ limit: 50 }),
         enabled: !!token,
     });
+
+    const showLoader = isLoading || (isFetching && !data);
+    const showError = !showLoader && isError && !data;
 
     const prescriptions = data?.prescriptions ?? [];
 
@@ -372,7 +376,7 @@ export default function MedicalRecords() {
                         Medical Records
                     </h2>
                     <p className="text-slate-500 font-medium">
-                        {isLoading
+                        {showLoader
                             ? 'Loading...'
                             : `${prescriptions.length} prescription${prescriptions.length !== 1 ? 's' : ''} from your consultations`}
                     </p>
@@ -393,17 +397,13 @@ export default function MedicalRecords() {
             </div>
 
             {/* Loading */}
-            {isLoading && (
-                <div className="flex justify-center py-24">
-                    <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-                </div>
-            )}
+            {showLoader && <LoadingState message="Loading records…" />}
 
             {/* Error */}
-            {isError && <ErrorState message="Failed to load records." />}
+            {showError && <ErrorState message="Failed to load records." />}
 
             {/* Empty */}
-            {!isLoading && !isError && filtered.length === 0 && (
+            {!showLoader && !showError && filtered.length === 0 && (
                 <EmptyState
                     icon={<ClipboardList className="w-12 h-12 text-slate-300" />}
                     title="No prescriptions yet"
@@ -412,7 +412,7 @@ export default function MedicalRecords() {
             )}
 
             {/* Prescriptions grid */}
-            {!isLoading && !isError && filtered.length > 0 && (
+            {!showLoader && !showError && filtered.length > 0 && (
                 <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {filtered.map((rx) => (
                         <PrescriptionCard

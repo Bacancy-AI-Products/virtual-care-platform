@@ -17,7 +17,6 @@ import {
     Settings,
     ClipboardList,
     Star,
-    TrendingUp,
     MessageSquare,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
@@ -68,7 +67,6 @@ const doctorNav: NavItem[] = [
     { to: '/doctor/patients', icon: Users, label: 'Patient Records' },
     { to: '/doctor/prescriptions', icon: FileText, label: 'Prescriptions' },
     { to: '/doctor/reviews', icon: Star, label: 'Reviews' },
-    { to: '/doctor/insights', icon: TrendingUp, label: 'Insights' },
     { to: '/doctor/profile', icon: User, label: 'Profile' },
 ];
 
@@ -116,11 +114,6 @@ const PREFETCH_MAP: Record<string, (qc: ReturnType<typeof useQueryClient>) => vo
         qc.prefetchQuery({
             queryKey: ['prescriptions', 'mine'],
             queryFn: () => prescriptionsApi.getMine(),
-        }),
-    '/doctor/insights': (qc) =>
-        qc.prefetchQuery({
-            queryKey: ['appointments', 'doctor', 'all'],
-            queryFn: () => appointmentsApi.list({ limit: 100 }),
         }),
 };
 
@@ -179,6 +172,11 @@ interface LayoutProps {
     role: 'patient' | 'doctor' | 'admin';
 }
 
+/** Active if the current path matches the nav target or is one of its sub-routes. */
+function isNavActive(pathname: string, to: string): boolean {
+    return pathname === to || pathname.startsWith(`${to}/`);
+}
+
 export const Layout = ({ children, role }: LayoutProps) => {
     const pathname = usePathname();
     const router = useRouter();
@@ -207,17 +205,8 @@ export const Layout = ({ children, role }: LayoutProps) => {
         });
     }, []);
 
-    const dashboardPath = `/${role}/dashboard`;
-    const brandLogoHref =
-        role === 'patient'
-            ? '/patient/dashboard'
-            : role === 'doctor'
-              ? '/doctor/dashboard'
-              : '/admin/dashboard';
-
     const displayName = isHydrated && user?.name ? user.name : 'Loading...';
     const avatarSeed = isHydrated && user?.id ? user.id : 'default';
-    const isOnDashboard = pathname === dashboardPath;
 
     const { data: me } = useQuery({
         queryKey: ['users', 'me'],
@@ -290,7 +279,7 @@ export const Layout = ({ children, role }: LayoutProps) => {
     /** Paren + `<div` share one line so SWC never parses `=` newline `<` as an expression. */
     const sidebarLogoRow = (
         <div className="-mx-4 mb-3 flex h-[66px] shrink-0 items-center px-4">
-            <BrandLogo href={brandLogoHref} />
+            <BrandLogo href={null} />
         </div>
     );
 
@@ -313,7 +302,7 @@ export const Layout = ({ children, role }: LayoutProps) => {
                         <SidebarItem
                             key={item.to}
                             {...item}
-                            active={pathname === item.to}
+                            active={isNavActive(pathname, item.to)}
                             onClick={onNavClick}
                         />
                     ))}
@@ -378,23 +367,13 @@ export const Layout = ({ children, role }: LayoutProps) => {
                     </button>
 
                     <div className="min-w-0 flex-1 leading-tight">
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
-                            <time
-                                dateTime={headerDate?.iso}
-                                className="text-sm font-semibold text-slate-800"
-                                suppressHydrationWarning
-                            >
-                                {headerDate?.line ?? '\u00a0'}
-                            </time>
-                            {!isOnDashboard && (
-                                <Link
-                                    href={dashboardPath}
-                                    className="text-xs font-semibold text-brand-600 transition-colors hover:text-brand-800"
-                                >
-                                    Overview
-                                </Link>
-                            )}
-                        </div>
+                        <time
+                            dateTime={headerDate?.iso}
+                            className="text-sm font-semibold text-slate-800"
+                            suppressHydrationWarning
+                        >
+                            {headerDate?.line ?? '\u00a0'}
+                        </time>
                         <p className="mt-0.5 hidden truncate text-xs leading-snug text-slate-500 sm:block">
                             {ROLE_HEADER_TAGLINE[role]}
                         </p>
@@ -468,7 +447,7 @@ export const Layout = ({ children, role }: LayoutProps) => {
                             <Sidebar
                                 header={
                                     <div className="-mx-4 mb-3 flex h-[66px] shrink-0 items-center justify-between gap-2 px-4">
-                                        <BrandLogo href={brandLogoHref} />
+                                        <BrandLogo href={null} />
                                         <button
                                             type="button"
                                             onClick={() => setIsMobileMenuOpen(false)}

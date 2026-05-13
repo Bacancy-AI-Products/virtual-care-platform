@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import {
     FileText,
-    Loader2,
     Search,
     Pill,
     Calendar,
@@ -19,6 +18,7 @@ import { prescriptionsApi, type Prescription } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { FORM_CONTROL_SEARCH_ON_WHITE, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
 const PAGE_SIZE = 10;
@@ -29,11 +29,14 @@ export default function DoctorPrescriptionsPage() {
     const [expanded, setExpanded] = React.useState<Set<string>>(new Set());
     const [page, setPage] = React.useState(1);
 
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading, isFetching, isError } = useQuery({
         queryKey: ['prescriptions', 'mine'],
         queryFn: () => prescriptionsApi.getMine({ limit: 500 }),
         enabled: !!token && user?.role === 'DOCTOR',
     });
+
+    const showLoader = isLoading || (isFetching && !data);
+    const showError = !showLoader && isError && !data;
 
     const prescriptions = React.useMemo(() => {
         const list = data?.prescriptions ?? [];
@@ -78,7 +81,7 @@ export default function DoctorPrescriptionsPage() {
                         Prescriptions
                     </h2>
                     <p className="text-slate-500 font-medium text-sm sm:text-base">
-                        {isLoading
+                        {showLoader
                             ? 'Loading...'
                             : `${prescriptions.length} prescription${prescriptions.length === 1 ? '' : 's'} you've issued${search.trim() ? ' (filtered)' : ''}`}
                     </p>
@@ -97,15 +100,11 @@ export default function DoctorPrescriptionsPage() {
                 </div>
             </div>
 
-            {isLoading && (
-                <div className="flex justify-center py-24">
-                    <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
-                </div>
-            )}
+            {showLoader && <LoadingState message="Loading prescriptions…" />}
 
-            {isError && <ErrorState message="Failed to load prescriptions." />}
+            {showError && <ErrorState message="Failed to load prescriptions." />}
 
-            {!isLoading && !isError && prescriptions.length === 0 && (
+            {!showLoader && !showError && prescriptions.length === 0 && (
                 <EmptyState
                     icon={<FileText className="w-12 h-12 text-slate-300" />}
                     title={search.trim() ? 'No matches' : 'No prescriptions yet'}
@@ -117,7 +116,7 @@ export default function DoctorPrescriptionsPage() {
                 />
             )}
 
-            {!isLoading && !isError && prescriptions.length > 0 && (
+            {!showLoader && !showError && prescriptions.length > 0 && (
                 <>
                     <ul className="space-y-3 sm:space-y-4">
                         {paged.map((rx) => (

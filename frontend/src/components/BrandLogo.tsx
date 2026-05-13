@@ -8,13 +8,15 @@ import Image from 'next/image';
 const LOGO_MARK_SRC = '/branding/bacancy-logo-without-name.png';
 
 interface BrandLogoProps {
-    href?: string;
+    /** Pass null to render as a plain element (no navigation). */
+    href?: string | null;
     compact?: boolean;
 }
 
 export function BrandLogo({ href = '/doctors', compact }: BrandLogoProps) {
-    return (
-        <Link href={href} className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+    const wrapperClass = 'flex items-center gap-2 sm:gap-2.5 min-w-0';
+    const inner = (
+        <>
             <Image
                 src={LOGO_MARK_SRC}
                 alt="Bacancy"
@@ -34,6 +36,16 @@ export function BrandLogo({ href = '/doctors', compact }: BrandLogoProps) {
             >
                 BacancyTeleCare
             </span>
+        </>
+    );
+
+    if (href === null) {
+        return <div className={wrapperClass}>{inner}</div>;
+    }
+
+    return (
+        <Link href={href} className={wrapperClass}>
+            {inner}
         </Link>
     );
 }

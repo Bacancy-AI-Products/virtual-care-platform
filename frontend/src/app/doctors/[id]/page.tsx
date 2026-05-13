@@ -107,14 +107,6 @@ export default function PublicDoctorProfilePage() {
                     transition={{ duration: 0.4 }}
                     className="space-y-8"
                 >
-                    <Link
-                        href="/doctors"
-                        className="inline-flex items-center gap-2 text-slate-500 hover:text-brand-500 transition-colors font-bold group"
-                    >
-                        <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
-                        Back to doctors
-                    </Link>
-
                     {/* Doctor info only (no slots, no booking for guests) */}
                     <div className="bg-white p-8 sm:p-10 rounded-[48px] border border-slate-100 shadow-sm relative overflow-hidden">
                         <div className="flex flex-col md:flex-row gap-8 md:gap-10 items-start relative z-10">

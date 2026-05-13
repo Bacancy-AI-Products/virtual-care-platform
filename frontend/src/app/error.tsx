@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
-import { RefreshCw, ChevronLeft, LifeBuoy } from 'lucide-react';
+import { RefreshCw, LifeBuoy } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 
 export default function GlobalError({
@@ -44,7 +43,7 @@ export default function GlobalError({
             </div>
 
             <header className="relative z-10 mx-auto w-full max-w-7xl px-4 py-5 sm:px-6">
-                <BrandLogo />
+                <BrandLogo href="/" />
             </header>
 
             <main className="relative z-10 flex min-h-[calc(100vh-84px)] items-center justify-center px-4 pb-8 sm:px-6 sm:pb-10">
@@ -136,13 +135,6 @@ export default function GlobalError({
                                                     <RefreshCw className="h-4 w-4 transition-transform group-hover:rotate-90" />
                                                     Try again
                                                 </button>
-                                                <Link
-                                                    href="/"
-                                                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50 active:scale-[0.98]"
-                                                >
-                                                    <ChevronLeft className="h-4 w-4" />
-                                                    Back to home
-                                                </Link>
                                             </div>
 
                                             <button

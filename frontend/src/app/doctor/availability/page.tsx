@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { doctorsApi, type AvailabilitySlot, type AvailabilitySlotInput } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { LoadingState } from '@/components/ui/LoadingState';
 import { Clock, Calendar, Plus, Trash2 } from 'lucide-react';
 import { NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 
@@ -30,11 +31,14 @@ export default function DoctorAvailabilityPage() {
     const router = useRouter();
     const qClient = useQueryClient();
 
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading, isFetching, isError } = useQuery({
         queryKey: ['doctor', 'me', 'availability'],
         queryFn: () => doctorsApi.getMyAvailability(),
         enabled: !!token && user?.role === 'DOCTOR',
     });
+
+    const showLoader = isLoading || (isFetching && !data);
+    const showError = !showLoader && isError && !data;
 
     const [local, setLocal] = React.useState<AvailabilitySlotInput[][]>(
         Array.from({ length: 7 }, (_, weekday) => [
@@ -137,15 +141,11 @@ export default function DoctorAvailabilityPage() {
                 </button>
             </div>
 
-            {isLoading && (
-                <div className="flex justify-center py-24">
-                    <p className="text-slate-500 font-medium">Loading availability...</p>
-                </div>
-            )}
+            {showLoader && <LoadingState message="Loading availability…" />}
 
-            {isError && <ErrorState message="Failed to load availability." />}
+            {showError && <ErrorState message="Failed to load availability." />}
 
-            {!isLoading && !isError && (
+            {!showLoader && !showError && (
                 <div className="grid lg:grid-cols-2 gap-6">
                     {WEEKDAYS.map((label, weekday) => (
                         <div

@@ -35,6 +35,7 @@ import {
 import { DoctorTrustStrip } from '@/components/doctor/DoctorTrustStrip';
 import { CredentialList } from '@/components/doctor/CredentialList';
 import { VerificationBadge } from '@/components/ui/VerificationBadge';
+import { LoadingState } from '@/components/ui/LoadingState';
 
 export default function DoctorProfile() {
     const { user, token } = useAuth();
@@ -51,12 +52,16 @@ export default function DoctorProfile() {
     const {
         data: profile,
         isLoading,
+        isFetching,
         isError,
     } = useQuery({
         queryKey: ['doctor', 'me'],
         queryFn: () => doctorsApi.getMe(),
         enabled: !!token && user?.role === 'DOCTOR',
     });
+
+    const showLoader = isLoading || (isFetching && !profile);
+    const showError = !showLoader && isError && !profile;
 
     const { data: specializationData } = useQuery({
         queryKey: ['doctor', 'specializations'],
@@ -199,12 +204,8 @@ export default function DoctorProfile() {
         }));
     };
 
-    if (!mounted || isLoading) {
-        return (
-            <div className="flex justify-center py-24">
-                <p className="text-slate-500 font-medium">Loading profile...</p>
-            </div>
-        );
+    if (!mounted || showLoader) {
+        return <LoadingState message="Loading profile…" />;
     }
 
     if (!token || user?.role !== 'DOCTOR') {
@@ -212,7 +213,7 @@ export default function DoctorProfile() {
         return null;
     }
 
-    if (isError || !profile) {
+    if (showError || !profile) {
         return (
             <div className="flex justify-center py-24">
                 <p className="text-red-500 font-bold">Failed to load profile.</p>
@@ -365,14 +366,17 @@ export default function DoctorProfile() {
                     </div>
 
                     <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm space-y-4">
-                        <h4 className="text-sm font-bold text-slate-900">Trust signals</h4>
-                        <p className="text-xs text-slate-500 font-medium">
-                            How your profile looks to patients searching for a doctor.
-                        </p>
-                        <DoctorTrustStrip
-                            experienceYears={profile.experienceYears}
-                            stats={profile.stats}
-                        />
+                        <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                            <GraduationCap className="w-4 h-4 text-brand-500" /> Credentials &
+                            Education
+                        </h4>
+                        {profile.credentials && profile.credentials.length > 0 ? (
+                            <CredentialList credentials={profile.credentials} />
+                        ) : (
+                            <p className="text-xs text-slate-500 font-medium">
+                                No credentials added yet.
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -603,15 +607,18 @@ export default function DoctorProfile() {
                                 </p>
                             </div>
 
-                            {profile.credentials && profile.credentials.length > 0 && (
-                                <div className="space-y-4 border-t border-slate-50 pt-6">
-                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                                        <GraduationCap className="w-3.5 h-3.5" /> Credentials &
-                                        Education
-                                    </p>
-                                    <CredentialList credentials={profile.credentials} />
-                                </div>
-                            )}
+                            <div className="space-y-4 border-t border-slate-50 pt-6">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                    Trust signals
+                                </p>
+                                <p className="text-xs text-slate-500 font-medium">
+                                    How your profile looks to patients searching for a doctor.
+                                </p>
+                                <DoctorTrustStrip
+                                    experienceYears={profile.experienceYears}
+                                    stats={profile.stats}
+                                />
+                            </div>
 
                             {profile.languages && profile.languages.length > 0 && (
                                 <div className="space-y-2 border-t border-slate-50 pt-6">
