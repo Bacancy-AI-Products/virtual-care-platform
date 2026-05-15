@@ -34,11 +34,10 @@ const notificationSelect = {
 export async function create(userId: string, type: NotificationType, data: CreateNotificationData) {
     // Encrypt PHI fields before persisting
     const encryptedBody = maybeEncrypt(data.body ?? null) ?? null;
-    // metadata is Json? — serialize to string then encrypt; stored as a JSON string value in jsonb
-    const encryptedMetadata =
-        data.metadata != null
-            ? (maybeEncrypt(JSON.stringify(data.metadata)) ?? JSON.stringify(data.metadata))
-            : null;
+    // metadata is `Json?` — wrap the encrypted envelope in `{ enc: "..." }` so the
+    // value is stored as a JSON object (unambiguous round-trip through jsonb)
+    // rather than as a JSON string scalar.
+    const metadataEnvelope = wrapMetadata(data.metadata ?? null);
 
     const notification = await (prisma as any).notification.create({
         data: {
@@ -46,20 +45,32 @@ export async function create(userId: string, type: NotificationType, data: Creat
             type,
             title: data.title,
             body: encryptedBody,
-            metadata: encryptedMetadata, // stored as JSON string value in jsonb column
+            metadata: metadataEnvelope,
         },
         select: notificationSelect,
     });
     return decryptNotification(notification);
 }
 
+/** Encode metadata for persistence: `null` → null, otherwise `{ enc: <ciphertext> }`. */
+function wrapMetadata(meta: Record<string, unknown> | null): { enc: string } | null {
+    if (meta == null) return null;
+    const serialized = JSON.stringify(meta);
+    const enc = maybeEncrypt(serialized) ?? serialized;
+    return { enc };
+}
+
 /** Decrypt PHI fields on a notification record. */
 function decryptNotification<T extends { body?: string | null; metadata?: unknown }>(n: T): T {
     const decryptedBody = maybeDecrypt(n.body as string | null | undefined);
     let decryptedMetadata: unknown = n.metadata;
-    if (typeof n.metadata === 'string') {
-        // Stored as encrypted string in jsonb — decrypt then parse
-        const raw = maybeDecrypt(n.metadata as string);
+    if (
+        n.metadata != null &&
+        typeof n.metadata === 'object' &&
+        'enc' in (n.metadata as Record<string, unknown>) &&
+        typeof (n.metadata as { enc: unknown }).enc === 'string'
+    ) {
+        const raw = maybeDecrypt((n.metadata as { enc: string }).enc);
         try {
             decryptedMetadata = raw != null ? JSON.parse(raw) : null;
         } catch {

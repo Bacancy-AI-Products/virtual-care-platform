@@ -32,13 +32,21 @@ const appointmentSelect = {
     },
 } as const;
 
-/** Decrypt the `reason` PHI field on any appointment-shaped object. */
-function decryptAppointment<T extends { reason?: string | null }>(appt: T): T {
-    return { ...appt, reason: maybeDecrypt(appt.reason) };
+/** Decrypt the PHI fields (`reason`, `declineReason`) on any appointment-shaped object. */
+function decryptAppointment<T extends { reason?: string | null; declineReason?: string | null }>(
+    appt: T,
+): T {
+    return {
+        ...appt,
+        reason: maybeDecrypt(appt.reason),
+        declineReason: maybeDecrypt(appt.declineReason),
+    };
 }
 
-/** Decrypt `reason` on an array of appointments. */
-function decryptAppointments<T extends { reason?: string | null }>(appts: T[]): T[] {
+/** Decrypt PHI on an array of appointments. */
+function decryptAppointments<T extends { reason?: string | null; declineReason?: string | null }>(
+    appts: T[],
+): T[] {
     return appts.map(decryptAppointment);
 }
 
@@ -116,7 +124,9 @@ export async function updateStatus(
         where: { id: appointmentId },
         data: {
             status,
-            ...(status === 'CANCELLED_BY_DOCTOR' ? { declineReason: declineReason ?? null } : {}),
+            ...(status === 'CANCELLED_BY_DOCTOR'
+                ? { declineReason: maybeEncrypt(declineReason ?? null) ?? null }
+                : {}),
         },
         include: {
             patient: { include: { user: { select: { id: true, name: true, email: true } } } },
@@ -131,7 +141,7 @@ export async function updateStatus(
         scheduledAt: updated.scheduledAt,
         status: updated.status,
         reason: maybeDecrypt(updated.reason) ?? null, // decrypt PHI before returning
-        declineReason: updated.declineReason,
+        declineReason: maybeDecrypt(updated.declineReason) ?? null,
         createdAt: updated.createdAt,
         patientUserId: updated.patient.userId,
         patientEmail: updated.patient.user.email,

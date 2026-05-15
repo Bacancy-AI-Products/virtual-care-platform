@@ -24,7 +24,7 @@ function decryptItem<
     };
 }
 
-/** Decrypt the sensitive fields on a prescription (including nested items). */
+/** Decrypt the sensitive fields on a prescription (including nested items + appointment.reason). */
 function decryptPrescription<
     T extends {
         notes?: string | null;
@@ -35,12 +35,16 @@ function decryptPrescription<
             duration?: string | null;
             instructions?: string | null;
         }>;
+        appointment?: { reason?: string | null } | null;
     },
 >(rx: T): T {
     return {
         ...rx,
         notes: maybeDecrypt(rx.notes),
         items: rx.items ? rx.items.map(decryptItem) : rx.items,
+        appointment: rx.appointment
+            ? { ...rx.appointment, reason: maybeDecrypt(rx.appointment.reason) }
+            : rx.appointment,
     };
 }
 

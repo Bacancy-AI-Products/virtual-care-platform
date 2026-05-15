@@ -30,11 +30,24 @@ function enc(value: string | null | undefined): string | null {
     return encryptField(value);
 }
 
-function encJson(value: unknown): string | null {
+/**
+ * Encode a value for the `Notification.metadata` jsonb column.
+ * Result is always `{ enc: "<ciphertext envelope>" }` (matches notifications.service).
+ * Returns null when input is null; returns the value as-is if it already has that shape.
+ */
+function encJson(value: unknown): { enc: string } | null {
     if (value == null) return null;
-    if (typeof value === 'string' && isEncryptedField(value)) return value;
+    if (
+        typeof value === 'object' &&
+        value !== null &&
+        'enc' in value &&
+        typeof (value as { enc: unknown }).enc === 'string' &&
+        isEncryptedField((value as { enc: string }).enc)
+    ) {
+        return value as { enc: string };
+    }
     const str = typeof value === 'string' ? value : JSON.stringify(value);
-    return encryptField(str);
+    return { enc: encryptField(str) };
 }
 
 // ─── Per-model backfill functions ─────────────────────────────────────────────
@@ -47,13 +60,17 @@ async function backfillPatients() {
         const rows = await prisma.patient.findMany({
             take: BATCH,
             skip,
+            orderBy: { id: 'asc' },
             select: {
                 id: true,
                 address: true,
                 phone: true,
                 emergencyContactPhone: true,
+                emergencyContactName: true,
                 dateOfBirth: true,
                 bloodGroup: true,
+                city: true,
+                state: true,
             },
         });
         if (rows.length === 0) break;
@@ -63,8 +80,11 @@ async function backfillPatients() {
                 (row.address && !isEncryptedField(row.address)) ||
                 (row.phone && !isEncryptedField(row.phone)) ||
                 (row.emergencyContactPhone && !isEncryptedField(row.emergencyContactPhone)) ||
+                (row.emergencyContactName && !isEncryptedField(row.emergencyContactName)) ||
                 (row.dateOfBirth && !isEncryptedField(row.dateOfBirth)) ||
-                (row.bloodGroup && !isEncryptedField(row.bloodGroup));
+                (row.bloodGroup && !isEncryptedField(row.bloodGroup)) ||
+                (row.city && !isEncryptedField(row.city)) ||
+                (row.state && !isEncryptedField(row.state));
 
             if (needsUpdate) {
                 await prisma.patient.update({
@@ -73,8 +93,11 @@ async function backfillPatients() {
                         address: enc(row.address),
                         phone: enc(row.phone),
                         emergencyContactPhone: enc(row.emergencyContactPhone),
+                        emergencyContactName: enc(row.emergencyContactName),
                         dateOfBirth: enc(row.dateOfBirth),
                         bloodGroup: enc(row.bloodGroup),
+                        city: enc(row.city),
+                        state: enc(row.state),
                     },
                 });
                 count++;
@@ -93,6 +116,7 @@ async function backfillAppointments() {
         const rows = await prisma.appointment.findMany({
             take: BATCH,
             skip,
+            orderBy: { id: 'asc' },
             select: { id: true, reason: true },
         });
         if (rows.length === 0) break;
@@ -119,6 +143,7 @@ async function backfillPrescriptions() {
         const rows = await prisma.prescription.findMany({
             take: BATCH,
             skip,
+            orderBy: { id: 'asc' },
             select: { id: true, notes: true },
         });
         if (rows.length === 0) break;
@@ -145,6 +170,7 @@ async function backfillPrescriptionItems() {
         const rows = await prisma.prescriptionItem.findMany({
             take: BATCH,
             skip,
+            orderBy: { id: 'asc' },
             select: {
                 id: true,
                 drugName: true,
@@ -191,6 +217,7 @@ async function backfillMessages() {
         const rows = await prisma.message.findMany({
             take: BATCH,
             skip,
+            orderBy: { id: 'asc' },
             select: { id: true, content: true },
         });
         if (rows.length === 0) break;
@@ -217,22 +244,28 @@ async function backfillNotifications() {
         const rows = await (prisma as any).notification.findMany({
             take: BATCH,
             skip,
+            orderBy: { id: 'asc' },
             select: { id: true, body: true, metadata: true },
         });
         if (rows.length === 0) break;
 
         for (const row of rows) {
             const bodyNeedsEnc = row.body && !isEncryptedField(row.body);
-            const metaNeedsEnc =
-                row.metadata != null &&
-                !(typeof row.metadata === 'string' && isEncryptedField(row.metadata));
+            const meta = row.metadata as unknown;
+            const metaAlreadyEnveloped =
+                meta != null &&
+                typeof meta === 'object' &&
+                'enc' in (meta as Record<string, unknown>) &&
+                typeof (meta as { enc: unknown }).enc === 'string' &&
+                isEncryptedField((meta as { enc: string }).enc);
+            const metaNeedsEnc = meta != null && !metaAlreadyEnveloped;
 
             if (bodyNeedsEnc || metaNeedsEnc) {
                 await (prisma as any).notification.update({
                     where: { id: row.id },
                     data: {
                         ...(bodyNeedsEnc ? { body: encryptField(row.body) } : {}),
-                        ...(metaNeedsEnc ? { metadata: encJson(row.metadata) } : {}),
+                        ...(metaNeedsEnc ? { metadata: encJson(meta) } : {}),
                     },
                 });
                 count++;

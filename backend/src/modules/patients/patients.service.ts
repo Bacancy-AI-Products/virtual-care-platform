@@ -4,13 +4,18 @@ import { maybeEncrypt, maybeDecrypt } from '../../utils/crypto';
 import type { Prisma } from '../../../generated/prisma';
 import type { Gender } from '../../../generated/prisma';
 
-// Fields that must be encrypted at rest (HIPAA §164.312(a)(2)(iv))
+// Fields that must be encrypted at rest (HIPAA §164.312(a)(2)(iv)).
+// Includes the demographic identifiers HIPAA classifies as "individually identifiable":
+// name, phone, address, sub-state geography (city, state), DOB, blood group.
 const PHI_STRING_FIELDS = [
     'address',
     'phone',
     'emergencyContactPhone',
+    'emergencyContactName',
     'dateOfBirth',
     'bloodGroup',
+    'city',
+    'state',
 ] as const;
 type PatientPhiField = (typeof PHI_STRING_FIELDS)[number];
 
@@ -124,11 +129,11 @@ export async function updateMyProfile(userId: string, data: UpdatePatientProfile
     if (data.height !== undefined) updateData.height = data.height;
     if (data.weight !== undefined) updateData.weight = data.weight;
     if (data.emergencyContactName !== undefined)
-        updateData.emergencyContactName = data.emergencyContactName;
+        updateData.emergencyContactName = maybeEncrypt(data.emergencyContactName);
     if (data.emergencyContactPhone !== undefined)
         updateData.emergencyContactPhone = maybeEncrypt(data.emergencyContactPhone);
-    if (data.city !== undefined) updateData.city = data.city;
-    if (data.state !== undefined) updateData.state = data.state;
+    if (data.city !== undefined) updateData.city = maybeEncrypt(data.city);
+    if (data.state !== undefined) updateData.state = maybeEncrypt(data.state);
     if (data.address !== undefined) updateData.address = maybeEncrypt(data.address);
 
     const updated = await prisma.patient.update({

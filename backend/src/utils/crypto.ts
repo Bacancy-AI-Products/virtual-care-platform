@@ -50,6 +50,13 @@ export function encryptField(plaintext: string): string {
  * Decrypt a previously encrypted field value.
  * `ciphertext` must be the JSON string produced by `encryptField`.
  * Throws on invalid format, wrong key, or tampered auth tag.
+ *
+ * NOTE: this implementation supports a single active master key. The `k`
+ * (keyId) field embedded in each payload is currently informational — every
+ * row is decrypted with the *current* MASTER_KEY. To rotate the master key
+ * safely, decrypt and re-encrypt all rows with the new key, then bump
+ * KEY_ID. A future phase will add a key registry so old rows can be read
+ * while new writes use a new key.
  */
 export function decryptField(ciphertext: string): string {
     const payload: EncryptedPayload = JSON.parse(ciphertext);

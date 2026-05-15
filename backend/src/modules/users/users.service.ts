@@ -70,7 +70,10 @@ export async function getMe(userId: string) {
               phone: maybeDecrypt(patient.phone),
               dateOfBirth: maybeDecrypt(patient.dateOfBirth),
               bloodGroup: maybeDecrypt(patient.bloodGroup),
+              emergencyContactName: maybeDecrypt(patient.emergencyContactName),
               emergencyContactPhone: maybeDecrypt(patient.emergencyContactPhone),
+              city: maybeDecrypt(patient.city),
+              state: maybeDecrypt(patient.state),
               address: maybeDecrypt(patient.address),
           }
         : undefined;
