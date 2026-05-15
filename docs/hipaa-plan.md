@@ -324,7 +324,7 @@ These cannot be solved in code:
 | Phase | Status | Branch |
 |---|---|---|
 | 0 — Secrets hygiene | ✅ done | `chore/phase0-secrets-hygiene` |
-| 1.1 — Audit logging | ⬜ not started | — |
+| 1.1 — Audit logging | ✅ done | `feature/phase1-audit-logging` |
 | 1.2 — Field encryption | ⬜ not started | — |
 | 1.3 — File encryption | ⬜ not started | — |
 | 1.4 — Security headers | ⬜ not started | — |
