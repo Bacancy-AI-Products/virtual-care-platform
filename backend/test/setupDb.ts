@@ -11,9 +11,13 @@
  * against the test DB once before the suite starts (see `package.json` test scripts).
  */
 import { afterAll, beforeEach } from 'vitest';
+import { prisma } from '../src/db';
 import { disconnectDb, resetDb } from './resetDb';
 
 beforeEach(async () => {
+    // Reconnect in case a prior test file's afterAll disconnected the engine
+    // before the audit-log fire-and-forget writes had settled.
+    await prisma.$connect();
     await resetDb();
 });
 
