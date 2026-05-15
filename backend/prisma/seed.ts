@@ -1122,7 +1122,9 @@ async function main() {
                 emailVerified: true,
                 patient: {
                     create: {
-                        dateOfBirth: p.dob,
+                        // dateOfBirth is now a String column (Phase 1.2 — encrypted at rest).
+                        // Seed writes plain YYYY-MM-DD; the encryption service layer is bypassed.
+                        dateOfBirth: p.dob.toISOString().slice(0, 10),
                         gender: p.gender,
                         bloodGroup: p.bloodGroup,
                         phone: p.phone,
