@@ -2,11 +2,9 @@
   "mcpServers": {
     "github": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
-      }
+      "command": "/bin/zsh",
+      "args": ["-l", "-c", "npx -y @modelcontextprotocol/server-github"],
+      "env": {}
     },
     "playwright": {
       "type": "stdio",
