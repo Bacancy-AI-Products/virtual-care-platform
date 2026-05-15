@@ -5,6 +5,18 @@
 
 ---
 
+## After every phase — mandatory plain-English summary
+
+After completing any implementation phase, always explain:
+1. **What the threat/problem was before** — what could go wrong without this change.
+2. **What was built and how it works** — explain technical concepts simply (no assumed knowledge).
+3. **What it does NOT protect against** — honest limits, so there are no false expectations.
+4. **What to say to an auditor or stakeholder** — a ready-made answer they can use directly.
+
+This applies to every phase, not just HIPAA. Always do this proactively without being asked.
+
+---
+
 ## Scope rules
 
 - Always work strictly within this project directory only.
@@ -27,11 +39,20 @@ Use the GitHub MCP server for all GitHub operations:
 
 Never ask for SSH keys, PAT tokens, or manual authentication unless MCP access fails.
 
-**Push / PR / merge workflow — mandatory:**
+**Commit / push / PR / merge workflow — HARD STOP (no exceptions):**
 
-- **Never push, create a PR, or merge a branch without first summarising the changes and receiving explicit user confirmation.** Show a diff summary (files changed, key changes, branch name, target branch) and wait for a "yes / go ahead" before executing.
-- If CI is running, wait for the full pipeline to pass before calling merge. Fix failures on the branch first.
-- This rule overrides any implicit "go ahead" — always ask, every time.
+> This rule has been violated twice. Any further violation is unacceptable.
+
+**NEVER run `git commit`, `git push`, `gh pr create`, or `gh pr merge` without completing ALL of the following steps first:**
+
+1. **Show a plain-English summary** of every file changed and what was done in each.
+2. **Show the full `git diff --stat`** output (file list + line counts).
+3. **Explicitly ask**: "Can I commit and push?" — use those exact words.
+4. **Wait for the user to reply with a clear "yes" or "go ahead"** before running any git write command.
+
+No implicit approvals. "proceed", "next step", or "continue" does NOT count as approval to commit/push unless the user has just seen the diff summary and explicitly said yes to committing.
+
+If CI is running after a push, wait for the full pipeline to pass before calling merge. Fix failures on the branch first.
 
 ## Testing & verification
 

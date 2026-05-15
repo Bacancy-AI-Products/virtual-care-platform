@@ -1,5 +1,6 @@
 import { prisma } from '../../db';
 import { AppError } from '../../utils/errors';
+import { maybeEncrypt, maybeDecrypt } from '../../utils/crypto';
 
 /** Matches Prisma NotificationType enum; use local type so module compiles before prisma generate. */
 export type NotificationType =
@@ -31,17 +32,41 @@ const notificationSelect = {
  * Caller is responsible for calling emitToUser(userId, notification) after create.
  */
 export async function create(userId: string, type: NotificationType, data: CreateNotificationData) {
+    // Encrypt PHI fields before persisting
+    const encryptedBody = maybeEncrypt(data.body ?? null) ?? null;
+    // metadata is Json? — serialize to string then encrypt; stored as a JSON string value in jsonb
+    const encryptedMetadata =
+        data.metadata != null
+            ? (maybeEncrypt(JSON.stringify(data.metadata)) ?? JSON.stringify(data.metadata))
+            : null;
+
     const notification = await (prisma as any).notification.create({
         data: {
             userId,
             type,
             title: data.title,
-            body: data.body ?? null,
-            metadata: data.metadata ?? null,
+            body: encryptedBody,
+            metadata: encryptedMetadata, // stored as JSON string value in jsonb column
         },
         select: notificationSelect,
     });
-    return notification;
+    return decryptNotification(notification);
+}
+
+/** Decrypt PHI fields on a notification record. */
+function decryptNotification<T extends { body?: string | null; metadata?: unknown }>(n: T): T {
+    const decryptedBody = maybeDecrypt(n.body as string | null | undefined);
+    let decryptedMetadata: unknown = n.metadata;
+    if (typeof n.metadata === 'string') {
+        // Stored as encrypted string in jsonb — decrypt then parse
+        const raw = maybeDecrypt(n.metadata as string);
+        try {
+            decryptedMetadata = raw != null ? JSON.parse(raw) : null;
+        } catch {
+            decryptedMetadata = raw; // fallback: return as-is if not valid JSON
+        }
+    }
+    return { ...n, body: decryptedBody, metadata: decryptedMetadata };
 }
 
 export interface ListForUserOptions {
@@ -63,7 +88,7 @@ export async function listForUser(userId: string, options: ListForUserOptions) {
         orderBy: { createdAt: 'desc' },
         take: limit,
     });
-    return { notifications };
+    return { notifications: notifications.map(decryptNotification) };
 }
 
 /** Get count of unread notifications for a user (for bell badge). */

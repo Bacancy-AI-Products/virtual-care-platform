@@ -7,6 +7,7 @@ import { verifyToken, JwtPayload } from './utils';
 import { prisma } from './db';
 import { connectRedis } from './redis';
 import { logAccess, AuditAction } from './modules/audit/audit.service';
+import { maybeEncrypt, maybeDecrypt } from './utils/crypto';
 
 interface AuthenticatedSocket extends Socket {
     data: {
@@ -106,9 +107,15 @@ export async function initializeSocket(httpServer: HttpServer): Promise<Server> 
                     orderBy: { createdAt: 'asc' },
                 });
 
+                // Decrypt message content before sending to client
+                const decryptedMessages = messages.map((m) => ({
+                    ...m,
+                    content: maybeDecrypt(m.content),
+                }));
+
                 socket.emit('joined', {
                     appointmentId,
-                    messages,
+                    messages: decryptedMessages,
                     role: isDoctor ? 'doctor' : 'patient',
                 });
 
@@ -167,7 +174,7 @@ export async function initializeSocket(httpServer: HttpServer): Promise<Server> 
                         senderId: userId,
                         receiverId,
                         appointmentId,
-                        content: content.trim(),
+                        content: maybeEncrypt(content.trim()) ?? content.trim(), // encrypt PHI
                     },
                     include: {
                         sender: { select: { id: true, name: true, role: true } },
@@ -185,8 +192,10 @@ export async function initializeSocket(httpServer: HttpServer): Promise<Server> 
                     success: true,
                 });
 
+                // Decrypt before broadcasting — clients must receive plaintext
+                const outbound = { ...message, content: maybeDecrypt(message.content) };
                 const roomName = `consultation:${appointmentId}`;
-                io.to(roomName).emit('new-message', message);
+                io.to(roomName).emit('new-message', outbound);
             } catch (error) {
                 console.error('[Socket] Error sending message:', error);
                 socket.emit('error', { message: 'Failed to send message' });

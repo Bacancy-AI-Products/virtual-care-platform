@@ -3,6 +3,7 @@ import { requireAuth, AuthenticatedRequest } from '../../middleware/auth';
 import { auditPhiAccess } from '../../middleware/auditLog';
 import { AuditAction } from '../audit/audit.service';
 import { prisma } from '../../db';
+import { maybeDecrypt } from '../../utils/crypto';
 
 const router = Router();
 
@@ -54,7 +55,7 @@ router.get(
                     senderId: m.senderId,
                     receiverId: m.receiverId,
                     appointmentId: m.appointmentId,
-                    content: m.content,
+                    content: maybeDecrypt(m.content), // decrypt PHI content
                     createdAt: m.createdAt,
                     sender: m.sender,
                 })),

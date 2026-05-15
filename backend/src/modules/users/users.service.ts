@@ -1,5 +1,6 @@
 import { prisma } from '../../db';
 import { AppError } from '../../utils/errors';
+import { maybeDecrypt } from '../../utils/crypto';
 
 const doctorProfileSelect = {
     id: true,
@@ -61,9 +62,22 @@ export async function getMe(userId: string) {
     }
 
     const { doctorProfile, patient, ...base } = user;
+
+    // Decrypt patient PHI fields before returning to caller
+    const decryptedPatient = patient
+        ? {
+              ...patient,
+              phone: maybeDecrypt(patient.phone),
+              dateOfBirth: maybeDecrypt(patient.dateOfBirth),
+              bloodGroup: maybeDecrypt(patient.bloodGroup),
+              emergencyContactPhone: maybeDecrypt(patient.emergencyContactPhone),
+              address: maybeDecrypt(patient.address),
+          }
+        : undefined;
+
     return {
         ...base,
         doctorProfile: doctorProfile ?? undefined,
-        patient: patient ?? undefined,
+        patient: decryptedPatient,
     };
 }

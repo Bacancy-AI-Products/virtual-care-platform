@@ -1,7 +1,48 @@
 import { prisma } from '../../db';
 import { AppError } from '../../utils/errors';
+import { maybeEncrypt, maybeDecrypt } from '../../utils/crypto';
 import type { Prisma } from '../../../generated/prisma';
 import type { Gender } from '../../../generated/prisma';
+
+// Fields that must be encrypted at rest (HIPAA §164.312(a)(2)(iv))
+const PHI_STRING_FIELDS = [
+    'address',
+    'phone',
+    'emergencyContactPhone',
+    'dateOfBirth',
+    'bloodGroup',
+] as const;
+type PatientPhiField = (typeof PHI_STRING_FIELDS)[number];
+
+/** Encrypt all PHI string fields before a Prisma write. */
+function encryptPatientFields<
+    T extends Partial<Record<PatientPhiField, string | null | undefined>>,
+>(data: T): T {
+    const out = { ...data };
+    for (const field of PHI_STRING_FIELDS) {
+        if (field in out) {
+            (out as Record<string, unknown>)[field] = maybeEncrypt(
+                out[field] as string | null | undefined,
+            );
+        }
+    }
+    return out;
+}
+
+/** Decrypt all PHI string fields after a Prisma read. */
+function decryptPatientFields<
+    T extends Partial<Record<PatientPhiField, string | null | undefined>>,
+>(record: T): T {
+    const out = { ...record };
+    for (const field of PHI_STRING_FIELDS) {
+        if (field in out) {
+            (out as Record<string, unknown>)[field] = maybeDecrypt(
+                out[field] as string | null | undefined,
+            );
+        }
+    }
+    return out;
+}
 
 const patientFullSelect = {
     id: true,
@@ -55,7 +96,7 @@ async function getDoctorId(userId: string): Promise<string | null> {
 
 export interface UpdatePatientProfileData {
     phone?: string | null;
-    dateOfBirth?: Date | null;
+    dateOfBirth?: string | null; // ISO date string "YYYY-MM-DD" — stored encrypted at rest
     gender?: string | null;
     bloodGroup?: string | null;
     height?: number | null;
@@ -76,19 +117,19 @@ export async function updateMyProfile(userId: string, data: UpdatePatientProfile
     }
 
     const updateData: Prisma.PatientUpdateInput = {};
-    if (data.phone !== undefined) updateData.phone = data.phone;
-    if (data.dateOfBirth !== undefined) updateData.dateOfBirth = data.dateOfBirth;
+    if (data.phone !== undefined) updateData.phone = maybeEncrypt(data.phone);
+    if (data.dateOfBirth !== undefined) updateData.dateOfBirth = maybeEncrypt(data.dateOfBirth);
     if (data.gender !== undefined) updateData.gender = data.gender as Gender | null;
-    if (data.bloodGroup !== undefined) updateData.bloodGroup = data.bloodGroup;
+    if (data.bloodGroup !== undefined) updateData.bloodGroup = maybeEncrypt(data.bloodGroup);
     if (data.height !== undefined) updateData.height = data.height;
     if (data.weight !== undefined) updateData.weight = data.weight;
     if (data.emergencyContactName !== undefined)
         updateData.emergencyContactName = data.emergencyContactName;
     if (data.emergencyContactPhone !== undefined)
-        updateData.emergencyContactPhone = data.emergencyContactPhone;
+        updateData.emergencyContactPhone = maybeEncrypt(data.emergencyContactPhone);
     if (data.city !== undefined) updateData.city = data.city;
     if (data.state !== undefined) updateData.state = data.state;
-    if (data.address !== undefined) updateData.address = data.address;
+    if (data.address !== undefined) updateData.address = maybeEncrypt(data.address);
 
     const updated = await prisma.patient.update({
         where: { userId },
@@ -96,7 +137,7 @@ export async function updateMyProfile(userId: string, data: UpdatePatientProfile
         select: patientFullSelect,
     });
 
-    return updated;
+    return decryptPatientFields(updated);
 }
 
 export async function getPatientForDoctor(patientId: string, doctorUserId: string) {
@@ -124,5 +165,5 @@ export async function getPatientForDoctor(patientId: string, doctorUserId: strin
         throw new AppError('Patient not found', 404, 'NOT_FOUND');
     }
 
-    return patient;
+    return decryptPatientFields(patient);
 }
