@@ -74,3 +74,7 @@ export const config = {
 if (config.nodeEnv === 'production' && !config.jwtSecret) {
     throw new Error('JWT_SECRET is required in production');
 }
+
+if (config.nodeEnv === 'production' && !config.logHmacKey) {
+    throw new Error('LOG_HMAC_KEY is required in production for audit-log tamper-evidence');
+}

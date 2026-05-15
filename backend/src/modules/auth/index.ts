@@ -78,7 +78,6 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
                 ...auditCtx,
                 statusCode: 401,
                 success: false,
-                metadata: { email },
             });
             next(loginErr);
         }
