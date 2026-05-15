@@ -6,6 +6,7 @@ import { assertTokenNotRevoked } from './modules/auth/auth.service';
 import { verifyToken, JwtPayload } from './utils';
 import { prisma } from './db';
 import { connectRedis } from './redis';
+import { logAccess, AuditAction } from './modules/audit/audit.service';
 
 interface AuthenticatedSocket extends Socket {
     data: {
@@ -171,6 +172,17 @@ export async function initializeSocket(httpServer: HttpServer): Promise<Server> 
                     include: {
                         sender: { select: { id: true, name: true, role: true } },
                     },
+                });
+
+                void logAccess({
+                    userId,
+                    actorRole: socket.data.role,
+                    action: AuditAction.MESSAGE_CREATE,
+                    resourceType: 'Message',
+                    resourceId: message.id,
+                    ip: socket.handshake.address,
+                    userAgent: socket.handshake.headers['user-agent'],
+                    success: true,
                 });
 
                 const roomName = `consultation:${appointmentId}`;

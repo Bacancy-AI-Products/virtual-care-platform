@@ -11,6 +11,7 @@
  * against the test DB once before the suite starts (see `package.json` test scripts).
  */
 import { afterAll, beforeEach } from 'vitest';
+import { _drainPendingAuditWrites } from '../src/modules/audit/audit.service';
 import { disconnectDb, resetDb } from './resetDb';
 
 beforeEach(async () => {
@@ -18,5 +19,8 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+    // Drain fire-and-forget audit writes so they don't race with $disconnect
+    // and leave the engine in a state the next test file can't reconnect to.
+    await _drainPendingAuditWrites();
     await disconnectDb();
 });

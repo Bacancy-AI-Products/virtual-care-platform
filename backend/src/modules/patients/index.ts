@@ -1,5 +1,11 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { requireAuth, requireRole, type AuthenticatedRequest } from '../../middleware';
+import {
+    requireAuth,
+    requireRole,
+    type AuthenticatedRequest,
+    auditPhiAccess,
+} from '../../middleware';
+import { AuditAction } from '../audit/audit.service';
 import { toValidationError } from '../../utils/validation';
 import * as patientsService from './patients.service';
 import { patientIdParamSchema, updatePatientProfileSchema } from './patients.schemas';
@@ -14,6 +20,7 @@ router.put(
     '/me',
     requireAuth,
     requireRole('PATIENT'),
+    auditPhiAccess(AuditAction.PATIENT_PROFILE_UPDATE, 'Patient'),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const parsed = updatePatientProfileSchema.safeParse(req.body);
@@ -38,6 +45,7 @@ router.get(
     '/:id',
     requireAuth,
     requireRole('DOCTOR'),
+    auditPhiAccess(AuditAction.PATIENT_PROFILE_READ, 'Patient'),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const parsed = patientIdParamSchema.safeParse(req.params);
