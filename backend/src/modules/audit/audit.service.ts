@@ -104,6 +104,21 @@ const auditPrisma = prisma.$extends({
 
 // ─── Core logging function ────────────────────────────────────────────────────
 
+// Tracks in-flight audit writes so tests can drain them before disconnecting
+// Prisma. Callers still use `void logAccess(...)` — fire-and-forget semantics
+// at the call site are unchanged.
+const _pendingWrites = new Set<Promise<void>>();
+
+/**
+ * Wait for all in-flight audit writes to settle. For test teardown only —
+ * production code should never block on this.
+ */
+export async function _drainPendingAuditWrites(): Promise<void> {
+    while (_pendingWrites.size > 0) {
+        await Promise.allSettled([..._pendingWrites]);
+    }
+}
+
 /**
  * Write an immutable audit log entry.
  *
@@ -114,7 +129,14 @@ const auditPrisma = prisma.$extends({
  *   and detectable during verification. What matters is that no row can be
  *   silently edited after creation.
  */
-export async function logAccess(params: LogAccessParams): Promise<void> {
+export function logAccess(params: LogAccessParams): Promise<void> {
+    const promise = _writeAccessLog(params);
+    _pendingWrites.add(promise);
+    promise.finally(() => _pendingWrites.delete(promise));
+    return promise;
+}
+
+async function _writeAccessLog(params: LogAccessParams): Promise<void> {
     try {
         // Best-effort previous hash for tamper-evidence chain
         const lastLog = await prisma.accessLog.findFirst({
