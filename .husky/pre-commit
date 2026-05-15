@@ -12,6 +12,21 @@ set -e
 
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 
+# ── Secret scanning ───────────────────────────────────────────────────────────
+# Blocks commits that introduce API keys, passwords, or tokens into any file.
+cd "$ROOT_DIR"
+if [ -d "node_modules/secretlint" ]; then
+  if ! npx secretlint --secretlintrc .secretlintrc.json "**/.env*" "**/*.json" "**/*.ts" "**/*.tsx" "**/*.js" 2>/dev/null; then
+    echo "🚨  secretlint detected secrets in staged files. Commit blocked."
+    echo "    Remove the secret, use an env var, and try again."
+    exit 1
+  fi
+else
+  echo "⚠  secretlint not installed. Skipping secret scan."
+  echo "   Run: npm install (in repo root)"
+fi
+
+
 # ── Frontend ──────────────────────────────────────────────────────────────────
 cd "$ROOT_DIR/frontend"
 
