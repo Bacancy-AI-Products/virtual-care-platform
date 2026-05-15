@@ -11,7 +11,8 @@ Realtime
 WebRTC + Socket.io
 
 Storage
-AWS S3 (medical reports)
+PostgreSQL (file blobs via `File.data Bytes`) — current implementation
+AWS S3 (medical reports) — planned, not yet implemented (see `docs/s3-hipaa-integration-plan.md`)
 
 Authentication
 JWT
