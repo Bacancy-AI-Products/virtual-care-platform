@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { Role } from '../../../generated/prisma';
 import { requireAuth, type AuthenticatedRequest } from '../../middleware';
 import { toValidationError } from '../../utils/validation';
+import { logAccess, AuditAction } from '../audit/audit.service';
 import * as authService from './auth.service';
 import {
     forgotPasswordSchema,
@@ -18,8 +19,21 @@ const router = Router();
  */
 router.post('/logout', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = (req as AuthenticatedRequest).user!.sub;
+        const authReq = req as AuthenticatedRequest & { id?: string };
+        const userId = authReq.user!.sub;
         await authService.revokeSessions(userId);
+        void logAccess({
+            userId,
+            actorRole: authReq.user!.role,
+            action: AuditAction.LOGOUT,
+            ip: req.ip ?? req.socket?.remoteAddress,
+            userAgent: req.get('User-Agent'),
+            requestId: authReq.id,
+            httpMethod: req.method,
+            path: req.originalUrl,
+            statusCode: 204,
+            success: true,
+        });
         res.status(204).send();
     } catch (e) {
         next(e);
@@ -39,8 +53,35 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
         }
 
         const { email, password } = parsed.data;
-        const result = await authService.login(email, password);
-        res.json(result);
+        const auditCtx = {
+            ip: req.ip ?? req.socket?.remoteAddress,
+            userAgent: req.get('User-Agent'),
+            requestId: (req as Request & { id?: string }).id,
+            httpMethod: req.method,
+            path: req.originalUrl,
+        };
+
+        try {
+            const result = await authService.login(email, password);
+            void logAccess({
+                userId: result.user.id,
+                actorRole: result.user.role,
+                action: AuditAction.LOGIN_SUCCESS,
+                ...auditCtx,
+                statusCode: 200,
+                success: true,
+            });
+            res.json(result);
+        } catch (loginErr) {
+            void logAccess({
+                action: AuditAction.LOGIN_FAILURE,
+                ...auditCtx,
+                statusCode: 401,
+                success: false,
+                metadata: { email },
+            });
+            next(loginErr);
+        }
     } catch (e) {
         next(e);
     }
@@ -61,6 +102,18 @@ function createSignupHandler(role: Role) {
 
             const { name, email, password } = parsed.data;
             const result = await authService.signup(name, email, password, role);
+            void logAccess({
+                userId: result.user.id,
+                actorRole: result.user.role,
+                action: AuditAction.SIGNUP,
+                ip: req.ip ?? req.socket?.remoteAddress,
+                userAgent: req.get('User-Agent'),
+                requestId: (req as Request & { id?: string }).id,
+                httpMethod: req.method,
+                path: req.originalUrl,
+                statusCode: 201,
+                success: true,
+            });
             res.status(201).json(result);
         } catch (e) {
             next(e);
@@ -86,6 +139,17 @@ router.post('/forgot-password', async (req: Request, res: Response, next: NextFu
             return;
         }
         const result = await authService.requestPasswordReset(parsed.data.email);
+        void logAccess({
+            action: AuditAction.PASSWORD_RESET_REQUESTED,
+            ip: req.ip ?? req.socket?.remoteAddress,
+            userAgent: req.get('User-Agent'),
+            requestId: (req as Request & { id?: string }).id,
+            httpMethod: req.method,
+            path: req.originalUrl,
+            statusCode: 200,
+            success: true,
+            // NOTE: email is not stored to avoid leaking whether account exists
+        });
         res.json(result);
     } catch (e) {
         next(e);
@@ -105,6 +169,16 @@ router.post('/reset-password', async (req: Request, res: Response, next: NextFun
         }
         const { token, newPassword } = parsed.data;
         const result = await authService.resetPassword(token, newPassword);
+        void logAccess({
+            action: AuditAction.PASSWORD_RESET_COMPLETED,
+            ip: req.ip ?? req.socket?.remoteAddress,
+            userAgent: req.get('User-Agent'),
+            requestId: (req as Request & { id?: string }).id,
+            httpMethod: req.method,
+            path: req.originalUrl,
+            statusCode: 200,
+            success: true,
+        });
         res.json(result);
     } catch (e) {
         next(e);

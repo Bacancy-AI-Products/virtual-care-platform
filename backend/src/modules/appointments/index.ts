@@ -1,5 +1,11 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { requireAuth, requireRole, type AuthenticatedRequest } from '../../middleware';
+import {
+    requireAuth,
+    requireRole,
+    type AuthenticatedRequest,
+    auditPhiAccess,
+} from '../../middleware';
+import { AuditAction } from '../audit/audit.service';
 import { toValidationError } from '../../utils/validation';
 import { emitToUser } from '../../notifications-emitter';
 import { prisma } from '../../db';
@@ -30,6 +36,7 @@ router.post(
     '/',
     requireAuth,
     requireRole('PATIENT'),
+    auditPhiAccess(AuditAction.APPOINTMENT_CREATE, 'Appointment'),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const bodyParsed = createAppointmentSchema.safeParse(req.body);
@@ -76,22 +83,27 @@ router.post(
  * List appointments for the caller.
  * PATIENT → their own | DOCTOR → their own | ADMIN → all
  */
-router.get('/', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const parsed = listAppointmentsQuerySchema.safeParse(req.query);
-        if (!parsed.success) return void next(toValidationError(parsed.error));
+router.get(
+    '/',
+    requireAuth,
+    auditPhiAccess(AuditAction.APPOINTMENT_LIST, 'Appointment'),
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const parsed = listAppointmentsQuerySchema.safeParse(req.query);
+            if (!parsed.success) return void next(toValidationError(parsed.error));
 
-        const { user } = req as AuthenticatedRequest;
-        const result = await appointmentsService.listAppointments(
-            user!.sub,
-            user!.role,
-            parsed.data,
-        );
-        res.json(result);
-    } catch (e) {
-        next(e);
-    }
-});
+            const { user } = req as AuthenticatedRequest;
+            const result = await appointmentsService.listAppointments(
+                user!.sub,
+                user!.role,
+                parsed.data,
+            );
+            res.json(result);
+        } catch (e) {
+            next(e);
+        }
+    },
+);
 
 /**
  * GET /appointments/:appointmentId
@@ -100,6 +112,7 @@ router.get('/', requireAuth, async (req: Request, res: Response, next: NextFunct
 router.get(
     '/:appointmentId',
     requireAuth,
+    auditPhiAccess(AuditAction.APPOINTMENT_READ, 'Appointment'),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const parsed = appointmentIdParamSchema.safeParse(req.params);
@@ -125,6 +138,7 @@ router.get(
 router.patch(
     '/:appointmentId/cancel',
     requireAuth,
+    auditPhiAccess(AuditAction.APPOINTMENT_CANCEL, 'Appointment'),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const parsed = appointmentIdParamSchema.safeParse(req.params);
@@ -151,6 +165,7 @@ router.patch(
     '/:appointmentId/status',
     requireAuth,
     requireRole('DOCTOR'),
+    auditPhiAccess(AuditAction.APPOINTMENT_STATUS_UPDATE, 'Appointment'),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const paramParsed = appointmentIdParamSchema.safeParse(req.params);
@@ -229,6 +244,7 @@ router.patch(
 router.get(
     '/:appointmentId/prescriptions',
     requireAuth,
+    auditPhiAccess(AuditAction.PRESCRIPTION_LIST, 'Prescription'),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const parsed = prescriptionAppointmentIdParamSchema.safeParse(req.params);
@@ -258,6 +274,7 @@ router.post(
     '/:appointmentId/prescriptions',
     requireAuth,
     requireRole('DOCTOR'),
+    auditPhiAccess(AuditAction.PRESCRIPTION_CREATE, 'Prescription'),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const paramParsed = prescriptionAppointmentIdParamSchema.safeParse(req.params);

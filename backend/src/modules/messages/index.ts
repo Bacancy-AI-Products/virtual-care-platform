@@ -1,5 +1,7 @@
 import { Router, Response, NextFunction } from 'express';
 import { requireAuth, AuthenticatedRequest } from '../../middleware/auth';
+import { auditPhiAccess } from '../../middleware/auditLog';
+import { AuditAction } from '../audit/audit.service';
 import { prisma } from '../../db';
 
 const router = Router();
@@ -12,6 +14,7 @@ const router = Router();
 router.get(
     '/appointment/:appointmentId',
     requireAuth,
+    auditPhiAccess(AuditAction.MESSAGE_LIST, 'Message'),
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const appointmentId = req.params.appointmentId as string;

@@ -57,6 +57,12 @@ export const config = {
     dailyApiKey: process.env.DAILY_API_KEY ?? '',
     dailyDomain: process.env.DAILY_DOMAIN ?? '',
     frontendUrl: process.env.FRONTEND_URL ?? appBaseUrl,
+    /**
+     * HIPAA §164.312(b) — Audit log HMAC chain key.
+     * 32+ byte base64 string. If absent, hashes are skipped (logs still written).
+     * Required in production for tamper-evidence.
+     */
+    logHmacKey: getOptionalEnv('LOG_HMAC_KEY'),
     /** Redis connection string for Socket.io adapter. Optional in dev. Required for multi-instance prod. */
     redisUrl: getOptionalEnv('REDIS_URL'),
     pagination: {

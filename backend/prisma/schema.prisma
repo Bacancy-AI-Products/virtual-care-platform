@@ -298,6 +298,36 @@ model File {
   @@map("files")
 }
 
+// --- Audit log (HIPAA §164.312(b) — append-only, tamper-evident) ---
+// NEVER update or delete rows from this table. Application code enforces this
+// via the auditPrisma extended client in audit.service.ts.
+// For production: also revoke UPDATE/DELETE on the access_logs table for the
+// app DB user, or enable Postgres RLS as a defence-in-depth layer.
+model AccessLog {
+  id           String   @id @default(cuid())
+  userId       String?  @map("user_id")
+  actorRole    String?  @map("actor_role")
+  action       String
+  resourceType String?  @map("resource_type")
+  resourceId   String?  @map("resource_id")
+  ip           String?
+  userAgent    String?  @map("user_agent")
+  requestId    String?  @map("request_id")
+  httpMethod   String?  @map("http_method")
+  path         String?
+  statusCode   Int?     @map("status_code")
+  success      Boolean
+  metadata     Json?
+  prevHash     String?  @map("prev_hash")
+  hash         String?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([action, createdAt(sort: Desc)])
+  @@index([resourceType, resourceId])
+  @@map("access_logs")
+}
+
 // --- Notifications (in-app bell + real-time via Socket.io) ---
 model Notification {
   id        String           @id @default(uuid())

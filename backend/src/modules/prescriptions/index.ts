@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { requireAuth, type AuthenticatedRequest } from '../../middleware';
+import { requireAuth, type AuthenticatedRequest, auditPhiAccess } from '../../middleware';
+import { AuditAction } from '../audit/audit.service';
 import { toValidationError } from '../../utils/validation';
 import * as prescriptionsService from './prescriptions.service';
 import {
@@ -18,6 +19,7 @@ const router = Router();
 router.post(
     '/appointment/:appointmentId',
     requireAuth,
+    auditPhiAccess(AuditAction.PRESCRIPTION_CREATE, 'Prescription'),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const paramParsed = appointmentIdParamSchema.safeParse(req.params);
@@ -58,6 +60,7 @@ router.post(
 router.get(
     '/appointment/:appointmentId',
     requireAuth,
+    auditPhiAccess(AuditAction.PRESCRIPTION_LIST, 'Prescription'),
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const paramParsed = appointmentIdParamSchema.safeParse(req.params);
@@ -88,53 +91,63 @@ router.get(
  * GET /prescriptions/mine
  * All prescriptions for the logged-in patient (or written by the logged-in doctor).
  */
-router.get('/mine', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const queryParsed = listMyPrescriptionsQuerySchema.safeParse(req.query);
-        if (!queryParsed.success) {
-            next(toValidationError(queryParsed.error));
-            return;
-        }
+router.get(
+    '/mine',
+    requireAuth,
+    auditPhiAccess(AuditAction.PRESCRIPTION_LIST, 'Prescription'),
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const queryParsed = listMyPrescriptionsQuerySchema.safeParse(req.query);
+            if (!queryParsed.success) {
+                next(toValidationError(queryParsed.error));
+                return;
+            }
 
-        const { user } = req as AuthenticatedRequest;
-        if (!user) {
-            next(new Error('Authentication required'));
-            return;
+            const { user } = req as AuthenticatedRequest;
+            if (!user) {
+                next(new Error('Authentication required'));
+                return;
+            }
+            const result = await prescriptionsService.listForUser(
+                user.sub,
+                user.role,
+                queryParsed.data,
+            );
+            res.json(result);
+        } catch (e) {
+            next(e);
         }
-        const result = await prescriptionsService.listForUser(
-            user.sub,
-            user.role,
-            queryParsed.data,
-        );
-        res.json(result);
-    } catch (e) {
-        next(e);
-    }
-});
+    },
+);
 
 /**
  * GET /prescriptions/:id
  * Get a prescription by ID.
  */
-router.get('/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const parsed = prescriptionIdParamSchema.safeParse(req.params);
-        if (!parsed.success) {
-            next(toValidationError(parsed.error));
-            return;
-        }
+router.get(
+    '/:id',
+    requireAuth,
+    auditPhiAccess(AuditAction.PRESCRIPTION_READ, 'Prescription'),
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const parsed = prescriptionIdParamSchema.safeParse(req.params);
+            if (!parsed.success) {
+                next(toValidationError(parsed.error));
+                return;
+            }
 
-        const { user } = req as AuthenticatedRequest;
-        if (!user) {
-            next(new Error('Authentication required'));
-            return;
-        }
+            const { user } = req as AuthenticatedRequest;
+            if (!user) {
+                next(new Error('Authentication required'));
+                return;
+            }
 
-        const result = await prescriptionsService.getById(parsed.data.id, user.sub, user.role);
-        res.json(result);
-    } catch (e) {
-        next(e);
-    }
-});
+            const result = await prescriptionsService.getById(parsed.data.id, user.sub, user.role);
+            res.json(result);
+        } catch (e) {
+            next(e);
+        }
+    },
+);
 
 export { router as prescriptionsRouter };

@@ -1,5 +1,7 @@
 import { Router, Response, NextFunction } from 'express';
 import { requireAuth, AuthenticatedRequest } from '../../middleware/auth';
+import { auditPhiAccess } from '../../middleware/auditLog';
+import { AuditAction } from '../audit/audit.service';
 import { prisma } from '../../db';
 import { toValidationError } from '../../utils/validation';
 import { createRoomParamsSchema, getTokenParamsSchema } from './video.schemas';
@@ -11,6 +13,7 @@ const router = Router();
 router.post(
     '/rooms/:appointmentId',
     requireAuth,
+    auditPhiAccess(AuditAction.VIDEO_ROOM_CREATE, 'Appointment'),
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const parsed = createRoomParamsSchema.safeParse(req.params);
@@ -76,6 +79,7 @@ router.post(
 router.get(
     '/token/:appointmentId',
     requireAuth,
+    auditPhiAccess(AuditAction.VIDEO_TOKEN_ISSUE, 'Appointment'),
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const parsed = getTokenParamsSchema.safeParse(req.params);
@@ -143,6 +147,7 @@ router.get(
 router.post(
     '/session/start/:appointmentId',
     requireAuth,
+    auditPhiAccess(AuditAction.VIDEO_SESSION_START, 'Appointment'),
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const parsed = createRoomParamsSchema.safeParse(req.params);
@@ -197,6 +202,7 @@ router.post(
 router.post(
     '/session/end/:appointmentId',
     requireAuth,
+    auditPhiAccess(AuditAction.VIDEO_SESSION_END, 'Appointment'),
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const parsed = createRoomParamsSchema.safeParse(req.params);
@@ -248,6 +254,7 @@ router.post(
 router.get(
     '/info/:appointmentId',
     requireAuth,
+    auditPhiAccess(AuditAction.VIDEO_INFO_READ, 'Appointment'),
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const parsed = getTokenParamsSchema.safeParse(req.params);

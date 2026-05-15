@@ -1,6 +1,8 @@
 import { Router, Response, NextFunction } from 'express';
 import multer from 'multer';
 import { requireAuth, AuthenticatedRequest } from '../../middleware/auth';
+import { auditPhiAccess } from '../../middleware/auditLog';
+import { AuditAction } from '../audit/audit.service';
 import { prisma } from '../../db';
 import {
     saveFile,
@@ -37,6 +39,7 @@ const upload = multer({
 router.get(
     '/mine',
     requireAuth,
+    auditPhiAccess(AuditAction.FILE_LIST, 'File'),
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const userId = req.user!.sub;
@@ -82,6 +85,7 @@ router.get(
 router.post(
     '/upload',
     requireAuth,
+    auditPhiAccess(AuditAction.FILE_UPLOAD, 'File'),
     upload.single('file'),
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
@@ -137,6 +141,7 @@ router.post(
 router.get(
     '/appointment/:appointmentId',
     requireAuth,
+    auditPhiAccess(AuditAction.FILE_LIST_APPOINTMENT, 'File'),
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const appointmentId = req.params.appointmentId as string;
@@ -185,6 +190,7 @@ router.get(
 router.get(
     '/download/:fileId',
     requireAuth,
+    auditPhiAccess(AuditAction.FILE_DOWNLOAD, 'File'),
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const fileId = req.params.fileId as string;
@@ -238,6 +244,7 @@ router.get(
 router.delete(
     '/:fileId',
     requireAuth,
+    auditPhiAccess(AuditAction.FILE_DELETE, 'File'),
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const fileId = req.params.fileId as string;
