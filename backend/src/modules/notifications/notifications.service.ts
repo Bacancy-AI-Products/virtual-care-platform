@@ -1,5 +1,6 @@
 import { prisma } from '../../db';
 import { AppError } from '../../utils/errors';
+import { maybeEncrypt, maybeDecrypt } from '../../utils/crypto';
 
 /** Matches Prisma NotificationType enum; use local type so module compiles before prisma generate. */
 export type NotificationType =
@@ -31,17 +32,52 @@ const notificationSelect = {
  * Caller is responsible for calling emitToUser(userId, notification) after create.
  */
 export async function create(userId: string, type: NotificationType, data: CreateNotificationData) {
+    // Encrypt PHI fields before persisting
+    const encryptedBody = maybeEncrypt(data.body ?? null) ?? null;
+    // metadata is `Json?` — wrap the encrypted envelope in `{ enc: "..." }` so the
+    // value is stored as a JSON object (unambiguous round-trip through jsonb)
+    // rather than as a JSON string scalar.
+    const metadataEnvelope = wrapMetadata(data.metadata ?? null);
+
     const notification = await (prisma as any).notification.create({
         data: {
             userId,
             type,
             title: data.title,
-            body: data.body ?? null,
-            metadata: data.metadata ?? null,
+            body: encryptedBody,
+            metadata: metadataEnvelope,
         },
         select: notificationSelect,
     });
-    return notification;
+    return decryptNotification(notification);
+}
+
+/** Encode metadata for persistence: `null` → null, otherwise `{ enc: <ciphertext> }`. */
+function wrapMetadata(meta: Record<string, unknown> | null): { enc: string } | null {
+    if (meta == null) return null;
+    const serialized = JSON.stringify(meta);
+    const enc = maybeEncrypt(serialized) ?? serialized;
+    return { enc };
+}
+
+/** Decrypt PHI fields on a notification record. */
+function decryptNotification<T extends { body?: string | null; metadata?: unknown }>(n: T): T {
+    const decryptedBody = maybeDecrypt(n.body as string | null | undefined);
+    let decryptedMetadata: unknown = n.metadata;
+    if (
+        n.metadata != null &&
+        typeof n.metadata === 'object' &&
+        'enc' in (n.metadata as Record<string, unknown>) &&
+        typeof (n.metadata as { enc: unknown }).enc === 'string'
+    ) {
+        const raw = maybeDecrypt((n.metadata as { enc: string }).enc);
+        try {
+            decryptedMetadata = raw != null ? JSON.parse(raw) : null;
+        } catch {
+            decryptedMetadata = raw; // fallback: return as-is if not valid JSON
+        }
+    }
+    return { ...n, body: decryptedBody, metadata: decryptedMetadata };
 }
 
 export interface ListForUserOptions {
@@ -63,7 +99,7 @@ export async function listForUser(userId: string, options: ListForUserOptions) {
         orderBy: { createdAt: 'desc' },
         take: limit,
     });
-    return { notifications };
+    return { notifications: notifications.map(decryptNotification) };
 }
 
 /** Get count of unread notifications for a user (for bell badge). */

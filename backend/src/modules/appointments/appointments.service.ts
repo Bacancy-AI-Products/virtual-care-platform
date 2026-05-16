@@ -1,5 +1,6 @@
 import { prisma } from '../../db';
 import { AppError } from '../../utils/errors';
+import { maybeEncrypt, maybeDecrypt } from '../../utils/crypto';
 import type { Prisma, AppointmentStatus } from '../../../generated/prisma';
 
 /** Consistent shape returned for any appointment query. */
@@ -30,6 +31,24 @@ const appointmentSelect = {
         },
     },
 } as const;
+
+/** Decrypt the PHI fields (`reason`, `declineReason`) on any appointment-shaped object. */
+function decryptAppointment<T extends { reason?: string | null; declineReason?: string | null }>(
+    appt: T,
+): T {
+    return {
+        ...appt,
+        reason: maybeDecrypt(appt.reason),
+        declineReason: maybeDecrypt(appt.declineReason),
+    };
+}
+
+/** Decrypt PHI on an array of appointments. */
+function decryptAppointments<T extends { reason?: string | null; declineReason?: string | null }>(
+    appts: T[],
+): T[] {
+    return appts.map(decryptAppointment);
+}
 
 async function getDoctorId(userId: string): Promise<string | null> {
     const user = await prisma.user.findUnique({
@@ -105,7 +124,9 @@ export async function updateStatus(
         where: { id: appointmentId },
         data: {
             status,
-            ...(status === 'CANCELLED_BY_DOCTOR' ? { declineReason: declineReason ?? null } : {}),
+            ...(status === 'CANCELLED_BY_DOCTOR'
+                ? { declineReason: maybeEncrypt(declineReason ?? null) ?? null }
+                : {}),
         },
         include: {
             patient: { include: { user: { select: { id: true, name: true, email: true } } } },
@@ -119,8 +140,8 @@ export async function updateStatus(
         doctorId: updated.doctorId,
         scheduledAt: updated.scheduledAt,
         status: updated.status,
-        reason: updated.reason,
-        declineReason: updated.declineReason,
+        reason: maybeDecrypt(updated.reason) ?? null, // decrypt PHI before returning
+        declineReason: maybeDecrypt(updated.declineReason) ?? null,
         createdAt: updated.createdAt,
         patientUserId: updated.patient.userId,
         patientEmail: updated.patient.user.email,
@@ -207,7 +228,7 @@ export async function createAppointment(
             doctorId: data.doctorId,
             scheduledAt,
             durationMinutes: data.durationMinutes,
-            reason: data.reason ?? null,
+            reason: maybeEncrypt(data.reason ?? null) ?? null,
             status: 'PENDING',
         },
         include: { doctor: { select: { userId: true } } },
@@ -220,7 +241,7 @@ export async function createAppointment(
         scheduledAt: appointment.scheduledAt,
         durationMinutes: appointment.durationMinutes,
         status: appointment.status,
-        reason: appointment.reason,
+        reason: maybeDecrypt(appointment.reason) ?? null, // decrypt before returning to caller
         createdAt: appointment.createdAt,
         doctorUserId: appointment.doctor.userId,
     };
@@ -267,7 +288,7 @@ export async function listAppointments(
         prisma.appointment.count({ where }),
     ]);
 
-    return { data, total, page, limit };
+    return { data: decryptAppointments(data), total, page, limit };
 }
 
 // ─── Get ──────────────────────────────────────────────────────────────────────
@@ -287,7 +308,7 @@ export async function getAppointment(appointmentId: string, userId: string, role
         if (!isDoctor && !isPatient) throw new AppError('Access denied', 403, 'FORBIDDEN');
     }
 
-    return appointment;
+    return decryptAppointment(appointment);
 }
 
 // ─── Cancel ───────────────────────────────────────────────────────────────────
@@ -332,9 +353,10 @@ export async function cancelAppointment(appointmentId: string, userId: string, r
 
     const newStatus: AppointmentStatus = isPatient ? 'CANCELLED_BY_PATIENT' : 'CANCELLED_BY_DOCTOR';
 
-    return prisma.appointment.update({
+    const cancelled = await prisma.appointment.update({
         where: { id: appointmentId },
         data: { status: newStatus },
         select: appointmentSelect,
     });
+    return decryptAppointment(cancelled);
 }

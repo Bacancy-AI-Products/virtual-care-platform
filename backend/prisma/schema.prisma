@@ -148,7 +148,7 @@ model DoctorAvailability {
 model Patient {
   id                    String    @id @default(uuid())
   userId                String    @unique @map("user_id")
-  dateOfBirth           DateTime? @map("date_of_birth") @db.Date
+  dateOfBirth           String?   @map("date_of_birth") // ISO date string; encrypted at rest in prod
   gender                Gender?
   phone                 String?   @map("phone")
   bloodGroup            String?   @map("blood_group")

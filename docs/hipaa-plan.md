@@ -325,7 +325,7 @@ These cannot be solved in code:
 |---|---|---|
 | 0 — Secrets hygiene | ✅ done | `chore/phase0-secrets-hygiene` |
 | 1.1 — Audit logging | ✅ done | `feature/phase1-audit-logging` |
-| 1.2 — Field encryption | ⬜ not started | — |
+| 1.2 — Field encryption | ✅ done | `feature/phase1-field-encryption` |
 | 1.3 — File encryption | ⬜ not started | — |
 | 1.4 — Security headers | ⬜ not started | — |
 | 2.1 — Rate limiting | ⬜ not started | — |

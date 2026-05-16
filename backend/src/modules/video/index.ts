@@ -4,6 +4,7 @@ import { auditPhiAccess } from '../../middleware/auditLog';
 import { AuditAction } from '../audit/audit.service';
 import { prisma } from '../../db';
 import { toValidationError } from '../../utils/validation';
+import { maybeDecrypt } from '../../utils/crypto';
 import { createRoomParamsSchema, getTokenParamsSchema } from './video.schemas';
 import { createDailyRoom, createMeetingToken } from './video.service';
 
@@ -297,7 +298,7 @@ router.get(
                 scheduledAt: appointment.scheduledAt,
                 durationMinutes: appointment.durationMinutes,
                 status: appointment.status,
-                reason: appointment.reason,
+                reason: maybeDecrypt(appointment.reason),
                 videoRoomId: appointment.videoRoomId,
                 meetingLink: appointment.meetingLink,
                 sessionStartedAt: appointment.sessionStartedAt,

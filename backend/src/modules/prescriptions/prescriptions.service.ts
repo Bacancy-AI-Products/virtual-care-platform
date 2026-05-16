@@ -1,5 +1,52 @@
 import { prisma } from '../../db';
 import { AppError } from '../../utils/errors';
+import { maybeEncrypt, maybeDecrypt } from '../../utils/crypto';
+
+// ─── PHI decrypt helpers ──────────────────────────────────────────────────────
+
+/** Decrypt the sensitive fields on a single PrescriptionItem. */
+function decryptItem<
+    T extends {
+        drugName?: string;
+        dosage?: string | null;
+        frequency?: string | null;
+        duration?: string | null;
+        instructions?: string | null;
+    },
+>(item: T): T {
+    return {
+        ...item,
+        drugName: maybeDecrypt(item.drugName) ?? '',
+        dosage: maybeDecrypt(item.dosage),
+        frequency: maybeDecrypt(item.frequency),
+        duration: maybeDecrypt(item.duration),
+        instructions: maybeDecrypt(item.instructions),
+    };
+}
+
+/** Decrypt the sensitive fields on a prescription (including nested items + appointment.reason). */
+function decryptPrescription<
+    T extends {
+        notes?: string | null;
+        items?: Array<{
+            drugName?: string;
+            dosage?: string | null;
+            frequency?: string | null;
+            duration?: string | null;
+            instructions?: string | null;
+        }>;
+        appointment?: { reason?: string | null } | null;
+    },
+>(rx: T): T {
+    return {
+        ...rx,
+        notes: maybeDecrypt(rx.notes),
+        items: rx.items ? rx.items.map(decryptItem) : rx.items,
+        appointment: rx.appointment
+            ? { ...rx.appointment, reason: maybeDecrypt(rx.appointment.reason) }
+            : rx.appointment,
+    };
+}
 
 const prescriptionSelect = {
     id: true,
@@ -125,22 +172,22 @@ export async function createPrescription(
             doctorId: appointment.doctorId,
             patientId: appointment.patientId,
             appointmentId: appointment.id,
-            notes: data.notes ?? null,
+            notes: maybeEncrypt(data.notes ?? null) ?? null,
             items: {
                 create: data.items.map((item) => ({
-                    drugName: item.drugName,
-                    dosage: item.dosage ?? null,
-                    frequency: item.frequency ?? null,
-                    duration: item.duration ?? null,
-                    quantity: item.quantity ?? null,
-                    instructions: item.instructions ?? null,
+                    drugName: maybeEncrypt(item.drugName) ?? item.drugName,
+                    dosage: maybeEncrypt(item.dosage ?? null) ?? null,
+                    frequency: maybeEncrypt(item.frequency ?? null) ?? null,
+                    duration: maybeEncrypt(item.duration ?? null) ?? null,
+                    quantity: item.quantity ?? null, // quantity is not a PHI field
+                    instructions: maybeEncrypt(item.instructions ?? null) ?? null,
                 })),
             },
         },
         select: prescriptionSelect,
     });
 
-    return prescription;
+    return decryptPrescription(prescription);
 }
 
 export async function listByAppointment(appointmentId: string, userId: string, role: string) {
@@ -163,7 +210,7 @@ export async function listByAppointment(appointmentId: string, userId: string, r
         orderBy: { createdAt: 'desc' },
     });
 
-    return { prescriptions };
+    return { prescriptions: prescriptions.map(decryptPrescription) };
 }
 
 export async function getById(prescriptionId: string, userId: string, role: string) {
@@ -180,7 +227,7 @@ export async function getById(prescriptionId: string, userId: string, role: stri
         throw new AppError('You do not have access to this prescription', 403, 'FORBIDDEN');
     }
 
-    return prescription;
+    return decryptPrescription(prescription);
 }
 
 export interface ListPrescriptionsForUserOptions {
@@ -254,5 +301,5 @@ export async function listForUser(
         },
     });
 
-    return { prescriptions };
+    return { prescriptions: prescriptions.map(decryptPrescription) };
 }

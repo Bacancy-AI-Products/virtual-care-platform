@@ -8,11 +8,13 @@ export const patientIdParamSchema = z.object({
 
 export const updatePatientProfileSchema = z.object({
     phone: z.string().max(20).optional().nullable(),
+    // dateOfBirth is sent as an ISO date string ("YYYY-MM-DD"). At rest it is
+    // stored as the same string (dev) or as an AES-256-GCM ciphertext (prod).
     dateOfBirth: z
         .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, 'dateOfBirth must be a YYYY-MM-DD date string')
         .optional()
-        .nullable()
-        .transform((s) => (s === undefined ? undefined : s === null ? null : new Date(s))),
+        .nullable(),
     gender: z.enum(['MALE', 'FEMALE', 'OTHER', 'PREFER_NOT_TO_SAY']).optional().nullable(),
     bloodGroup: z.string().max(10).optional().nullable(),
     height: z.number().int().min(50).max(250).optional().nullable(),

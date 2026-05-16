@@ -63,6 +63,19 @@ export const config = {
      * Required in production for tamper-evidence.
      */
     logHmacKey: getOptionalEnv('LOG_HMAC_KEY'),
+    /**
+     * HIPAA §164.312(a)(2)(iv) — Field-level AES-256-GCM master key.
+     * Must be exactly 32 bytes, encoded as base64 (44 chars).
+     * Generate: `openssl rand -base64 32`
+     * Required in production; optional in dev (encryption is skipped when absent).
+     */
+    masterKey: getOptionalEnv('MASTER_KEY'),
+    /**
+     * Identifier for the current master key. Used inside encrypted payloads to
+     * support key rotation without re-encrypting all rows at once.
+     * Defaults to "v1". Increment (e.g. "v2") when rotating the master key.
+     */
+    keyId: getOptionalEnv('KEY_ID', 'v1'),
     /** Redis connection string for Socket.io adapter. Optional in dev. Required for multi-instance prod. */
     redisUrl: getOptionalEnv('REDIS_URL'),
     pagination: {
@@ -77,4 +90,16 @@ if (config.nodeEnv === 'production' && !config.jwtSecret) {
 
 if (config.nodeEnv === 'production' && !config.logHmacKey) {
     throw new Error('LOG_HMAC_KEY is required in production for audit-log tamper-evidence');
+}
+
+if (config.nodeEnv === 'production' && !config.masterKey) {
+    throw new Error('MASTER_KEY is required in production for PHI field encryption');
+}
+
+// Validate key length when provided: must be exactly 32 bytes (base64 → 44 chars)
+if (config.masterKey) {
+    const keyBytes = Buffer.from(config.masterKey, 'base64');
+    if (keyBytes.length !== 32) {
+        throw new Error(`MASTER_KEY must be exactly 32 bytes (base64), got ${keyBytes.length}`);
+    }
 }
