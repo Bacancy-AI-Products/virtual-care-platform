@@ -327,7 +327,7 @@ These cannot be solved in code:
 | 1.1 — Audit logging | ✅ done | `feature/phase1-audit-logging` |
 | 1.2 — Field encryption | ✅ done | `feature/phase1-field-encryption` |
 | 1.3 — File encryption | ✅ done | `feature/phase1-file-encryption` |
-| 1.4 — Security headers | ⬜ not started | — |
+| 1.4 — Security headers | ✅ done | `feature/phase1-security-headers` |
 | 2.1 — Rate limiting | ⬜ not started | — |
 | 2.2 — Account lockout | ⬜ not started | — |
 | 2.3 — Password policy | ⬜ not started | — |

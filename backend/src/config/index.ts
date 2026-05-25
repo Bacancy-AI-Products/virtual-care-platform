@@ -96,6 +96,18 @@ if (config.nodeEnv === 'production' && !config.masterKey) {
     throw new Error('MASTER_KEY is required in production for PHI field encryption');
 }
 
+// HIPAA §164.312(e)(1) — encryption in transit.
+// TODO: Change console.error → throw once HTTPS is configured on the production domain.
+//       Running over HTTP in production is a §164.312(e)(1) violation — this must be
+//       resolved before the app is used with real patient data.
+if (config.nodeEnv === 'production' && config.frontendUrl.startsWith('http://')) {
+    console.error(
+        '[HIPAA] WARNING: FRONTEND_URL is HTTP in production. ' +
+            'PHI is being transmitted without TLS encryption — this violates §164.312(e)(1). ' +
+            'Configure HTTPS and change this warning to a throw before handling real patient data.',
+    );
+}
+
 // Validate key length when provided: must be exactly 32 bytes (base64 → 44 chars)
 if (config.masterKey) {
     const keyBytes = Buffer.from(config.masterKey, 'base64');
