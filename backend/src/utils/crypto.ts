@@ -117,6 +117,52 @@ export function maybeDecrypt(value: string | null | undefined): string | null | 
     return value; // plaintext (pre-backfill row or dev without MASTER_KEY)
 }
 
+// ─── Buffer encrypt / decrypt (Phase 1.3 — file encryption) ─────────────────
+
+/**
+ * Encrypt a binary buffer with AES-256-GCM.
+ * Checksum (SHA-256 of plaintext) must be stored separately by the caller.
+ * Throws if MASTER_KEY is not configured.
+ */
+export function encryptBuffer(plaintext: Buffer): {
+    ciphertext: Buffer;
+    iv: string;
+    tag: string;
+    keyId: string;
+} {
+    const key = getMasterKey();
+    const iv = crypto.randomBytes(12);
+    const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+    const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()]);
+    const tag = cipher.getAuthTag();
+    return {
+        ciphertext,
+        iv: iv.toString('base64'),
+        tag: tag.toString('base64'),
+        keyId: config.keyId ?? 'v1',
+    };
+}
+
+/**
+ * Decrypt a buffer previously encrypted with `encryptBuffer`.
+ * `iv` and `tag` are the base64 strings stored alongside the ciphertext.
+ * Throws on wrong key or tampered auth tag.
+ */
+export function decryptBuffer(ciphertext: Buffer, iv: string, tag: string): Buffer {
+    const key = getMasterKey();
+    const decipher = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(iv, 'base64'));
+    decipher.setAuthTag(Buffer.from(tag, 'base64'));
+    return Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+}
+
+/**
+ * SHA-256 hex digest of a buffer. Stored at upload time (on the plaintext)
+ * and verified on every download after decryption.
+ */
+export function checksumBuffer(buf: Buffer): string {
+    return crypto.createHash('sha256').update(buf).digest('hex');
+}
+
 // ─── Private helpers ──────────────────────────────────────────────────────────
 
 function getMasterKey(): Buffer {

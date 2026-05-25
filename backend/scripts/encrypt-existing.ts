@@ -16,7 +16,7 @@
 
 import '../src/config'; // loads dotenv + validates MASTER_KEY length
 import { PrismaClient } from '../generated/prisma';
-import { encryptField, isEncryptedField } from '../src/utils/crypto';
+import { encryptField, isEncryptedField, encryptBuffer, checksumBuffer } from '../src/utils/crypto';
 import { config } from '../src/config';
 
 const prisma = new PrismaClient();
@@ -276,6 +276,44 @@ async function backfillNotifications() {
     console.log(`[notifications] Done — encrypted ${count} rows.`);
 }
 
+async function backfillFiles() {
+    let skip = 0;
+    let count = 0;
+    console.log('\n[files] Starting…');
+    for (;;) {
+        const rows = await prisma.file.findMany({
+            take: BATCH,
+            skip,
+            orderBy: { id: 'asc' },
+            select: { id: true, data: true, keyId: true },
+        });
+        if (rows.length === 0) break;
+
+        for (const row of rows) {
+            // Skip rows with no blob data or already encrypted
+            if (!row.data || row.keyId) continue;
+
+            const plaintext = Buffer.isBuffer(row.data) ? row.data : Buffer.from(row.data);
+            const checksum = checksumBuffer(plaintext);
+            const enc = encryptBuffer(plaintext);
+
+            await prisma.file.update({
+                where: { id: row.id },
+                data: {
+                    data: new Uint8Array(enc.ciphertext),
+                    iv: enc.iv,
+                    tag: enc.tag,
+                    keyId: enc.keyId,
+                    checksum,
+                },
+            });
+            count++;
+        }
+        skip += rows.length;
+    }
+    console.log(`[files] Done — encrypted ${count} rows.`);
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -294,6 +332,7 @@ async function main() {
     await backfillPrescriptionItems();
     await backfillMessages();
     await backfillNotifications();
+    await backfillFiles();
 
     console.log('\n✅ Backfill complete.');
 }

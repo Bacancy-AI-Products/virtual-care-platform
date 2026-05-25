@@ -287,7 +287,11 @@ model File {
   originalName  String   @map("original_name")
   mimeType      String   @map("mime_type")
   sizeBytes     BigInt   @map("size_bytes")
-  data          Bytes?  @map("data") // optimized blob stored in DB
+  data          Bytes?   @map("data") // optimized blob stored in DB (AES-256-GCM encrypted when keyId is set)
+  iv            String?  @map("iv")        // base64 GCM IV (96-bit)
+  tag           String?  @map("tag")       // base64 GCM auth tag (128-bit)
+  keyId         String?  @map("key_id")    // identifies MASTER_KEY used; null = unencrypted legacy row
+  checksum      String?  @map("checksum")  // SHA-256 hex of plaintext blob; verified on every download
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 

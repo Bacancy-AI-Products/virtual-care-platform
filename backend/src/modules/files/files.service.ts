@@ -3,6 +3,9 @@ import fs from 'fs';
 import { Jimp } from 'jimp';
 import { prisma } from '../../db';
 import { FileType } from '../../../generated/prisma';
+import { config } from '../../config';
+import { encryptBuffer, decryptBuffer, checksumBuffer } from '../../utils/crypto';
+import { logAccess, AuditAction } from '../audit/audit.service';
 
 const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
 
@@ -78,6 +81,20 @@ export async function saveFile(file: Express.Multer.File, userId: string, appoin
         storageKey = 'db';
     }
 
+    let encIv: string | undefined;
+    let encTag: string | undefined;
+    let encKeyId: string | undefined;
+    let checksum: string | undefined;
+
+    if (data && config.masterKey) {
+        checksum = checksumBuffer(data);
+        const enc = encryptBuffer(data);
+        data = enc.ciphertext;
+        encIv = enc.iv;
+        encTag = enc.tag;
+        encKeyId = enc.keyId;
+    }
+
     const fileRecord = await prisma.file.create({
         data: {
             ownerId: userId,
@@ -89,6 +106,10 @@ export async function saveFile(file: Express.Multer.File, userId: string, appoin
             mimeType,
             sizeBytes: BigInt(sizeBytes),
             data: data ? new Uint8Array(data) : null,
+            iv: encIv,
+            tag: encTag,
+            keyId: encKeyId,
+            checksum,
         },
         include: {
             uploadedBy: { select: { id: true, name: true, role: true } },
@@ -129,22 +150,59 @@ export function getFilePath(storageKey: string): string {
 
 /**
  * Get file blob for download. Prefers DB data; falls back to filesystem for legacy files.
+ * Decrypts AES-256-GCM encrypted blobs and verifies SHA-256 checksum.
+ * Logs FILE_INTEGRITY_MISMATCH to AccessLog and returns null if checksum fails.
  */
-export function getFileBlob(file: {
-    data: Buffer | Uint8Array | null;
-    storageKey: string | null;
-    mimeType: string;
-}): Buffer | null {
+export async function getFileBlob(
+    file: {
+        id: string;
+        data: Buffer | Uint8Array | null;
+        storageKey: string | null;
+        mimeType: string;
+        iv?: string | null;
+        tag?: string | null;
+        keyId?: string | null;
+        checksum?: string | null;
+    },
+    context?: { userId?: string; actorRole?: string },
+): Promise<Buffer | null> {
+    let raw: Buffer | null = null;
+
     if (file.data && file.data.length > 0) {
-        return Buffer.isBuffer(file.data) ? file.data : Buffer.from(file.data);
-    }
-    if (file.storageKey && file.storageKey !== 'db') {
+        raw = Buffer.isBuffer(file.data) ? file.data : Buffer.from(file.data);
+    } else if (file.storageKey && file.storageKey !== 'db') {
         const filePath = getFilePath(file.storageKey);
         if (fs.existsSync(filePath)) {
-            return fs.readFileSync(filePath);
+            raw = fs.readFileSync(filePath);
         }
     }
-    return null;
+
+    if (!raw) return null;
+
+    // Decrypt if this row was encrypted (keyId present means it went through encryptBuffer)
+    if (file.keyId && file.iv && file.tag) {
+        const decrypted = decryptBuffer(raw, file.iv, file.tag);
+
+        if (file.checksum) {
+            const actual = checksumBuffer(decrypted);
+            if (actual !== file.checksum) {
+                void logAccess({
+                    userId: context?.userId,
+                    actorRole: context?.actorRole,
+                    action: AuditAction.FILE_INTEGRITY_MISMATCH,
+                    resourceType: 'File',
+                    resourceId: file.id,
+                    success: false,
+                    metadata: { expected: file.checksum, actual },
+                });
+                return null;
+            }
+        }
+
+        return decrypted;
+    }
+
+    return raw;
 }
 
 export async function deleteFile(fileId: string, userId: string) {

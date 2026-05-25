@@ -222,7 +222,10 @@ router.get(
                 }
             }
 
-            const blob = getFileBlob(file);
+            const blob = await getFileBlob(file, {
+                userId,
+                actorRole: req.user!.role,
+            });
 
             if (!blob) {
                 return res.status(404).json({
@@ -231,7 +234,7 @@ router.get(
             }
 
             res.setHeader('Content-Type', file.mimeType);
-            res.setHeader('Content-Disposition', `inline; filename="${file.originalName}"`);
+            res.setHeader('Content-Disposition', `attachment; filename="${file.originalName}"`);
 
             res.send(blob);
         } catch (error) {
