@@ -135,14 +135,20 @@ describe('getFilesByAppointment', () => {
 // ─── getFileBlob ─────────────────────────────────────────────────────────────
 
 describe('getFileBlob', () => {
-    it('returns a Buffer when data is present', () => {
+    it('returns a Buffer when data is present', async () => {
         const buf = Buffer.from('hello');
-        const result = getFileBlob({ data: buf, storageKey: 'db', mimeType: 'text/plain' });
+        const result = await getFileBlob({
+            id: 'test-id',
+            data: buf,
+            storageKey: 'db',
+            mimeType: 'text/plain',
+        });
         expect(result).toEqual(buf);
     });
 
-    it('returns null when both data and a valid storageKey are absent', () => {
-        const result = getFileBlob({
+    it('returns null when both data and a valid storageKey are absent', async () => {
+        const result = await getFileBlob({
+            id: 'test-id',
             data: null,
             storageKey: null,
             mimeType: 'image/png',
