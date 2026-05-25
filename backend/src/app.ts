@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import pinoHttp from 'pino-http';
 import { errorHandler } from './middleware';
 import { requestId } from './middleware/requestId';
@@ -10,6 +11,20 @@ import { isRedisConfigured, pingRedis } from './redis';
 
 const app = express();
 
+// Trust the first proxy hop so req.ip is the real client IP behind ALB / Caddy / nginx
+app.set('trust proxy', 1);
+
+app.use(
+    helmet({
+        // CSP is tuned separately at the Next.js layer; disable here to avoid conflicting headers
+        contentSecurityPolicy: false,
+        hsts: {
+            maxAge: 31536000, // 1 year
+            includeSubDomains: true,
+            preload: true,
+        },
+    }),
+);
 app.use(requestId);
 app.use(pinoHttp({ logger }));
 app.use(
