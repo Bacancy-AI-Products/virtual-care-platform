@@ -104,6 +104,7 @@ export async function saveFile(file: Express.Multer.File, userId: string, appoin
             storageKey,
             originalName: file.originalname,
             mimeType,
+            // sizeBytes reflects the original plaintext size, not the encrypted blob length
             sizeBytes: BigInt(sizeBytes),
             data: data ? new Uint8Array(data) : null,
             iv: encIv,
@@ -148,10 +149,14 @@ export function getFilePath(storageKey: string): string {
     return path.join(UPLOADS_DIR, storageKey);
 }
 
+/** Sentinel returned when decryption or checksum verification fails — distinct from "file not found". */
+export const FILE_INTEGRITY_FAILURE = Symbol('FILE_INTEGRITY_FAILURE');
+
 /**
  * Get file blob for download. Prefers DB data; falls back to filesystem for legacy files.
  * Decrypts AES-256-GCM encrypted blobs and verifies SHA-256 checksum.
- * Logs FILE_INTEGRITY_MISMATCH to AccessLog and returns null if checksum fails.
+ * Returns FILE_INTEGRITY_FAILURE (not null) when decryption or checksum fails so callers
+ * can distinguish a tampered/corrupt file from a genuinely missing one.
  */
 export async function getFileBlob(
     file: {
@@ -165,7 +170,7 @@ export async function getFileBlob(
         checksum?: string | null;
     },
     context?: { userId?: string; actorRole?: string },
-): Promise<Buffer | null> {
+): Promise<Buffer | null | typeof FILE_INTEGRITY_FAILURE> {
     let raw: Buffer | null = null;
 
     if (file.data && file.data.length > 0) {
@@ -181,7 +186,21 @@ export async function getFileBlob(
 
     // Decrypt if this row was encrypted (keyId present means it went through encryptBuffer)
     if (file.keyId && file.iv && file.tag) {
-        const decrypted = decryptBuffer(raw, file.iv, file.tag);
+        let decrypted: Buffer;
+        try {
+            decrypted = decryptBuffer(raw, file.iv, file.tag);
+        } catch {
+            void logAccess({
+                userId: context?.userId,
+                actorRole: context?.actorRole,
+                action: AuditAction.FILE_INTEGRITY_MISMATCH,
+                resourceType: 'File',
+                resourceId: file.id,
+                success: false,
+                metadata: { reason: 'decryption_failed' },
+            });
+            return FILE_INTEGRITY_FAILURE;
+        }
 
         if (file.checksum) {
             const actual = checksumBuffer(decrypted);
@@ -195,8 +214,13 @@ export async function getFileBlob(
                     success: false,
                     metadata: { expected: file.checksum, actual },
                 });
-                return null;
+                return FILE_INTEGRITY_FAILURE;
             }
+        } else {
+            // Row was encrypted but has no checksum — integrity unverifiable
+            console.warn(
+                `[files] encrypted row ${file.id} has no checksum — integrity unverifiable`,
+            );
         }
 
         return decrypted;

@@ -10,6 +10,7 @@ import {
     getFilesByAppointment,
     getFileBlob,
     deleteFile,
+    FILE_INTEGRITY_FAILURE,
 } from './files.service';
 
 const router = Router();
@@ -227,14 +228,25 @@ router.get(
                 actorRole: req.user!.role,
             });
 
+            if (blob === FILE_INTEGRITY_FAILURE) {
+                return res.status(500).json({
+                    error: {
+                        code: 'FILE_INTEGRITY_FAILED',
+                        message: 'File integrity check failed',
+                    },
+                });
+            }
+
             if (!blob) {
                 return res.status(404).json({
                     error: { code: 'FILE_MISSING', message: 'File not found on server' },
                 });
             }
 
+            // Strip characters that would break the Content-Disposition header value
+            const safeName = file.originalName.replace(/["\\\r\n]/g, '_');
             res.setHeader('Content-Type', file.mimeType);
-            res.setHeader('Content-Disposition', `attachment; filename="${file.originalName}"`);
+            res.setHeader('Content-Disposition', `attachment; filename="${safeName}"`);
 
             res.send(blob);
         } catch (error) {

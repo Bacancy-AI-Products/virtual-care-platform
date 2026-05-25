@@ -279,10 +279,12 @@ async function backfillNotifications() {
 async function backfillFiles() {
     let skip = 0;
     let count = 0;
+    // Files can be up to 10MB each — use a small batch to avoid loading 1GB into memory at once
+    const FILE_BATCH = 5;
     console.log('\n[files] Starting…');
     for (;;) {
         const rows = await prisma.file.findMany({
-            take: BATCH,
+            take: FILE_BATCH,
             skip,
             orderBy: { id: 'asc' },
             select: { id: true, data: true, keyId: true },
