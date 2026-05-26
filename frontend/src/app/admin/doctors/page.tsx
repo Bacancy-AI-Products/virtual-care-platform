@@ -93,7 +93,7 @@ export default function AdminDoctors() {
                                                 <Image
                                                     src={
                                                         doctor.avatar ||
-                                                        `https://picsum.photos/seed/${doctor.id}/100/100`
+                                                        `https://i.pravatar.cc/150?u=${doctor.id}`
                                                     }
                                                     fill
                                                     className="rounded-2xl object-cover shadow-sm"
@@ -170,7 +170,13 @@ export default function AdminDoctors() {
                                         <div className="flex items-center gap-4">
                                             <div className="relative w-12 h-12">
                                                 <Image
-                                                    src={`https://picsum.photos/seed/doc${i + 10}/100/100`}
+                                                    src={
+                                                        [
+                                                            'https://i.pravatar.cc/150?img=65',
+                                                            'https://i.pravatar.cc/150?img=32',
+                                                        ][i] ??
+                                                        `https://i.pravatar.cc/150?u=doc${i}`
+                                                    }
                                                     fill
                                                     className="rounded-2xl object-cover shadow-sm"
                                                     alt={doc.name}

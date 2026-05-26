@@ -55,6 +55,26 @@ router.put(
 );
 
 /**
+ * GET /doctors/me/stats
+ * Get own aggregated trust-signal stats (rating, reviews, consultations, avg response).
+ * Doctor-only. Split from /doctors/me so the main profile fetch stays a single DB query.
+ */
+router.get(
+    '/me/stats',
+    requireAuth,
+    requireRole('DOCTOR'),
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = (req as AuthenticatedRequest).user!.sub;
+            const result = await doctorsService.getMyStats(userId);
+            res.json(result);
+        } catch (e) {
+            next(e);
+        }
+    },
+);
+
+/**
  * GET /doctors/me/availability
  * Get own weekly availability. Doctor-only.
  */

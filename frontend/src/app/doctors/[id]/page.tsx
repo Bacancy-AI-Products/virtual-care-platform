@@ -112,7 +112,7 @@ export default function PublicDoctorProfilePage() {
                         <div className="flex flex-col md:flex-row gap-8 md:gap-10 items-start relative z-10">
                             <div className="relative w-36 h-36 sm:w-40 sm:h-40 flex-shrink-0">
                                 <Image
-                                    src={`https://picsum.photos/seed/${doctor.id}/200/200`}
+                                    src={`https://i.pravatar.cc/200?u=${doctor.userId}`}
                                     alt={doctor.user.name}
                                     fill
                                     className="rounded-[40px] object-cover border-8 border-slate-50 shadow-xl"

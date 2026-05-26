@@ -43,6 +43,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { PatientVitalsPanel } from '@/components/doctor/PatientVitalsPanel';
+import { PatientDocumentsPanel } from '@/components/doctor/PatientDocumentsPanel';
 
 function calculateAge(dob: string | null): number | null {
     if (!dob) return null;
@@ -215,7 +217,7 @@ export default function DoctorPatientDetailsPage() {
                 <div className="flex flex-col md:flex-row gap-6 lg:gap-8 items-center md:items-start">
                     <div className="relative w-28 h-28 sm:w-32 sm:h-32 flex-shrink-0">
                         <Image
-                            src={`https://picsum.photos/seed/${profile.id}/200/200`}
+                            src={`https://i.pravatar.cc/200?u=${profile.userId}`}
                             alt={profile.user.name}
                             fill
                             className="rounded-[24px] sm:rounded-[28px] object-cover border-4 border-slate-50 shadow-xl"
@@ -432,6 +434,12 @@ export default function DoctorPatientDetailsPage() {
                     </div>
                 </div>
             </section>
+
+            {/* Vital Readings (patient-logged trends) */}
+            <PatientVitalsPanel patientId={profile.id} />
+
+            {/* Patient-uploaded documents (lab reports, imaging, etc.) */}
+            <PatientDocumentsPanel patientId={profile.id} />
 
             {/* Contact & Address */}
             <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">

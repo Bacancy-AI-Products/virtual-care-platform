@@ -34,6 +34,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { RatingStars } from '@/components/ui/RatingStars';
 import { VerificationBadge } from '@/components/ui/VerificationBadge';
+import { useScrollToTopOnPageChange } from '@/hooks/useScrollToTopOnPageChange';
 
 /** Server page size for the public doctors grid (3 columns × 3 rows at xl). */
 const PAGE_SIZE = 9;
@@ -75,7 +76,7 @@ function DoctorCard({
             <div className="flex items-start gap-6 mb-6">
                 <div className="relative w-20 h-20 flex-shrink-0">
                     <Image
-                        src={`https://picsum.photos/seed/${doctor.id}/100/100`}
+                        src={`https://i.pravatar.cc/150?u=${doctor.userId}`}
                         alt={doctor.user.name}
                         fill
                         className="rounded-3xl object-cover border-4 border-white shadow-md"
@@ -162,6 +163,7 @@ function PublicDoctorsContent() {
     const [searchTerm, setSearchTerm] = React.useState('');
     const [debouncedQ, setDebouncedQ] = React.useState('');
     const [page, setPage] = React.useState(1);
+    useScrollToTopOnPageChange(page);
     const [selectedSpecialtyId, setSelectedSpecialtyId] = React.useState<string>('all');
     const [selectedStateCode, setSelectedStateCode] = React.useState('');
     const [selectedCity, setSelectedCity] = React.useState('');

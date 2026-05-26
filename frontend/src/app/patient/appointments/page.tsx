@@ -25,6 +25,7 @@ import {
 } from '@/services/api';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { useScrollToTopOnPageChange } from '@/hooks/useScrollToTopOnPageChange';
 
 const PAGE_SIZE = 6;
 
@@ -122,7 +123,7 @@ function AppointmentCard({
             {/* Doctor */}
             <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                 <img
-                    src={`https://picsum.photos/seed/${appt.doctor.id}/100/100`}
+                    src={`https://i.pravatar.cc/150?u=${appt.doctor.user.id}`}
                     className="h-12 w-12 shrink-0 rounded-2xl object-cover shadow-sm sm:h-14 sm:w-14"
                     alt={appt.doctor.user.name}
                     referrerPolicy="no-referrer"
@@ -239,6 +240,7 @@ export default function PatientAppointments() {
     const [activeTab, setActiveTab] = React.useState<Tab>('Upcoming');
     const [cancellingId, setCancellingId] = React.useState<string | null>(null);
     const [page, setPage] = React.useState(1);
+    useScrollToTopOnPageChange(page);
 
     const { data: specializationData } = useQuery({
         queryKey: ['doctor', 'specializations'],

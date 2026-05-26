@@ -15,7 +15,7 @@ const MOCK_PATIENTS = [
         joined: 'Jan 12, 2024',
         appointments: 12,
         lastVisit: 'Mar 10, 2024',
-        avatar: 'https://picsum.photos/seed/p1/100/100',
+        avatar: 'https://i.pravatar.cc/150?img=57',
     },
     {
         id: '2',
@@ -25,7 +25,7 @@ const MOCK_PATIENTS = [
         joined: 'Feb 05, 2024',
         appointments: 4,
         lastVisit: 'Mar 08, 2024',
-        avatar: 'https://picsum.photos/seed/p2/100/100',
+        avatar: 'https://i.pravatar.cc/150?img=10',
     },
     {
         id: '3',
@@ -35,7 +35,7 @@ const MOCK_PATIENTS = [
         joined: 'Dec 20, 2023',
         appointments: 8,
         lastVisit: 'Feb 28, 2024',
-        avatar: 'https://picsum.photos/seed/p3/100/100',
+        avatar: 'https://i.pravatar.cc/150?img=64',
     },
     {
         id: '4',
@@ -45,7 +45,7 @@ const MOCK_PATIENTS = [
         joined: 'Jan 30, 2024',
         appointments: 2,
         lastVisit: 'Mar 01, 2024',
-        avatar: 'https://picsum.photos/seed/p4/100/100',
+        avatar: 'https://i.pravatar.cc/150?img=41',
     },
     {
         id: '5',
@@ -55,7 +55,7 @@ const MOCK_PATIENTS = [
         joined: 'Feb 15, 2024',
         appointments: 1,
         lastVisit: 'Mar 11, 2024',
-        avatar: 'https://picsum.photos/seed/p5/100/100',
+        avatar: 'https://i.pravatar.cc/150?img=68',
     },
 ];
 

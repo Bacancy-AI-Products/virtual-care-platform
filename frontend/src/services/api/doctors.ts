@@ -35,6 +35,11 @@ export interface DoctorSummary {
     stats: DoctorStats;
 }
 
+/** Same shape as DoctorSummary but without aggregated stats. Returned by
+ * /doctors/me — stats are fetched separately via /doctors/me/stats so the
+ * profile fetch stays a single DB query and stats can be cached independently. */
+export type MyDoctorProfile = Omit<DoctorSummary, 'stats'>;
+
 export interface AvailabilitySlot {
     id: string;
     weekday: number; // 0 = Sunday … 6 = Saturday
@@ -107,10 +112,12 @@ export const doctorsApi = {
             },
         }),
 
-    getMe: () => request<DoctorSummary>('/doctors/me'),
+    getMe: () => request<MyDoctorProfile>('/doctors/me'),
+
+    getMyStats: () => request<DoctorStats>('/doctors/me/stats'),
 
     updateMe: (data: UpdateDoctorProfileInput) =>
-        request<DoctorSummary>('/doctors/me', {
+        request<MyDoctorProfile>('/doctors/me', {
             method: 'PUT',
             body: JSON.stringify(data),
         }),

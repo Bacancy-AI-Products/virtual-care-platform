@@ -45,13 +45,19 @@ export default function QueryProvider({ children }: { children: ReactNode }) {
             new QueryClient({
                 defaultOptions: {
                     queries: {
-                        staleTime: 30_000,
+                        staleTime: 60_000,
                         gcTime: 10 * 60 * 1000,
                         refetchOnWindowFocus: false,
                         refetchOnReconnect: true,
                         placeholderData: keepPreviousData,
-                        retry: 3,
-                        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
+                        // Don't retry 4xx (auth/validation/not-found) — they won't recover.
+                        // Retry server/network errors once, then surface the failure quickly.
+                        retry: (failureCount, error) => {
+                            const status = (error as { status?: number } | undefined)?.status;
+                            if (status && status >= 400 && status < 500) return false;
+                            return failureCount < 1;
+                        },
+                        retryDelay: 800,
                     },
                 },
             }),

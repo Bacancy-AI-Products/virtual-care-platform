@@ -11,6 +11,8 @@ import { videoRouter } from '../modules/video';
 import { adminRouter } from '../modules/admin';
 import { notificationsRouter } from '../modules/notifications';
 import { reviewsRouter } from '../modules/reviews';
+import { vitalsRouter } from '../modules/vitals';
+import { reportsRouter } from '../modules/reports';
 
 const apiRouter = Router();
 
@@ -32,5 +34,7 @@ apiRouter.use('/files', filesRouter);
 apiRouter.use('/video', videoRouter);
 apiRouter.use('/admin', adminRouter);
 apiRouter.use('/notifications', notificationsRouter);
+apiRouter.use('/vitals', vitalsRouter);
+apiRouter.use('/reports', reportsRouter);
 
 export { apiRouter };

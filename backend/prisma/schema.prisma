@@ -54,6 +54,33 @@ enum NotificationType {
   APPOINTMENT_CANCELLED
 }
 
+// Patient-recorded health metrics (Vitals module).
+enum VitalType {
+  BP_SYSTOLIC
+  BP_DIASTOLIC
+  HEART_RATE
+  BLOOD_SUGAR
+  SPO2
+  TEMPERATURE
+  WEIGHT
+}
+
+// Derived from value vs. per-type reference range at write time.
+enum VitalStatus {
+  NORMAL
+  WARNING
+  CRITICAL
+}
+
+// How the reading was captured. Manual is the only one wired in v1;
+// the others are kept for future device / health-app integrations.
+enum VitalEntryMethod {
+  MANUAL
+  BLUETOOTH_DEVICE
+  CONNECTED_APP
+  IMPORTED
+}
+
 // Canonical list of medical specializations for doctors.
 model Specialization {
   id   String @id
@@ -166,6 +193,7 @@ model Patient {
   appointments  Appointment[]
   prescriptions Prescription[]
   reviews       Review[]
+  vitalReadings VitalReading[]
 
   @@map("patients")
 }
@@ -285,6 +313,9 @@ model File {
   type          FileType
   storageKey    String?  @map("storage_key") // legacy: filesystem path; "db" when data in DB
   originalName  String   @map("original_name")
+  /// Patient-supplied label for medical reports (e.g. "CBC Aug 2025").
+  /// Optional. NOT used for avatar uploads.
+  description   String?  @db.VarChar(500)
   mimeType      String   @map("mime_type")
   sizeBytes     BigInt   @map("size_bytes")
   data          Bytes?  @map("data") // optimized blob stored in DB
@@ -344,4 +375,28 @@ model Notification {
   @@index([userId, createdAt(sort: Desc)])
   @@index([userId, read])
   @@map("notifications")
+}
+
+// --- Vitals (patient-recorded health metrics for RPM-style tracking) ---
+// PHI: `value` and `notes` are field-level-encryption candidates (see hipaa-plan Phase 1.2).
+// Audit: all reads/writes flow through auditPhiAccess middleware.
+model VitalReading {
+  id           String           @id @default(uuid())
+  patientId    String           @map("patient_id")
+  type         VitalType
+  value        Decimal          @db.Decimal(8, 2) // covers HR (3 digits), temp (xx.x), glucose, weight, etc.
+  unit         String           @db.VarChar(16)   // mmHg, bpm, mg/dL, %, °F, kg
+  recordedAt   DateTime         @map("recorded_at") // when the reading was taken (patient-supplied; may be backdated)
+  entryMethod  VitalEntryMethod @default(MANUAL) @map("entry_method")
+  status       VitalStatus      @map("status")     // derived at write time vs. per-type range
+  notes        String?          @db.Text           // symptoms / activity context
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, recordedAt(sort: Desc)])
+  @@index([patientId, type, recordedAt(sort: Desc)])
+  @@index([patientId, status, recordedAt(sort: Desc)])
+  @@map("vital_readings")
 }

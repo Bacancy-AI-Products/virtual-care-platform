@@ -18,6 +18,8 @@ import { motion } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import { appointmentsApi, type Appointment } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
+import { useScrollToTopOnPageChange } from '@/hooks/useScrollToTopOnPageChange';
+import { vitalsApi, type DoctorRecentStatusRow } from '@/services/api';
 import { FORM_CONTROL_SEARCH_ON_WHITE, NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -53,6 +55,7 @@ function getPaginationItems(totalPages: number, currentPage: number): Array<numb
 
 interface PatientRow {
     patientId: string;
+    userId: string;
     name: string;
     email: string;
     totalAppointments: number;
@@ -72,6 +75,7 @@ function buildPatientRows(appointments: Appointment[]): PatientRow[] {
         if (!existing || apptDate > new Date(existing.lastAppointmentAt)) {
             map.set(pid, {
                 patientId: pid,
+                userId: appt.patient.user.id,
                 name: appt.patient.user.name,
                 email: appt.patient.user.email,
                 totalAppointments: (existing?.totalAppointments ?? 0) + 1,
@@ -107,18 +111,63 @@ function StatusPill({ status }: { status: string }) {
     );
 }
 
+/**
+ * Inline badge surfacing the latest vitals signal for a patient — rendered
+ * only when there's a non-Normal reading in the past 7 days so the table
+ * stays uncluttered for healthy patients.
+ */
+function VitalsBadge({ row }: { row: DoctorRecentStatusRow | undefined }) {
+    if (!row || (row.criticalCount === 0 && row.warningCount === 0)) return null;
+    const critical = row.criticalCount > 0;
+    return (
+        <span
+            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                critical
+                    ? 'bg-rose-50 text-rose-700 ring-1 ring-rose-100'
+                    : 'bg-amber-50 text-amber-700 ring-1 ring-amber-100'
+            }`}
+            title={
+                critical
+                    ? `${row.criticalCount} critical reading${row.criticalCount === 1 ? '' : 's'} in the last 7 days`
+                    : `${row.warningCount} reading${row.warningCount === 1 ? '' : 's'} outside normal range`
+            }
+        >
+            <span
+                className={`h-1.5 w-1.5 rounded-full ${critical ? 'bg-rose-500' : 'bg-amber-500'}`}
+            />
+            {critical ? 'Critical vitals' : 'Watch vitals'}
+        </span>
+    );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DoctorPatients() {
     const { token } = useAuth();
     const [search, setSearch] = React.useState('');
     const [page, setPage] = React.useState(1);
+    useScrollToTopOnPageChange(page);
 
     const { data, isLoading, isFetching, isError } = useQuery({
         queryKey: ['appointments', 'doctor', 'all'],
         queryFn: () => appointmentsApi.list({ limit: 100 }),
         enabled: !!token,
     });
+
+    // Side-quest fetch: per-patient vitals status for the last 7 days, used
+    // only to render the small badge in the patients row. Failure is silent —
+    // the table still renders without the badge.
+    const { data: vitalsStatus } = useQuery({
+        queryKey: ['vitals', 'doctor', 'recent-status', 7],
+        queryFn: () => vitalsApi.getDoctorRecentStatus(7),
+        enabled: !!token,
+        staleTime: 1000 * 60,
+    });
+    const statusByPatientId = React.useMemo(() => {
+        const map = new Map<string, DoctorRecentStatusRow>();
+        vitalsStatus?.data.forEach((row) => map.set(row.patientId, row));
+        return map;
+    }, [vitalsStatus]);
 
     const showLoader = isLoading || (isFetching && !data);
     const showError = !showLoader && isError && !data;
@@ -269,17 +318,24 @@ export default function DoctorPatients() {
                                             >
                                                 <div className="relative w-12 h-12 flex-shrink-0">
                                                     <Image
-                                                        src={`https://picsum.photos/seed/${patient.patientId}/100/100`}
+                                                        src={`https://i.pravatar.cc/150?u=${patient.userId}`}
                                                         alt={patient.name}
                                                         fill
                                                         className="rounded-2xl object-cover"
                                                         referrerPolicy="no-referrer"
                                                     />
                                                 </div>
-                                                <div>
+                                                <div className="min-w-0">
                                                     <p className="font-bold text-slate-900 group-hover:text-brand-600 transition-colors">
                                                         {patient.name}
                                                     </p>
+                                                    <div className="mt-1">
+                                                        <VitalsBadge
+                                                            row={statusByPatientId.get(
+                                                                patient.patientId,
+                                                            )}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </Link>
                                         </td>
@@ -341,7 +397,7 @@ export default function DoctorPatients() {
                                 <div className="flex items-center gap-4 mb-4">
                                     <div className="relative w-14 h-14 flex-shrink-0">
                                         <Image
-                                            src={`https://picsum.photos/seed/${patient.patientId}/100/100`}
+                                            src={`https://i.pravatar.cc/150?u=${patient.userId}`}
                                             alt={patient.name}
                                             fill
                                             className="rounded-2xl object-cover"
@@ -355,6 +411,11 @@ export default function DoctorPatients() {
                                         <p className="text-xs text-slate-500 truncate">
                                             {patient.email}
                                         </p>
+                                        <div className="mt-1.5">
+                                            <VitalsBadge
+                                                row={statusByPatientId.get(patient.patientId)}
+                                            />
+                                        </div>
                                     </div>
                                     <StatusPill status={patient.lastStatus} />
                                 </div>

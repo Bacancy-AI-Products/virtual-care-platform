@@ -49,8 +49,26 @@ async function optimizeImage(
 /**
  * Save file: optimize images, store blob in DB. Legacy filesystem fallback for existing data.
  */
-export async function saveFile(file: Express.Multer.File, userId: string, appointmentId?: string) {
-    const isAvatar = !appointmentId;
+/**
+ * Persist an uploaded file into the database.
+ *
+ * `options.isAvatar` controls image optimisation:
+ *   - `true` (avatar)  → small JPEG, square crop, low quality.
+ *   - `false` (medical)→ medical-image preset (larger, higher quality).
+ *
+ * Default behaviour preserves backwards compatibility with callers that
+ * predate the option: appointment-less uploads default to "avatar" exactly
+ * the way the original heuristic did. New medical-report routes pass
+ * `isAvatar: false` explicitly so reports without an appointment are still
+ * optimised as medical images.
+ */
+export async function saveFile(
+    file: Express.Multer.File,
+    userId: string,
+    appointmentId?: string,
+    options?: { isAvatar?: boolean; description?: string | null },
+) {
+    const isAvatar = options?.isAvatar ?? !appointmentId;
     let data: Buffer | null = null;
     let storageKey: string | null = null;
     let mimeType = file.mimetype;
@@ -86,6 +104,7 @@ export async function saveFile(file: Express.Multer.File, userId: string, appoin
             type: getFileType(file.mimetype),
             storageKey,
             originalName: file.originalname,
+            description: options?.description ?? null,
             mimeType,
             sizeBytes: BigInt(sizeBytes),
             data: data ? new Uint8Array(data) : null,

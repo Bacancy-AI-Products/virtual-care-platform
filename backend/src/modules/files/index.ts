@@ -54,6 +54,7 @@ router.get(
                 select: {
                     id: true,
                     originalName: true,
+                    description: true,
                     mimeType: true,
                     type: true,
                     sizeBytes: true,
@@ -67,6 +68,7 @@ router.get(
                 files.map((f) => ({
                     id: f.id,
                     originalName: f.originalName,
+                    description: f.description,
                     mimeType: f.mimeType,
                     type: f.type,
                     sizeBytes: f.sizeBytes.toString(),
@@ -97,6 +99,12 @@ router.post(
 
             const userId = req.user!.sub;
             const { appointmentId } = req.body;
+            // `description` is the patient-supplied label used by the
+            // "medical reports" upload page. Trim and clamp to 500 chars to
+            // match the DB column constraint.
+            const rawDescription =
+                typeof req.body.description === 'string' ? req.body.description.trim() : '';
+            const description = rawDescription.length === 0 ? null : rawDescription.slice(0, 500);
 
             if (appointmentId) {
                 const appointment = await prisma.appointment.findUnique({
@@ -120,17 +128,114 @@ router.post(
                 }
             }
 
-            const file = await saveFile(req.file, userId, appointmentId);
+            // Any upload through this endpoint is a medical document — never an
+            // avatar. Avatars use the dedicated `/users/me/avatar` route.
+            const file = await saveFile(req.file, userId, appointmentId, {
+                isAvatar: false,
+                description,
+            });
 
             res.status(201).json({
                 id: file.id,
                 originalName: file.originalName,
+                description: file.description,
                 mimeType: file.mimeType,
                 type: file.type,
                 sizeBytes: file.sizeBytes.toString(),
                 uploadedBy: file.uploadedBy,
                 createdAt: file.createdAt,
             });
+        } catch (error) {
+            next(error);
+        }
+    },
+);
+
+/**
+ * GET /files/patient/:patientId
+ * Doctor-only view of every medical document a patient has uploaded — both
+ * appointment-scoped files and standalone reports.
+ *
+ * Access rule mirrors `patients.getPatientForDoctor`: the doctor must have at
+ * least one appointment with this patient. Otherwise 403.
+ */
+router.get(
+    '/patient/:patientId',
+    requireAuth,
+    auditPhiAccess(AuditAction.FILE_LIST, 'File'),
+    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            const userId = req.user!.sub;
+            const patientId = req.params.patientId as string;
+            if (!patientId) {
+                return res.status(400).json({
+                    error: { code: 'BAD_REQUEST', message: 'patientId is required' },
+                });
+            }
+
+            // Resolve the calling doctor's profile id and verify the link.
+            const me = await prisma.user.findUnique({
+                where: { id: userId },
+                select: { doctorProfile: { select: { id: true } } },
+            });
+            const doctorId = me?.doctorProfile?.id;
+            if (!doctorId) {
+                return res.status(403).json({
+                    error: { code: 'FORBIDDEN', message: 'Doctor profile required' },
+                });
+            }
+            const link = await prisma.appointment.findFirst({
+                where: { doctorId, patientId },
+                select: { id: true },
+            });
+            if (!link) {
+                return res.status(403).json({
+                    error: {
+                        code: 'FORBIDDEN',
+                        message: 'You do not have access to this patient',
+                    },
+                });
+            }
+
+            // Walk patient → user → owned files. Includes both appointment-
+            // scoped (older flow) and patient-level (new reports flow) files.
+            const patient = await prisma.patient.findUnique({
+                where: { id: patientId },
+                select: { userId: true },
+            });
+            if (!patient) {
+                return res.status(404).json({
+                    error: { code: 'NOT_FOUND', message: 'Patient not found' },
+                });
+            }
+            const files = await prisma.file.findMany({
+                where: { ownerId: patient.userId },
+                select: {
+                    id: true,
+                    originalName: true,
+                    description: true,
+                    mimeType: true,
+                    type: true,
+                    sizeBytes: true,
+                    createdAt: true,
+                    appointmentId: true,
+                    uploadedBy: { select: { id: true, name: true, role: true } },
+                },
+                orderBy: { createdAt: 'desc' },
+            });
+            res.json(
+                files.map((f) => ({
+                    id: f.id,
+                    originalName: f.originalName,
+                    description: f.description,
+                    mimeType: f.mimeType,
+                    type: f.type,
+                    sizeBytes: f.sizeBytes.toString(),
+                    appointmentId: f.appointmentId,
+                    uploadedBy: f.uploadedBy,
+                    createdAt: f.createdAt,
+                })),
+            );
         } catch (error) {
             next(error);
         }

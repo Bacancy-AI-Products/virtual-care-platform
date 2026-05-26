@@ -21,7 +21,8 @@ import {
     doctorsApi,
     usersApi,
     filesApi,
-    type DoctorSummary,
+    type MyDoctorProfile,
+    type DoctorStats,
     type UpdateDoctorProfileInput,
     type SpecializationOption,
 } from '@/services/api';
@@ -49,19 +50,32 @@ export default function DoctorProfile() {
 
     React.useEffect(() => setMounted(true), []);
 
+    React.useEffect(() => {
+        if (mounted && (!token || user?.role !== 'DOCTOR')) {
+            router.push('/login?from=/doctor/profile');
+        }
+    }, [mounted, token, user?.role, router]);
+
     const {
         data: profile,
-        isLoading,
-        isFetching,
+        isPending,
         isError,
+        refetch,
     } = useQuery({
         queryKey: ['doctor', 'me'],
         queryFn: () => doctorsApi.getMe(),
         enabled: !!token && user?.role === 'DOCTOR',
+        staleTime: 1000 * 60 * 5,
     });
 
-    const showLoader = isLoading || (isFetching && !profile);
-    const showError = !showLoader && isError && !profile;
+    // Stats are fetched on a separate, longer cache window so the profile
+    // page renders the moment the (cheap) profile query resolves.
+    const { data: stats } = useQuery<DoctorStats>({
+        queryKey: ['doctor', 'me', 'stats'],
+        queryFn: () => doctorsApi.getMyStats(),
+        enabled: !!token && user?.role === 'DOCTOR',
+        staleTime: 1000 * 60 * 10,
+    });
 
     const { data: specializationData } = useQuery({
         queryKey: ['doctor', 'specializations'],
@@ -156,7 +170,7 @@ export default function DoctorProfile() {
 
     const updateMutation = useMutation({
         mutationFn: (data: UpdateDoctorProfileInput) => doctorsApi.updateMe(data),
-        onSuccess: (updated: DoctorSummary) => {
+        onSuccess: (updated: MyDoctorProfile) => {
             qClient.setQueryData(['doctor', 'me'], updated);
             setIsEditing(false);
         },
@@ -204,21 +218,42 @@ export default function DoctorProfile() {
         }));
     };
 
-    if (!mounted || showLoader) {
+    if (!mounted) {
         return <LoadingState message="Loading profile…" />;
     }
 
     if (!token || user?.role !== 'DOCTOR') {
-        router.push('/login?from=/doctor/profile');
         return null;
     }
 
-    if (showError || !profile) {
+    // No cached data + still fetching → first-time spinner.
+    if (!profile && isPending) {
+        return <LoadingState message="Loading profile…" />;
+    }
+
+    // No cached data + finished with an error → actionable retry UI.
+    if (!profile && isError) {
         return (
-            <div className="flex justify-center py-24">
-                <p className="text-red-500 font-bold">Failed to load profile.</p>
+            <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+                <p className="text-red-600 font-bold">We couldn’t load your profile.</p>
+                <p className="text-sm text-slate-500 max-w-sm">
+                    Check your connection and try again. If this keeps happening, please contact
+                    support.
+                </p>
+                <button
+                    type="button"
+                    onClick={() => refetch()}
+                    className="px-5 py-2.5 bg-brand-500 text-white text-sm font-bold rounded-xl hover:bg-brand-600 transition-all active:scale-95"
+                >
+                    Retry
+                </button>
             </div>
         );
+    }
+
+    if (!profile) {
+        // Safety net: shouldn't reach here but guard so TS narrows below.
+        return <LoadingState message="Loading profile…" />;
     }
 
     return (
@@ -281,9 +316,9 @@ export default function DoctorProfile() {
                 )}
             </div>
 
-            <div className="grid md:grid-cols-3 gap-10">
-                <div className="md:col-span-1 space-y-6">
-                    <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm text-center relative group">
+            <div className="grid gap-6 xl:grid-cols-5 xl:gap-10">
+                <div className="xl:col-span-2 xl:row-start-1">
+                    <div className="bg-white p-6 sm:p-8 rounded-[32px] border border-slate-100 shadow-sm text-center relative group">
                         {/* Hidden file input for avatar upload */}
                         <input
                             ref={fileInputRef}
@@ -304,15 +339,15 @@ export default function DoctorProfile() {
                                     fill
                                     className="rounded-[40px] object-cover border-4 border-white shadow-xl"
                                 />
-                            ) : (
+                            ) : !avatarFileId ? (
                                 <Image
-                                    src={`https://picsum.photos/seed/${profile.id}/200/200`}
+                                    src={`https://i.pravatar.cc/200?u=${me?.id ?? profile.id}`}
                                     alt={profile.user.name}
                                     fill
                                     className="rounded-[40px] object-cover border-4 border-white shadow-xl"
                                     referrerPolicy="no-referrer"
                                 />
-                            )}
+                            ) : null}
                             <div className="absolute inset-0 rounded-[40px] bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 {uploadingAvatar ? (
                                     <Loader2 className="w-6 h-6 text-white animate-spin" />
@@ -364,7 +399,9 @@ export default function DoctorProfile() {
                             </div>
                         </div>
                     </div>
+                </div>
 
+                <div className="xl:col-span-2 xl:row-start-2">
                     <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm space-y-4">
                         <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                             <GraduationCap className="w-4 h-4 text-brand-500" /> Credentials &
@@ -380,12 +417,12 @@ export default function DoctorProfile() {
                     </div>
                 </div>
 
-                <div className="md:col-span-2 space-y-8">
+                <div className="space-y-8 xl:col-span-3 xl:col-start-3 xl:row-span-2 xl:row-start-1">
                     {isEditing ? (
                         <form
                             id="doctor-profile-form"
                             onSubmit={handleSubmit}
-                            className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm space-y-8"
+                            className="bg-white p-6 sm:p-8 rounded-[32px] border border-slate-100 shadow-sm space-y-8"
                             autoComplete="off"
                         >
                             <h3 className="text-xl font-bold text-slate-900">
@@ -538,7 +575,7 @@ export default function DoctorProfile() {
                             </div>
                         </form>
                     ) : (
-                        <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm space-y-8">
+                        <div className="bg-white p-6 sm:p-8 rounded-[32px] border border-slate-100 shadow-sm space-y-8">
                             <h3 className="text-xl font-bold text-slate-900">
                                 Professional Information
                             </h3>
@@ -616,7 +653,14 @@ export default function DoctorProfile() {
                                 </p>
                                 <DoctorTrustStrip
                                     experienceYears={profile.experienceYears}
-                                    stats={profile.stats}
+                                    stats={
+                                        stats ?? {
+                                            averageRating: null,
+                                            reviewCount: 0,
+                                            consultationCount: 0,
+                                            avgResponseMinutes: null,
+                                        }
+                                    }
                                 />
                             </div>
 

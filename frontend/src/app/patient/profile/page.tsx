@@ -149,16 +149,23 @@ export default function PatientProfile() {
         emergencyContactPhone: '',
     });
 
-    const { data: me, isLoading } = useQuery({
+    const {
+        data: me,
+        isPending,
+        isError,
+        refetch,
+    } = useQuery({
         queryKey: ['users', 'me'],
         queryFn: () => usersApi.getMe(),
         enabled: !!token,
+        staleTime: 1000 * 60 * 5,
     });
 
     const { data: apptData } = useQuery({
         queryKey: ['appointments', 'patient', 'all'],
         queryFn: () => appointmentsApi.list({ limit: 100 }),
         enabled: !!token,
+        staleTime: 1000 * 60 * 2,
     });
 
     // Load avatar blob URL whenever the file ID changes
@@ -295,10 +302,40 @@ export default function PatientProfile() {
         saveMutation.mutate();
     };
 
-    if (!mounted || isLoading) {
+    if (!mounted) {
         return (
             <div className="flex justify-center py-32">
                 <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
+            </div>
+        );
+    }
+
+    // No cached data + first fetch in flight → quick spinner.
+    if (!me && isPending) {
+        return (
+            <div className="flex justify-center py-32">
+                <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
+            </div>
+        );
+    }
+
+    // No cached data + finished with an error → recoverable retry UI.
+    if (!me && isError) {
+        return (
+            <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+                <AlertCircle className="w-8 h-8 text-red-500" />
+                <p className="text-red-600 font-bold">We couldn’t load your profile.</p>
+                <p className="text-sm text-slate-500 max-w-sm">
+                    Check your connection and try again. If this keeps happening, please contact
+                    support.
+                </p>
+                <button
+                    type="button"
+                    onClick={() => refetch()}
+                    className="px-5 py-2.5 bg-brand-500 text-white text-sm font-bold rounded-xl hover:bg-brand-600 transition-all active:scale-95"
+                >
+                    Retry
+                </button>
             </div>
         );
     }
@@ -307,6 +344,11 @@ export default function PatientProfile() {
     const locationStr = [patient?.city, patient?.state].filter(Boolean).join(', ') || '—';
     const age = getAge(patient?.dateOfBirth ?? null);
     const initial = me?.name?.[0]?.toUpperCase() ?? 'P';
+
+    // Only show pravatar when we know no file was uploaded (avoids flicker:
+    // show pravatar → then switch to blob when it arrives)
+    const defaultAvatarUrl =
+        me?.id && !me.avatarFileId ? `https://i.pravatar.cc/150?u=${me.id}` : null;
 
     return (
         <motion.div
@@ -394,9 +436,9 @@ export default function PatientProfile() {
                             onClick={() => !uploadingAvatar && fileInputRef.current?.click()}
                             title="Change profile picture"
                         >
-                            {avatarBlobUrl ? (
+                            {avatarBlobUrl || defaultAvatarUrl ? (
                                 <Image
-                                    src={avatarBlobUrl}
+                                    src={avatarBlobUrl ?? defaultAvatarUrl!}
                                     alt="Profile picture"
                                     fill
                                     className="rounded-[28px] object-cover shadow-lg"
