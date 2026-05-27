@@ -18,6 +18,9 @@ import {
     ClipboardList,
     Star,
     MessageSquare,
+    Activity,
+    FileBarChart,
+    FolderHeart,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { SidebarDecoration } from '@/components/SidebarDecoration';
@@ -33,6 +36,8 @@ import {
     appointmentsApi,
     prescriptionsApi,
     reviewsApi,
+    vitalsApi,
+    reportsApi,
 } from '@/services/api';
 
 function cn(...inputs: ClassValue[]) {
@@ -41,7 +46,7 @@ function cn(...inputs: ClassValue[]) {
 
 const ROLE_HEADER_TAGLINE: Record<'patient' | 'doctor' | 'admin', string> = {
     patient: 'Stay on top of appointments, records, and visits.',
-    doctor: 'Schedule, visits, and patient context in one place.',
+    doctor: 'Schedule, vitals, reports, and patient context in one place.',
     admin: 'Monitor providers, patients, and platform activity.',
 };
 
@@ -55,7 +60,9 @@ const patientNav: NavItem[] = [
     { to: '/patient/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/patient/doctors', icon: Search, label: 'Find Doctors' },
     { to: '/patient/appointments', icon: Calendar, label: 'Appointments' },
+    { to: '/patient/vitals', icon: Activity, label: 'Vitals' },
     { to: '/patient/records', icon: FileText, label: 'Medical Records' },
+    { to: '/patient/reports', icon: FolderHeart, label: 'Attachments' },
     { to: '/patient/feedback', icon: MessageSquare, label: 'Feedback' },
     { to: '/patient/profile', icon: User, label: 'Profile' },
 ];
@@ -67,6 +74,7 @@ const doctorNav: NavItem[] = [
     { to: '/doctor/patients', icon: Users, label: 'Patient Records' },
     { to: '/doctor/prescriptions', icon: FileText, label: 'Prescriptions' },
     { to: '/doctor/reviews', icon: Star, label: 'Reviews' },
+    { to: '/doctor/reports', icon: FileBarChart, label: 'Reports' },
     { to: '/doctor/profile', icon: User, label: 'Profile' },
 ];
 
@@ -95,6 +103,16 @@ const PREFETCH_MAP: Record<string, (qc: ReturnType<typeof useQueryClient>) => vo
             queryKey: ['reviews', 'mine'],
             queryFn: () => reviewsApi.getMine({ limit: 100 }),
         }),
+    '/patient/vitals': (qc) => {
+        qc.prefetchQuery({
+            queryKey: ['vitals', 'reference'],
+            queryFn: () => vitalsApi.getReference(),
+        });
+        qc.prefetchQuery({
+            queryKey: ['vitals', 'mine', 'trends', 30],
+            queryFn: () => vitalsApi.getMyTrends(30),
+        });
+    },
     '/patient/dashboard': (qc) =>
         qc.prefetchQuery({
             queryKey: ['appointments', 'patient', 'upcoming'],
@@ -105,11 +123,20 @@ const PREFETCH_MAP: Record<string, (qc: ReturnType<typeof useQueryClient>) => vo
             queryKey: ['appointments', 'doctor', 'all'],
             queryFn: () => appointmentsApi.list({ limit: 100 }),
         }),
-    '/doctor/dashboard': (qc) =>
+    '/doctor/dashboard': (qc) => {
         qc.prefetchQuery({
             queryKey: ['appointments', 'doctor', 'all'],
             queryFn: () => appointmentsApi.list({ limit: 100 }),
-        }),
+        });
+        qc.prefetchQuery({
+            queryKey: ['vitals', 'doctor', 'recent-status', 7],
+            queryFn: () => vitalsApi.getDoctorRecentStatus(7),
+        });
+        qc.prefetchQuery({
+            queryKey: ['reports', 'productivity', 7],
+            queryFn: () => reportsApi.getProductivity(7),
+        });
+    },
     '/doctor/prescriptions': (qc) =>
         qc.prefetchQuery({
             queryKey: ['prescriptions', 'mine'],
@@ -331,8 +358,8 @@ export const Layout = ({ children, role }: LayoutProps) => {
 
     return (
         <div className="min-h-screen bg-slate-50 flex w-full max-w-full overflow-x-hidden">
-            {/* Sidebar — Desktop */}
-            <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 shrink-0 flex-col overflow-hidden border-r border-slate-200/70 bg-white/95 shadow-[6px_0_32px_-18px_rgba(15,23,42,0.12)] backdrop-blur-md lg:flex lg:flex-col">
+            {/* Sidebar: Desktop (xl+); tablets use the drawer */}
+            <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 shrink-0 flex-col overflow-hidden border-r border-slate-200/70 bg-white/95 shadow-[6px_0_32px_-18px_rgba(15,23,42,0.12)] backdrop-blur-md xl:flex xl:flex-col">
                 <div
                     className="pointer-events-none absolute bottom-0 left-0 top-0 w-[3px] bg-gradient-to-b from-medical-teal via-brand-400 to-brand-500"
                     aria-hidden
@@ -350,23 +377,23 @@ export const Layout = ({ children, role }: LayoutProps) => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex min-h-screen w-full min-w-0 max-w-full flex-1 flex-col overflow-x-hidden pt-[66px] lg:ml-72">
-                {/* Fixed within content column — desktop aligns with lg:ml-72 sidebar */}
-                <header className="fixed left-0 right-0 top-0 z-[38] flex h-[66px] shrink-0 items-center justify-between gap-3 border-b border-slate-200/80 bg-white/92 px-4 shadow-[0_4px_28px_-10px_rgba(15,23,42,0.1)] backdrop-blur-xl sm:px-6 lg:left-72 lg:gap-6 lg:px-10">
+            <main className="flex min-h-screen w-full min-w-0 max-w-full flex-1 flex-col overflow-x-hidden pt-[66px] xl:ml-72">
+                {/* Fixed within content column. Desktop aligns with xl:ml-72 sidebar. */}
+                <header className="fixed left-0 right-0 top-0 z-[38] flex h-[66px] shrink-0 items-center justify-between gap-3 border-b border-slate-200/80 bg-white/92 px-4 shadow-[0_4px_28px_-10px_rgba(15,23,42,0.1)] backdrop-blur-xl sm:px-6 xl:left-72 xl:gap-6 xl:px-10">
                     <span
                         className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-medical-teal/0 via-brand-400/50 to-medical-teal/0"
                         aria-hidden
                     />
                     <button
                         type="button"
-                        className="lg:hidden flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200/90 bg-white text-slate-700 shadow-sm ring-1 ring-slate-100/90 transition-colors hover:border-brand-200 hover:bg-brand-50/70 hover:text-brand-800 active:scale-[0.98]"
+                        className="xl:hidden flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200/90 bg-white text-slate-700 shadow-sm ring-1 ring-slate-100/90 transition-colors hover:border-brand-200 hover:bg-brand-50/70 hover:text-brand-800 active:scale-[0.98]"
                         onClick={() => setIsMobileMenuOpen(true)}
                         aria-label="Open menu"
                     >
                         <Menu className="h-5 w-5" aria-hidden />
                     </button>
 
-                    <div className="min-w-0 flex-1 leading-tight">
+                    <div className="hidden min-w-0 flex-1 leading-tight sm:block">
                         <time
                             dateTime={headerDate?.iso}
                             className="text-sm font-semibold text-slate-800"
@@ -374,7 +401,7 @@ export const Layout = ({ children, role }: LayoutProps) => {
                         >
                             {headerDate?.line ?? '\u00a0'}
                         </time>
-                        <p className="mt-0.5 hidden truncate text-xs leading-snug text-slate-500 sm:block">
+                        <p className="mt-0.5 truncate text-xs leading-snug text-slate-500">
                             {ROLE_HEADER_TAGLINE[role]}
                         </p>
                     </div>
@@ -405,10 +432,7 @@ export const Layout = ({ children, role }: LayoutProps) => {
                             </div>
                             <div className="relative h-10 w-10 shrink-0 rounded-full shadow-md shadow-slate-400/25 ring-2 ring-white transition-transform group-hover:ring-brand-100/80 sm:h-9 sm:w-9">
                                 <Image
-                                    src={
-                                        avatarUrl ??
-                                        `https://picsum.photos/seed/${avatarSeed}/100/100`
-                                    }
+                                    src={avatarUrl ?? `https://i.pravatar.cc/150?u=${avatarSeed}`}
                                     alt="Avatar"
                                     fill
                                     className="rounded-full object-cover"
@@ -425,9 +449,9 @@ export const Layout = ({ children, role }: LayoutProps) => {
                 </div>
             </main>
 
-            {/* Mobile Menu Overlay */}
+            {/* Mobile / Tablet Menu Overlay */}
             {isMobileMenuOpen && (
-                <div className="fixed inset-0 z-50 lg:hidden">
+                <div className="fixed inset-0 z-50 xl:hidden">
                     <div
                         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
                         onClick={() => setIsMobileMenuOpen(false)}

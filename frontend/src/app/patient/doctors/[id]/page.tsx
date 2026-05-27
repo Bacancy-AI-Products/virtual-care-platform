@@ -205,14 +205,14 @@ export default function DoctorProfilePage() {
                 Back to Results
             </button>
 
-            <div className="grid lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 min-w-0">
+            <div className="grid xl:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 min-w-0">
                 {/* Doctor info */}
-                <div className="lg:col-span-2 space-y-6 sm:space-y-8 lg:space-y-10 min-w-0">
+                <div className="xl:col-span-2 space-y-6 sm:space-y-8 lg:space-y-10 min-w-0">
                     <div className="w-full bg-white p-5 sm:p-8 lg:p-10 rounded-[28px] sm:rounded-[36px] lg:rounded-[48px] border border-slate-100 shadow-sm relative overflow-hidden">
                         <div className="flex flex-col md:flex-row gap-6 lg:gap-10 items-center md:items-start relative z-10 min-w-0">
                             <div className="relative w-28 h-28 sm:w-32 sm:h-32 lg:w-40 lg:h-40 flex-shrink-0">
                                 <Image
-                                    src={`https://picsum.photos/seed/${doctor.id}/200/200`}
+                                    src={`https://i.pravatar.cc/200?u=${doctor.userId}`}
                                     alt={doctor.user.name}
                                     fill
                                     className="rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] object-cover border-4 lg:border-8 border-slate-50 shadow-xl"
@@ -300,7 +300,7 @@ export default function DoctorProfilePage() {
 
                 {/* Booking panel */}
                 <div className="min-w-0">
-                    <div className="bg-white p-5 sm:p-7 lg:p-8 rounded-[28px] sm:rounded-[36px] lg:rounded-[48px] border border-slate-100 shadow-xl shadow-slate-100 lg:sticky lg:top-28 space-y-5 sm:space-y-6 max-w-md mx-auto lg:max-w-none lg:mx-0 overflow-hidden">
+                    <div className="bg-white p-5 sm:p-7 lg:p-8 rounded-[28px] sm:rounded-[36px] lg:rounded-[48px] border border-slate-100 shadow-xl shadow-slate-100 xl:sticky xl:top-28 space-y-5 sm:space-y-6 max-w-md mx-auto md:max-w-none md:mx-0 overflow-hidden">
                         <div className="flex items-center justify-between gap-3">
                             <h3 className="min-w-0 text-lg sm:text-xl lg:text-2xl font-bold text-slate-900 leading-tight">
                                 Book Appointment
@@ -366,7 +366,7 @@ export default function DoctorProfilePage() {
                                     No slots on {format(selectedDate, 'MMM d')}
                                 </p>
                             ) : (
-                                <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto pr-1">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-2 gap-3 max-h-48 overflow-y-auto pr-1">
                                     {slots.map((slot) => {
                                         const slotStart = new Date(slot.startsAt).getTime();
                                         const slotEnd = slotStart + slot.durationMinutes * 60_000;

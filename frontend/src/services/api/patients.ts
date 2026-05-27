@@ -2,6 +2,7 @@ import { request } from './client';
 
 export interface PatientProfile {
     id: string;
+    userId: string;
     dateOfBirth: string | null;
     gender: string | null;
     phone: string | null;
@@ -13,7 +14,7 @@ export interface PatientProfile {
     city: string | null;
     state: string | null;
     address: string | null;
-    user: { name: string; email: string };
+    user: { id: string; name: string; email: string };
 }
 
 export const patientsApi = {

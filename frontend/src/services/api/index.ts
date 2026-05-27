@@ -3,6 +3,7 @@ export type { AuthUser, AuthResult } from './auth';
 export { authApi } from './auth';
 export type {
     DoctorSummary,
+    MyDoctorProfile,
     DoctorStats,
     Credential,
     AvailabilitySlot,
@@ -36,9 +37,32 @@ export type { VideoRoomResponse, VideoTokenResponse, VideoInfoResponse } from '.
 export { videoApi } from './video';
 export type { Message } from './messages';
 export { messagesApi } from './messages';
-export type { FileRecord } from './files';
+export type { FileRecord, UploadOptions } from './files';
 export { filesApi } from './files';
 export type { PrescriptionItem, Prescription, CreatePrescriptionInput } from './prescriptions';
 export { prescriptionsApi } from './prescriptions';
 export type { AppNotification } from './notifications';
 export { notificationsApi } from './notifications';
+export type {
+    VitalType,
+    VitalStatus,
+    VitalEntryMethod,
+    VitalReference,
+    VitalReading,
+    VitalsListResponse,
+    VitalSeries,
+    VitalSeriesPoint,
+    VitalTrendsResponse,
+    CreateVitalReadingInput,
+    ListMyVitalsParams,
+    DoctorRecentStatusRow,
+    DoctorRecentStatusResponse,
+} from './vitals';
+export { vitalsApi } from './vitals';
+export type {
+    PatientVitalsSummary,
+    RpmMinutesRow,
+    RpmMinutesReport,
+    ProductivityReport,
+} from './reports';
+export { reportsApi } from './reports';

@@ -259,7 +259,7 @@ export function ChatPanel({ appointmentInfo, chat, onClose }: Props) {
                     <div className="flex items-center gap-4">
                         <div className="relative w-12 h-12">
                             <Image
-                                src={`https://picsum.photos/seed/${isDoctor ? 'patient' : 'doctor'}/100/100`}
+                                src={`https://i.pravatar.cc/150?u=${isDoctor ? 'patient' : 'doctor'}`}
                                 fill
                                 className="rounded-2xl object-cover"
                                 alt="User"

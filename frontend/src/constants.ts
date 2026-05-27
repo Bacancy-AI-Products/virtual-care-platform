@@ -13,7 +13,7 @@ export const MOCK_DOCTORS: Doctor[] = [
         fee: 150,
         about: 'Dr. Sarah Johnson is a highly experienced cardiologist with over 12 years of practice. She specializes in non-invasive cardiology and heart failure management.',
         availableSlots: ['09:00 AM', '10:30 AM', '02:00 PM', '04:00 PM'],
-        avatar: 'https://picsum.photos/seed/doctor1/200/200',
+        avatar: 'https://i.pravatar.cc/200?img=47',
     },
     {
         id: 'd2',
@@ -27,7 +27,7 @@ export const MOCK_DOCTORS: Doctor[] = [
         fee: 120,
         about: 'Dr. Michael Chen focuses on clinical and cosmetic dermatology. He is known for his patient-centric approach and expertise in skin conditions.',
         availableSlots: ['11:00 AM', '01:30 PM', '03:00 PM', '05:30 PM'],
-        avatar: 'https://picsum.photos/seed/doctor2/200/200',
+        avatar: 'https://i.pravatar.cc/200?img=60',
     },
     {
         id: 'd3',
@@ -41,6 +41,6 @@ export const MOCK_DOCTORS: Doctor[] = [
         fee: 100,
         about: 'Dr. Emily White has been caring for children for over 15 years. She provides comprehensive pediatric care from newborns to adolescents.',
         availableSlots: ['08:30 AM', '10:00 AM', '01:00 PM', '03:30 PM'],
-        avatar: 'https://picsum.photos/seed/doctor3/200/200',
+        avatar: 'https://i.pravatar.cc/200?img=35',
     },
 ];

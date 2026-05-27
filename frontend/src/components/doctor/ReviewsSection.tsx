@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import { reviewsApi, type DoctorReview, type ReviewsSummary } from '@/services/api';
 import { RatingStars } from '@/components/ui/RatingStars';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { useScrollToTopOnPageChange } from '@/hooks/useScrollToTopOnPageChange';
 
 const PAGE_SIZE = 5;
 
@@ -20,6 +21,8 @@ interface ReviewsSectionProps {
  */
 export function ReviewsSection({ doctorId }: ReviewsSectionProps) {
     const [page, setPage] = React.useState(1);
+    const sectionRef = React.useRef<HTMLDivElement>(null);
+    useScrollToTopOnPageChange(page, sectionRef);
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ['doctor', doctorId, 'reviews', page],
@@ -33,7 +36,10 @@ export function ReviewsSection({ doctorId }: ReviewsSectionProps) {
     const hasPrev = page > 1;
 
     return (
-        <div className="bg-white p-5 sm:p-8 lg:p-10 rounded-[28px] sm:rounded-[36px] lg:rounded-[48px] border border-slate-100 shadow-sm space-y-6 sm:space-y-8">
+        <div
+            ref={sectionRef}
+            className="bg-white p-5 sm:p-8 lg:p-10 rounded-[28px] sm:rounded-[36px] lg:rounded-[48px] border border-slate-100 shadow-sm space-y-6 sm:space-y-8"
+        >
             <div className="flex items-center justify-between gap-4">
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Patient reviews</h2>
                 {summary && summary.reviewCount > 0 && (

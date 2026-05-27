@@ -52,6 +52,12 @@ export default function DoctorAvailabilityPage() {
     );
 
     React.useEffect(() => {
+        if (!token || user?.role !== 'DOCTOR') {
+            router.push('/login?from=/doctor/availability');
+        }
+    }, [token, user?.role, router]);
+
+    React.useEffect(() => {
         if (data?.availability) {
             setLocal(groupByWeekday(data.availability));
         }
@@ -68,7 +74,6 @@ export default function DoctorAvailabilityPage() {
     });
 
     if (!token || user?.role !== 'DOCTOR') {
-        router.push('/login?from=/doctor/availability');
         return null;
     }
 

@@ -117,6 +117,14 @@ export interface DoctorWithStats {
     stats: DoctorStats;
 }
 
+/**
+ * Same shape as DoctorWithStats but without the aggregated `stats` block.
+ * Returned by /doctors/me and PUT /doctors/me so those endpoints can stay
+ * a single DB query. Stats are fetched separately via /doctors/me/stats
+ * which can be cached independently on the client.
+ */
+export type MyDoctorProfile = Omit<DoctorWithStats, 'stats'>;
+
 export interface ListDoctorsResult {
     data: DoctorWithStats[];
     total: number;
@@ -272,7 +280,7 @@ export async function getMyAvailability(userId: string) {
     return getAvailability(profile.id);
 }
 
-export async function getMyProfile(userId: string): Promise<DoctorWithStats> {
+export async function getMyProfile(userId: string): Promise<MyDoctorProfile> {
     const profile = await prisma.doctorProfile.findUnique({
         where: { userId },
         select: doctorListSelect,
@@ -280,16 +288,26 @@ export async function getMyProfile(userId: string): Promise<DoctorWithStats> {
     if (!profile) {
         throw new AppError('Doctor profile not found', 404, 'NOT_FOUND');
     }
+    return profile;
+}
+
+export async function getMyStats(userId: string): Promise<DoctorStats> {
+    const profile = await prisma.doctorProfile.findUnique({
+        where: { userId },
+        select: { id: true },
+    });
+    if (!profile) {
+        throw new AppError('Doctor profile not found', 404, 'NOT_FOUND');
+    }
     const stats = await getStatsByDoctorIds([profile.id]);
-    return {
-        ...profile,
-        stats: stats.get(profile.id) ?? {
+    return (
+        stats.get(profile.id) ?? {
             averageRating: null,
             reviewCount: 0,
             consultationCount: 0,
             avgResponseMinutes: null,
-        },
-    };
+        }
+    );
 }
 
 export async function updateMyAvailability(
@@ -352,7 +370,7 @@ export interface UpdateDoctorProfileData {
 export async function updateMyProfile(
     userId: string,
     data: UpdateDoctorProfileData,
-): Promise<DoctorWithStats> {
+): Promise<MyDoctorProfile> {
     const profile = await prisma.doctorProfile.findUnique({
         where: { userId },
     });
@@ -381,16 +399,7 @@ export async function updateMyProfile(
         select: doctorListSelect,
     });
 
-    const stats = await getStatsByDoctorIds([updated.id]);
-    return {
-        ...updated,
-        stats: stats.get(updated.id) ?? {
-            averageRating: null,
-            reviewCount: 0,
-            consultationCount: 0,
-            avgResponseMinutes: null,
-        },
-    };
+    return updated;
 }
 
 export async function listSpecializations() {

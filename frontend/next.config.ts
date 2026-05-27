@@ -32,6 +32,18 @@ const nextConfig: NextConfig = {
                 port: '',
                 pathname: '/**',
             },
+            {
+                protocol: 'https',
+                hostname: 'i.pravatar.cc',
+                port: '',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'randomuser.me',
+                port: '',
+                pathname: '/**',
+            },
         ],
         // Serve optimised WebP/AVIF versions from Next.js image CDN
         formats: ['image/avif', 'image/webp'],

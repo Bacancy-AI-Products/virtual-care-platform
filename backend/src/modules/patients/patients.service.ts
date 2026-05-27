@@ -75,6 +75,7 @@ const patientFullSelect = {
  */
 const patientDoctorViewSelect = {
     id: true,
+    userId: true,
     dateOfBirth: true,
     gender: true,
     phone: true,
@@ -87,7 +88,7 @@ const patientDoctorViewSelect = {
     state: true,
     address: true,
     user: {
-        select: { name: true, email: true },
+        select: { id: true, name: true, email: true },
     },
 } as const;
 

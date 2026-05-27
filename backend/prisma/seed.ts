@@ -1146,11 +1146,21 @@ async function main() {
     // ─── APPOINTMENTS ──────────────────────────────────────────────────────────
     // Wipe existing seed appointments/prescriptions so re-runs are clean.
     const seedPatientIds = patients.map((p) => p.record.id);
+    const seedPatientUserIds = patients.map((p) => p.record.userId);
     await prisma.appointment.deleteMany({
         where: { patientId: { in: seedPatientIds } },
     });
     await prisma.prescription.deleteMany({
         where: { patientId: { in: seedPatientIds } },
+    });
+    // Purge legacy dummy files attached to prior seed runs (Complete Blood Count.pdf
+    // and Scan Image.png). File→Appointment is SetNull, so these survive the
+    // appointment wipe above as orphans without an explicit delete.
+    await prisma.file.deleteMany({
+        where: {
+            ownerId: { in: seedPatientUserIds },
+            originalName: { in: ['Complete Blood Count.pdf', 'Scan Image.png'] },
+        },
     });
 
     const busyDoctorIds = [drSarah.id, drChen.id, drPriya.id, drWilson.id, drEmily.id];
@@ -1370,7 +1380,7 @@ async function main() {
     const appointments = await prisma.appointment.createMany({ data: apptData });
     console.log(`\n✅ Created ${appointments.count} appointments`);
 
-    // ─── PRESCRIPTIONS & REPORT FILES FOR COMPLETED APPOINTMENTS ───────────────
+    // ─── PRESCRIPTIONS FOR COMPLETED APPOINTMENTS ──────────────────────────────
 
     const completedAppts = await prisma.appointment.findMany({
         where: {
@@ -1381,7 +1391,7 @@ async function main() {
     });
 
     for (const appt of completedAppts.slice(0, 20)) {
-        const prescription = await prisma.prescription.create({
+        await prisma.prescription.create({
             data: {
                 doctorId: appt.doctorId,
                 patientId: appt.patientId,
@@ -1406,41 +1416,6 @@ async function main() {
                     ],
                 },
             },
-        });
-
-        const patientUser = await prisma.patient.findUnique({
-            where: { id: appt.patientId },
-            select: { userId: true },
-        });
-        const doctorProfile = await prisma.doctorProfile.findUnique({
-            where: { id: appt.doctorId },
-            select: { userId: true },
-        });
-        if (!patientUser || !doctorProfile) continue;
-
-        await prisma.file.createMany({
-            data: [
-                {
-                    ownerId: patientUser.userId,
-                    appointmentId: appt.id,
-                    uploadedById: doctorProfile.userId,
-                    type: 'REPORT',
-                    storageKey: `reports/${appt.patientId}/${appt.id}/lab-cbc-${appt.scheduledAt.toISOString().slice(0, 10)}.pdf`,
-                    originalName: 'Complete Blood Count.pdf',
-                    mimeType: 'application/pdf',
-                    sizeBytes: BigInt(120_000),
-                },
-                {
-                    ownerId: patientUser.userId,
-                    appointmentId: appt.id,
-                    uploadedById: doctorProfile.userId,
-                    type: 'IMAGE',
-                    storageKey: `images/${appt.patientId}/${appt.id}/scan-${appt.scheduledAt.toISOString().slice(0, 10)}.png`,
-                    originalName: 'Scan Image.png',
-                    mimeType: 'image/png',
-                    sizeBytes: BigInt(450_000),
-                },
-            ],
         });
     }
 

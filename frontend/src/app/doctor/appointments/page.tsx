@@ -20,6 +20,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { appointmentsApi, type Appointment } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
+import { useScrollToTopOnPageChange } from '@/hooks/useScrollToTopOnPageChange';
 import { NO_BROWSER_INPUT_HELPERS } from '@/constants/form-controls';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -224,7 +225,7 @@ function RequestCard({
                 <div className="flex items-center gap-4">
                     <div className="relative">
                         <img
-                            src={`https://picsum.photos/seed/${appt.patient.user.id}/100/100`}
+                            src={`https://i.pravatar.cc/150?u=${appt.patient.user.id}`}
                             className="w-14 h-14 rounded-2xl object-cover shadow-sm"
                             alt={appt.patient.user.name}
                             referrerPolicy="no-referrer"
@@ -335,7 +336,7 @@ function ScheduledCard({
                 <div className="flex items-center gap-4">
                     <div className="relative">
                         <img
-                            src={`https://picsum.photos/seed/${appt.patient.user.id}/100/100`}
+                            src={`https://i.pravatar.cc/150?u=${appt.patient.user.id}`}
                             className="w-14 h-14 rounded-2xl object-cover shadow-sm"
                             alt={appt.patient.user.name}
                             referrerPolicy="no-referrer"
@@ -412,7 +413,7 @@ function ReadOnlyCard({ appt }: { appt: Appointment }) {
             {/* Patient info – fixed 260px */}
             <div className="flex items-center gap-4 min-w-0">
                 <img
-                    src={`https://picsum.photos/seed/${appt.patient.user.id}/100/100`}
+                    src={`https://i.pravatar.cc/150?u=${appt.patient.user.id}`}
                     className="w-14 h-14 rounded-2xl object-cover shadow-sm grayscale flex-shrink-0"
                     alt={appt.patient.user.name}
                     referrerPolicy="no-referrer"
@@ -488,6 +489,7 @@ export default function DoctorAppointments() {
         patientName: string;
     } | null>(null);
     const [page, setPage] = React.useState(1);
+    useScrollToTopOnPageChange(page);
 
     const { data, isLoading, isFetching, isError } = useQuery({
         queryKey: ['appointments', 'doctor', 'all'],
