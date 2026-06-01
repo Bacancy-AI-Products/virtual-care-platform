@@ -1,3 +1,9 @@
+// Load env before Prisma initialises — seed runs from backend/, root .env is one level up.
+import path from 'path';
+import dotenv from 'dotenv';
+dotenv.config({ path: path.resolve(__dirname, '..', '..', '.env') });
+dotenv.config(); // fallback: also check cwd/.env
+
 import { PrismaClient, Role, AppointmentStatus, Gender } from '../generated/prisma';
 import bcrypt from 'bcrypt';
 

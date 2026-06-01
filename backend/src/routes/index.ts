@@ -13,6 +13,7 @@ import { notificationsRouter } from '../modules/notifications';
 import { reviewsRouter } from '../modules/reviews';
 import { vitalsRouter } from '../modules/vitals';
 import { reportsRouter } from '../modules/reports';
+import { symptomChecksRouter } from '../modules/symptom-checks';
 
 const apiRouter = Router();
 
@@ -36,5 +37,6 @@ apiRouter.use('/admin', adminRouter);
 apiRouter.use('/notifications', notificationsRouter);
 apiRouter.use('/vitals', vitalsRouter);
 apiRouter.use('/reports', reportsRouter);
+apiRouter.use('/symptom-checks', symptomChecksRouter);
 
 export { apiRouter };

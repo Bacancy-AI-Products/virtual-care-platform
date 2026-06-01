@@ -81,10 +81,21 @@ enum VitalEntryMethod {
   IMPORTED
 }
 
+// Triage urgency levels for the AI symptom checker.
+// Order is meaningful — post-filter may ratchet UP, never DOWN.
+enum TriageUrgency {
+  SELF_CARE
+  ROUTINE
+  URGENT
+  EMERGENCY
+}
+
 // Canonical list of medical specializations for doctors.
 model Specialization {
   id   String @id
   name String @unique
+
+  symptomChecks SymptomCheck[]
 
   @@map("specializations")
 }
@@ -194,6 +205,7 @@ model Patient {
   prescriptions Prescription[]
   reviews       Review[]
   vitalReadings VitalReading[]
+  symptomChecks SymptomCheck[]
 
   @@map("patients")
 }
@@ -223,6 +235,7 @@ model Appointment {
   prescriptions Prescription[]
   files         File[]
   review        Review?
+  symptomChecks SymptomCheck[]
 
   @@index([doctorId, scheduledAt])
   @@index([patientId, scheduledAt])
@@ -403,4 +416,67 @@ model VitalReading {
   @@index([patientId, type, recordedAt(sort: Desc)])
   @@index([patientId, status, recordedAt(sort: Desc)])
   @@map("vital_readings")
+}
+
+// --- AI symptom checker results ---
+// One row per patient symptom-check submission. The result of the 5-stage
+// pipeline (pre-filter → LLM → post-filter → match → persist). See
+// docs/symptom-checker-plan.md for the full design.
+//
+// HIPAA notes:
+// - symptomsText, recommendation, doctorHandoffSummary, rawLlmResponse must be
+//   added to the field-level encryption allowlist (Phase 1.2) before this
+//   table is used in production.
+// - Every read/write must be wrapped by auditPhiAccess middleware (Phase 1.1).
+// - rawLlmResponse is auto-purged at rawResponsePurgeAt (default +30 days)
+//   by a documented cron job. The purge logs SYMPTOM_CHECK_RAW_PURGED.
+model SymptomCheck {
+  id        String @id @default(uuid())
+  patientId String @map("patient_id")
+
+  /// Patient's final symptom description — original free text plus any
+  /// clarifying chip-answers, joined into one string. PHI: encrypt at rest.
+  symptomsText String @map("symptoms_text")
+
+  /// Banded age range, e.g. "<18", "18-29". Banded (not DOB) so the LLM
+  /// receives only minimum-necessary info per HIPAA §164.502(b).
+  ageBand String? @map("age_band")
+  sex     Gender?
+
+  urgency          TriageUrgency
+  specializationId String?       @map("specialization_id")
+
+  /// Plain-English next-step shown to the patient. No diagnosis claims.
+  /// PHI: encrypt at rest.
+  recommendation String
+
+  /// Concise 1–2 sentence handoff summary auto-attached to Appointment.reason
+  /// when the patient books from this check. PHI: encrypt at rest.
+  doctorHandoffSummary String @map("doctor_handoff_summary")
+
+  /// Red-flag keywords detected (by pre-filter or LLM). Empty when none fired.
+  redFlags String[] @default([]) @map("red_flags")
+
+  /// Pipeline provenance — lets us correlate quality shifts with model/prompt
+  /// rollouts and roll back if needed.
+  modelVersion  String @map("model_version")
+  promptVersion String @map("prompt_version")
+
+  /// Raw LLM JSON response kept for debugging during the early months.
+  /// PHI: encrypt at rest. Purged at rawResponsePurgeAt (cron).
+  rawLlmResponse     String?   @map("raw_llm_response")
+  rawResponsePurgeAt DateTime? @map("raw_response_purge_at")
+
+  /// FK to the appointment booked from this check, if any.
+  resultingAppointmentId String? @map("resulting_appointment_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  patient              Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  specialization       Specialization? @relation(fields: [specializationId], references: [id], onDelete: SetNull)
+  resultingAppointment Appointment?    @relation(fields: [resultingAppointmentId], references: [id], onDelete: SetNull)
+
+  @@index([patientId, createdAt(sort: Desc)])
+  @@index([rawResponsePurgeAt])
+  @@map("symptom_checks")
 }

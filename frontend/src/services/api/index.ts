@@ -66,3 +66,15 @@ export type {
     ProductivityReport,
 } from './reports';
 export { reportsApi } from './reports';
+export type {
+    AgeBand,
+    Sex,
+    ClarifyQuestion,
+    SuggestedDoctor,
+    TriageUrgency,
+    ClarifyResponse,
+    TriageResponse,
+    SymptomCheckResponse,
+    CreateSymptomCheckInput,
+} from './symptom-checks';
+export { AGE_BANDS, symptomChecksApi } from './symptom-checks';

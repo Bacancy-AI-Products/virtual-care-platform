@@ -78,6 +78,35 @@ export const config = {
     keyId: getOptionalEnv('KEY_ID', 'v1'),
     /** Redis connection string for Socket.io adapter. Optional in dev. Required for multi-instance prod. */
     redisUrl: getOptionalEnv('REDIS_URL'),
+    /**
+     * AI symptom checker — feature settings. See docs/symptom-checker-plan.md.
+     * `enabled` is a kill switch — defaults to true in dev, false in production
+     * until the LLM-provider BAA is signed. The deterministic Phase 1 layer is
+     * safe to ship, but the feature is gated as a single unit.
+     */
+    symptomChecker: {
+        enabled:
+            (getOptionalEnv('SYMPTOM_CHECKER_ENABLED') ?? '').toLowerCase() === 'true' ||
+            (getOptionalEnv('SYMPTOM_CHECKER_ENABLED') === undefined &&
+                process.env.NODE_ENV !== 'production'),
+        /** Days before rawLlmResponse is purged by the cron (set up in a later phase). */
+        rawResponseTtlDays: parseInt(getOptionalEnv('RAW_LLM_RESPONSE_TTL_DAYS', '30') ?? '30', 10),
+        /**
+         * LLM provider for the triage call. When the API key is absent the
+         * service falls back to Phase 1 deterministic behaviour — safe but
+         * dumb (everything non-emergency routes to GP).
+         */
+        llm: {
+            anthropicApiKey: getOptionalEnv('ANTHROPIC_API_KEY'),
+            model: getOptionalEnv('LLM_MODEL', 'claude-sonnet-4-5') ?? 'claude-sonnet-4-5',
+            timeoutMs: parseInt(getOptionalEnv('LLM_TIMEOUT_MS', '8000') ?? '8000', 10),
+            maxRetries: parseInt(getOptionalEnv('LLM_MAX_RETRIES', '2') ?? '2', 10),
+            maxOutputTokens: parseInt(
+                getOptionalEnv('LLM_MAX_OUTPUT_TOKENS', '1024') ?? '1024',
+                10,
+            ),
+        },
+    },
     pagination: {
         defaultLimit: 20,
         maxLimit: 100,

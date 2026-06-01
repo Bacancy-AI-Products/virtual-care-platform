@@ -4,6 +4,7 @@ import { config } from './config';
 import { setNotificationEmitter } from './notifications-emitter';
 import { initializeSocket } from './socket';
 import { disconnectRedis } from './redis';
+import { startCronJobs } from './cron';
 
 const { port } = config;
 
@@ -16,12 +17,15 @@ async function start() {
         io.to(`user:${userId}`).emit('notification', payload);
     });
 
+    const stopCronJobs = startCronJobs();
+
     server.listen(port, () => {
         console.log(`[BacancyTeleCare] Server running on port ${port} (${config.nodeEnv})`);
         console.log(`[BacancyTeleCare] Socket.io initialized`);
     });
 
     const shutdown = () => {
+        stopCronJobs();
         io.close();
         server.close(async () => {
             await disconnectRedis();

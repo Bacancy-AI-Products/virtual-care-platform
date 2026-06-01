@@ -21,6 +21,7 @@ import {
     Activity,
     FileBarChart,
     FolderHeart,
+    Stethoscope,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { SidebarDecoration } from '@/components/SidebarDecoration';
@@ -58,6 +59,7 @@ interface NavItem {
 
 const patientNav: NavItem[] = [
     { to: '/patient/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/patient/symptom-check', icon: Stethoscope, label: 'Symptom Check' },
     { to: '/patient/doctors', icon: Search, label: 'Find Doctors' },
     { to: '/patient/appointments', icon: Calendar, label: 'Appointments' },
     { to: '/patient/vitals', icon: Activity, label: 'Vitals' },
